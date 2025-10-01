@@ -26,10 +26,9 @@ Este repositorio contiene:
 
 ## Miembros del equipo:
 
-- Apellido1 Apellido2, Nombre : github username : udc username : role
-- Apellido1 Apellido2, Nombre : github username : udc username : role
-- Apellido1 Apellido2, Nombre : github username : udc username : role
-
+- Borrazás Mancebo, Alexandre : alexborrazasm : alexandre.bmancebo  : Facilitador-Administrador
+- Pérez Pértega, Nerea : NereaPP : nerea.ppertega : Curadora-Traductora
+- García Figueroa, Daniel : gitdfigueroa : d.figueroa : analista
 
 ## Pasos para realizar la práctica
 
