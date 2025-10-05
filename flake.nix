@@ -7,6 +7,7 @@
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
       pyPkgs = ps: with ps; [
+        requests
         pygobject3
       ];
     in
@@ -14,21 +15,22 @@
       devShells = {
         "x86_64-linux" = {
           default = pkgs.mkShell {
-            buildInputs = with pkgs; [
-              libadwaita
-              gtk4
-              graphene
-              glib
+            packages = with pkgs; [
+              # Python with packages
+              (python312.withPackages pyPkgs)
+              
+              # Dev tools
               gobject-introspection
-              (pkgs.python312.withPackages pyPkgs)
+              gtk4
+              libadwaita
+              wrapGAppsHook
             ];
+
             shellHook = ''
-              export LD_LIBRARY_PATH=${pkgs.gtk4}/lib:$LD_LIBRARY_PATH
-              echo "Python + GTK devShell loaded"
+              echo "Python+GTK+adwaita devShell loaded"
             '';
           };
         };
       };
     };
 }
-
