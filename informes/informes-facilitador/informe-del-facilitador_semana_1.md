@@ -29,6 +29,20 @@ Luego de esto se decidió hacer una mezcla del diseño de Nerea y el mio
 para simplificar la aplicación, dado que nuestros diseños de la PI tendían a ser
 muy complejos.
 
+#### Responsabilidades
+Todos, primera reunión.
+
+#### Estado: `Completada`
+
+### Prueba del `SERVIDOR`
+
+Prueba y configuración del servidor proporcionado para la práctica. Además se
+va a utilizar para probar la API y entender mejor que cosas podemos o no 
+implementar.
+
+#### Responsabilidades
+Todos, primera reunión.
+
 #### Estado: `Completada`
 
 ### Creación del diseño IU y casos de uso (Tarea 1.1 enunciado)
@@ -57,6 +71,9 @@ primera tarea con un poco de retraso.
 Se hablo el patrón a utilizar, al final hemos decidido usar MVP (Modelo-Vista-
 Presentador), este patrón separa la lógica de la interfaz de usuario en 3 capas
 facilitando las pruebas, mantenimiento y la escalabilidad.
+
+#### Responsabilidades
+Todos, primera reunión.
 
 #### Estado: 'Completada'
 
