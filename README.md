@@ -28,7 +28,7 @@ Este repositorio contiene:
 
 - Borrazás Mancebo, Alexandre : alexborrazasm : alexandre.bmancebo  : Facilitador-Administrador
 - Pérez Pértega, Nerea : NereaPP : nerea.ppertega : Curadora-Traductora
-- García Figueroa, Daniel : gitdfigueroa : d.figueroa : analista
+- García Figueroa, Daniel : gitdfigueroa : d.figueroa : Analista
 
 ## Pasos para realizar la práctica
 
