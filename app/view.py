@@ -45,6 +45,7 @@ class ExampleObject(GObject.GObject):
   def __repr__(self):
     return f"ExampleObject(id={self._id}, name={self._name}, credit_balance={self._credit_balance})"
 
+
 class View:
   def __init__(self):
     self.handler = None
@@ -52,6 +53,8 @@ class View:
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
+
+  def show_empty_expense(self) -> None: pass # Abstract method
     
   def build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
@@ -72,12 +75,14 @@ class View:
     dots.set_icon_name("open-menu-symbolic")
     return dots
 
+
 class AdwView(View):
   def __init__(self):
     super().__init__()
     self.window = None # type: Adw.ApplicationWindow
-    self._listbox = None # type: Gtk.ListBox
+    self._expenses_list = None # type: Gtk.ListBox
     self._about = None # type: Adw.AboutDialog
+    self._sidebar_header = None # type: Adw.HeaderBar
 
     # Stack of views
     self._stack = None # type: Adw.Stack
@@ -89,54 +94,20 @@ class AdwView(View):
     self.data_model.append(ExampleObject(3, "Expense3", 5.75))
     
   def on_activate(self, app: Adw.Application) -> None:
-    self.build(app)
+    self._build(app)
   
-  def build(self, app: Adw.Application) -> None:
+  def _build(self, app: Adw.Application) -> None:
     self.window = win = Adw.ApplicationWindow()
     app.add_window(win)
     win.connect("destroy", lambda win: win.close())
     win.set_default_size(800, 600)
-  
-    # Left panel (expenses list) 
-    sidebar_header = self.build_left_header_bar()
-    sidebar_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
-      spacing=16, 
-      margin_top=16,
-      margin_bottom=16,
-      margin_start=16,
-      margin_end=16
-    )
-    self._listbox = self.build_listbox()
-    scrolledWindow = Gtk.ScrolledWindow()
-    scrolledWindow.set_vexpand(True) # Take all available vertical space 
-    scrolledWindow.set_child(self._listbox)
-    sidebar_box.append(scrolledWindow)
-    sidebar_toolbar = Adw.ToolbarView()
-    sidebar_toolbar.add_top_bar(sidebar_header)
-    sidebar_toolbar.set_content(sidebar_box)
-    sidebar_page = Adw.NavigationPage(title="Expenses", child=sidebar_toolbar)
-    ####
+
+    # Left panel (expenses list)
+    sidebar_page = self._build_expenses_list()
+
     # Right panel (content)
-    content_header = self.build_right_header_bar()
-
-    # Stack for different right-side views (hidden switcher)
     self._stack = Adw.ViewStack()
-
-    # Layout container for the right panel
-    content_box = Gtk.Box(
-        orientation=Gtk.Orientation.VERTICAL,
-        spacing=12,
-        margin_top=12
-    )
-    # Just append the stack directly (no visible switcher)
-    content_box.append(self._stack)
-
-    # Toolbar wrapper
-    content_toolbar = Adw.ToolbarView()
-    content_toolbar.add_top_bar(content_header)
-    content_toolbar.set_content(content_box)
-
-    content_page = Adw.NavigationPage(child=content_toolbar)
+    content_page = self._build_empty_expense()
     
     # Split view
     split_view = Adw.NavigationSplitView()
@@ -151,39 +122,92 @@ class AdwView(View):
       "max-width: 600px"))
     breakpoint.add_setter(split_view, "collapsed", True)
     # Show window controls when sidebar is collapsed
-    breakpoint.add_setter(sidebar_header, "show_end_title_buttons", True)
+    breakpoint.add_setter(self._sidebar_header, "show_end_title_buttons", True)
     win.add_breakpoint(breakpoint)
-      
-    # App toolbar (main container)
-    root_toolbar = Adw.ToolbarView()
-    root_toolbar.set_content(split_view)
     
-    win.set_content(root_toolbar)
+    # Show the window
+    win.set_content(split_view)
     win.present()
-    
-  def build_left_header_bar(self) -> Adw.HeaderBar:
-    add_button = Gtk.Button(icon_name="list-add-symbolic")
-    add_button.connect(
-      'clicked', lambda _wg: self.handler.on_add_expense_clicked())    
 
-    search_button = Gtk.Button(icon_name="system-search-symbolic")
-    search_button.connect(
-      'clicked', lambda _wg: self.handler.on_search_expense_clicked())    
+  def _build_expenses_list(self) -> Gtk.Widget:
 
-    header = Adw.HeaderBar()
-    header.set_show_end_title_buttons(False)  # hide window controls
-    menu = self.build_menu()
-    header.pack_start(search_button)
-    header.pack_start(add_button)
-    header.pack_end(menu)
-    return header
-  
-  def build_right_header_bar(self) -> Adw.HeaderBar:
-    header = Adw.HeaderBar()
+    def _build_header_bar() -> Adw.HeaderBar:
+      add_button = Gtk.Button(icon_name="list-add-symbolic")
+      add_button.connect(
+        'clicked', lambda _wg: self.handler.on_add_expense_clicked())    
+
+      search_button = Gtk.Button(icon_name="system-search-symbolic")
+      search_button.connect(
+        'clicked', lambda _wg: self.handler.on_search_expense_clicked())    
+
+      header = Adw.HeaderBar()
+      header.set_show_end_title_buttons(False)  # hide window controls
+      menu = self.build_menu()
+      header.pack_start(search_button)
+      header.pack_start(add_button)
+      header.pack_end(menu)
+
+      return header
+
+    self._sidebar_header = _build_header_bar() # For use in responsive design
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+      spacing=16, 
+      margin_top=16,
+      margin_bottom=16,
+      margin_start=16,
+      margin_end=16
+    )
+    self._expenses_list = self._build_listbox()
+    scrolledWindow = Gtk.ScrolledWindow()
+    scrolledWindow.set_vexpand(True) # Take all available vertical space 
+    scrolledWindow.set_child(self._expenses_list)
+    box.append(scrolledWindow)
+    toolbar = Adw.ToolbarView()
+    toolbar.add_top_bar(self._sidebar_header)
+    toolbar.set_content(box)
+
+    page = Adw.NavigationPage(title="Expenses", child=toolbar)
     
-    return header
+    return page
+
+  def _build_empty_expense(self) -> Adw.NavigationPage:
+      
+    content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+    content_box.set_valign(Gtk.Align.CENTER)
+    content_box.set_halign(Gtk.Align.CENTER)
+    content_box.set_vexpand(True)
+    content_box.set_hexpand(True)
+    
+    # Big icon
+    icon = Gtk.Image.new_from_icon_name("dialog-information-symbolic")
+    icon.set_pixel_size(96)
+    content_box.append(icon)
+    
+    # Text
+    label = Gtk.Label(label="Pick an expense")
+    label.set_margin_top(12)
+    label.set_css_classes(["title-1"])
+    content_box.append(label)
+    
+    # Add to stack of views
+    self._stack.add_titled(content_box, "empty", "Empty")
+    # Save for lazy loading
+    self._views.append(content_box)
+    
+    toolbar_view = Adw.ToolbarView()
+    toolbar_view.set_content(self._stack)  # Stack as content
+    
+    # Header bar in the top
+    header = Adw.HeaderBar()
+    toolbar_view.add_top_bar(header)
+    
+    # Navigation page
+    page = Adw.NavigationPage(child=toolbar_view)
+    page.set_title("Splitwithme")
+    
+    return page
   
-  def build_listbox(self) -> Gtk.ListBox:
+  def _build_listbox(self) -> Gtk.ListBox:
 
     def on_build_row(item: ExampleObject, user_data: Any) -> Gtk.Widget:
       image = Gtk.Image.new_from_icon_name("view-list-symbolic")
@@ -214,7 +238,10 @@ class AdwView(View):
     listbox.add_css_class("boxed-list-separate")
     listbox.bind_model(self.data_model, on_build_row, None)
     return listbox
-  
+
+  def show_empty_expense(self) -> None:
+    self._stack.set_visible_child_name("empty")
+
   def show_about(self, action: Gio.SimpleAction, param: Any):
     self._about = Adw.AboutDialog()
     self._about.set_title("About")
