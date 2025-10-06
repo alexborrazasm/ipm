@@ -17,7 +17,7 @@ def run(application_id: str, on_activate: Callable) -> None:
 class ViewHandler(Protocol):
   def on_add_expense_clicked() -> None: pass
   def on_search_expense_clicked() -> None: pass
-  def on_show_expense_info_clicked(self, data: ExampleObject) -> None: pass
+  def on_show_expense_info_clicked(self, data: Expense) -> None: pass
 
 class Expense(GObject.GObject):
   def __init__(self, id, description, date, amount, num_friends , credit_balance):
@@ -187,7 +187,7 @@ class AdwView(View):
       margin_start=16,
       margin_end=16
     )
-    self._expenses_list = self._build_listbox()
+    self._expenses_list = self._build_listbox_expenses()
     scrolledWindow = Gtk.ScrolledWindow()
     scrolledWindow.set_vexpand(True) # Take all available vertical space 
     scrolledWindow.set_child(self._expenses_list)
@@ -237,7 +237,7 @@ class AdwView(View):
     
     return page
   
-  def _build_listbox(self) -> Gtk.ListBox:
+  def _build_listbox_expenses(self) -> Gtk.ListBox:
 
     def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
       image = Gtk.Image.new_from_icon_name("view-list-symbolic")
@@ -269,6 +269,41 @@ class AdwView(View):
     listbox.bind_model(self.data_model, on_build_row, None)
 
     return listbox
+  
+  def _build_expense_info(self, data: Expense) -> Adw.ToolbarView:
+    # Info layout
+    info_box = Gtk.Box(
+        orientation=Gtk.Orientation.VERTICAL,
+        spacing=12,
+        margin_top=24,
+        margin_bottom=24,
+        margin_start=24,
+        margin_end=24
+    )
+
+    # Example fields
+    title_label = Gtk.Label(label=f"Expense: {data.description}")
+    title_label.set_css_classes(["title-1"])
+    title_label.set_halign(Gtk.Align.START)
+    info_box.append(title_label)
+
+    amount_label = Gtk.Label(label=f"Amount: {data.amount:.2f} €")
+    amount_label.set_halign(Gtk.Align.START)
+    info_box.append(amount_label)
+
+    date_label = Gtk.Label(label=f"Date: {data.date}")
+    date_label.set_halign(Gtk.Align.START)
+    info_box.append(date_label)
+
+    # Wrap it inside a scroll view in case it grows
+    scrolled = Gtk.ScrolledWindow()
+    scrolled.set_child(info_box)
+
+    # Build a ToolbarView
+    view = Adw.ToolbarView()
+    view.set_content(scrolled)
+
+    return view
 
   def show_about(self, action: Gio.SimpleAction, param: Any):
   
@@ -313,6 +348,7 @@ class AdwView(View):
 
   def show_add_expense(self) -> None:
     print("Add expense clicked")
+    self._stack.set_visible_child_name("empty")
     # TODO
 
   def show_search_expense(self) -> None: 
@@ -320,5 +356,8 @@ class AdwView(View):
     # TODO
 
   def show_expense_info(self, data: Expense) -> None:
-    print(f"Show expense info clicked for {data.id}")
-    # TODO
+    if not f"info{data.id}" in self._views:
+      info = self._build_expense_info(data)
+      self._views.append(f"info{data.id}")
+      self._stack.add_titled(info, f"info{data.id}", data.description)
+    self._stack.set_visible_child_name(f"info{data.id}")

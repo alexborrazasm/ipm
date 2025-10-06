@@ -28,4 +28,3 @@ class Presenter(ViewHandler):
   
   def on_show_expense_info_clicked(self, data) -> None:
     self.view.show_expense_info(data)
-    pass # TODO
