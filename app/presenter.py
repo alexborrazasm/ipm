@@ -18,3 +18,7 @@ class Presenter(ViewHandler):
   def on_search_expense_clicked(self) -> None:
     print("Search expense clicked")
     pass # TODO
+  
+  def on_show_expense_info_clicked(self, data) -> None:
+    print(f"Show expense info clicked for {data.id}")
+    pass # TODO

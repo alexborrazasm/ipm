@@ -17,6 +17,7 @@ def run(application_id: str, on_activate: Callable) -> None:
 class ViewHandler(Protocol):
   def on_add_expense_clicked() -> None: pass
   def on_search_expense_clicked() -> None: pass
+  def on_show_expense_info_clicked(self, data: ExampleObject) -> None: pass
 
 
 class ExampleObject(GObject.GObject):
@@ -51,7 +52,7 @@ class View:
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
-
+    
   def build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
     about_action.connect("activate", self.show_about)
@@ -74,6 +75,18 @@ class View:
 class AdwView(View):
   def __init__(self):
     super().__init__()
+    self.window = None # type: Adw.ApplicationWindow
+    self._listbox = None # type: Gtk.ListBox
+    self._about = None # type: Adw.AboutDialog
+
+    # Stack of views
+    self._stack = None # type: Adw.Stack
+    self._views = [] # List for lazy loading of views
+
+    # TODO for testing purposes
+    self.data_model.append(ExampleObject(1, "Expense1", 23.5))
+    self.data_model.append(ExampleObject(2, "Expense2", 12.0))
+    self.data_model.append(ExampleObject(3, "Expense3", 5.75))
     
   def on_activate(self, app: Adw.Application) -> None:
     self.build(app)
@@ -84,11 +97,7 @@ class AdwView(View):
     win.connect("destroy", lambda win: win.close())
     win.set_default_size(800, 600)
   
-    self.data_model.append(ExampleObject(1, "Expense1", 23.5)) # TODO: remove
-    self.data_model.append(ExampleObject(2, "Expense2", 12.0)) # TODO: remove
-    self.data_model.append(ExampleObject(3, "Expense3", 5.75))
-
-    # Left panel (friends list) 
+    # Left panel (expenses list) 
     sidebar_header = self.build_left_header_bar()
     sidebar_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
       spacing=16, 
@@ -97,23 +106,36 @@ class AdwView(View):
       margin_start=16,
       margin_end=16
     )
-    self.listbox = self.build_listbox()
+    self._listbox = self.build_listbox()
     scrolledWindow = Gtk.ScrolledWindow()
     scrolledWindow.set_vexpand(True) # Take all available vertical space 
-    scrolledWindow.set_child(self.listbox)
+    scrolledWindow.set_child(self._listbox)
     sidebar_box.append(scrolledWindow)
     sidebar_toolbar = Adw.ToolbarView()
     sidebar_toolbar.add_top_bar(sidebar_header)
     sidebar_toolbar.set_content(sidebar_box)
     sidebar_page = Adw.NavigationPage(title="Expenses", child=sidebar_toolbar)
-    
+    ####
     # Right panel (content)
     content_header = self.build_right_header_bar()
+
+    # Stack for different right-side views (hidden switcher)
+    self._stack = Adw.ViewStack()
+
+    # Layout container for the right panel
     content_box = Gtk.Box(
-      orientation=Gtk.Orientation.VERTICAL, spacing=12, margin_top=12)
+        orientation=Gtk.Orientation.VERTICAL,
+        spacing=12,
+        margin_top=12
+    )
+    # Just append the stack directly (no visible switcher)
+    content_box.append(self._stack)
+
+    # Toolbar wrapper
     content_toolbar = Adw.ToolbarView()
     content_toolbar.add_top_bar(content_header)
     content_toolbar.set_content(content_box)
+
     content_page = Adw.NavigationPage(child=content_toolbar)
     
     # Split view
@@ -184,7 +206,7 @@ class AdwView(View):
 
     def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
       idx = widget.get_selected_row().get_index()
-      self.update_labels(self.data_model[idx])
+      self.handler.on_show_expense_info_clicked(self.data_model[idx])
         
     listbox = Gtk.ListBox(hexpand=True)
     listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
@@ -194,32 +216,32 @@ class AdwView(View):
     return listbox
   
   def show_about(self, action: Gio.SimpleAction, param: Any):
-    self.about = Adw.AboutDialog()
-    self.about.set_title("About")
+    self._about = Adw.AboutDialog()
+    self._about.set_title("About")
     # Makes the dialog always appear in from of the parent window
     # Makes the parent window unresponsive while dialog is showing
-    self.about.set_application_name("Splitwithme")
-    self.about.set_developers([
+    self._about.set_application_name("Splitwithme")
+    self._about.set_developers([
       "Nerea Pérez",
       "Daniel García",
       "Alexandre Borrazás"
     ])
-    self.about.set_designers([
+    self._about.set_designers([
       "Nerea Pérez",
       "Daniel García",
       "Alexandre Borrazás"
     ])
-    self.about.set_copyright(
+    self._about.set_copyright(
       "Copyright 2025 Nerea Pérez Pértega"
       ", Daniel García Figueroa "
       "and Alexandre Borrazás Mancebo"
     )
-    self.about.set_license_type(Gtk.License.GPL_3_0)
-    self.about.set_website(
+    self._about.set_license_type(Gtk.License.GPL_3_0)
+    self._about.set_website(
       "https://github.com/GEI-IPM-614G010222526/practica-de-escritorio-rage-against-the-machine"
     )
-    self.about.set_version("0.1")
-    self.about.set_copyright(
+    self._about.set_version("0.1")
+    self._about.set_copyright(
       "© 2025 Nerea Pérez Pértega"
       ", Daniel García Figueroa"
       " and Alexandre Borrazás Mancebo"
@@ -228,4 +250,4 @@ class AdwView(View):
     #self.about.set_application_icon("icon.png")
     # myappicon.png must be uploaded in ~/.local/share/icons or /usr/share/icons
 
-    self.about.present(self.window)
+    self._about.present(self.window)
