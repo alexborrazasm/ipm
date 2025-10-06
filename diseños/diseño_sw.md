@@ -1,4 +1,6 @@
 ```mermaid
+
+%% DIAGRAMA ESTÁTICO (DIAGRAMA DE CLASES)
 classDiagram
 
     class Presenter {
@@ -61,4 +63,37 @@ classDiagram
     Presenter --> Model : model
     Presenter --> View : view
 
+```
+
+```mermaid
+
+%% DIAGRAMA DINÁMICO (DIAGRAMA DE SECUENCIA)
+sequenceDiagram
+    participant app as Main
+
+    create participant model as Model
+    app ->> model: create
+
+    alt args contains "adw"
+        create participant view as View
+        app ->> view: create
+        create Participant Presenter
+        app ->> Presenter: create(model, view)
+        app ->> Presenter: run(application_id)
+        Presenter ->> view : set_handler(self)        
+        rect rgb(191, 223, 255)
+            create participant adw as Adw.Application
+            note right of Presenter: run(application_id, AdwView.on_activate)
+            Presenter ->> adw : create(application_id)
+            Presenter ->> adw : connect('activate', on_activate)
+            Presenter ->> adw : run()
+            note right of adw: Init Gtk and Adw
+        end
+        adw --) adw : 'activate'
+        note right of adw : When Gtk is ready, the signal 'activate' <br> is sent so its handler is run
+        adw ->> view: on_activate(app)
+        view ->> view : build(app)
+    end
+        
+```
 
