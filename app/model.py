@@ -16,3 +16,40 @@ class Model:
     except Exception as e:
       print(e)
       return [] # TODO proper error handling
+    
+  def put_expense(self, expense_id: int, description: str, date: str, amount: float) -> list:
+      payload = {
+          "description": description,
+          "date": date,
+          "amount": amount
+      }
+
+      try:
+          r = requests.put(f"{SERVER_URL}/expenses/{expense_id}", json=payload)
+          if r.ok:
+              return r.json()
+          else:
+              print(f"Failed to update expense {expense_id}: {r.status_code} {r.text}")
+              return []
+      except Exception as e:
+          print(e)
+          return []  # TODO: proper error handling
+      
+
+  def delete_expense(self, expense_id: int) -> bool:
+    try:
+        r = requests.delete(f"{SERVER_URL}/expenses/{expense_id}")
+        if r.ok:
+            return True
+        else:
+            print(f"Failed to delete expense {expense_id}: {r.status_code} {r.text}")
+            return False
+    except Exception as e:
+        print(e)
+        return False  # TODO: proper error handling
+
+
+  
+
+
+
