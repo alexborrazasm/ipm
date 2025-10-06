@@ -19,42 +19,72 @@ class ViewHandler(Protocol):
   def on_search_expense_clicked() -> None: pass
   def on_show_expense_info_clicked(self, data: ExampleObject) -> None: pass
 
-
-class ExampleObject(GObject.GObject):
-  def __init__(self, id, name, credit_balance):
+class Expense(GObject.GObject):
+  def __init__(self, id, description, date, amount, num_friends , credit_balance):
     super().__init__()
     self._id = id
-    self._name = name
+    self._description = description
+    self._date = date
+    self._amount = amount
+    self._num_friends = num_friends
     self._credit_balance = credit_balance
-
-  @GObject.Property(type=str)
-  def name(self):
-    return self._name
-
-  def set_name(self, name):
-    self._name = name
 
   @GObject.Property(type=int)
   def id(self):
     return self._id
+
+  @GObject.Property(type=str)
+  def description(self):
+    return self._description
+
+  def set_description(self, description):
+    self._description = description
+
+  @GObject.Property(type=str)
+  def date(self):
+    return self._date
+  
+  def set_date(self, date):
+    self._date = date
+
+  @GObject.Property(type=float)
+  def amount(self):
+    return self._amount
+
+  def set_amount(self, amount):
+    self._amount = amount
+    
+  @GObject.Property(type=int)
+  def num_friends(self):
+    return self._num_friends
 
   @GObject.Property(type=float)
   def credit_balance(self):
     return self._credit_balance
 
   def __repr__(self):
-    return f"ExampleObject(id={self._id}, name={self._name}, credit_balance={self._credit_balance})"
-
+    return (
+      f"Expense(id={self._id}, description={self._description}, "
+      f"date={self._date}, amount={self._amount}, "
+      f"num_friends={self._num_friends}, credit_balance={self._credit_balance})"
+    )
 
 class View:
   def __init__(self):
     self.handler = None
-    self.data_model = Gio.ListStore(item_type=ExampleObject)
+    self.data_model = Gio.ListStore(item_type=Expense)
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
-
-  def show_empty_expense(self) -> None: pass # Abstract method
+    
+  def update(self, data: list) -> None:
+    self.data_model.remove_all()
+    for item in data:
+      example_object = Expense(
+        item['id'], item['description'], item['date'], 
+        item['amount'], item['num_friends'], item['credit_balance']
+      )
+      self.data_model.append(example_object)
     
   def build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
@@ -75,6 +105,11 @@ class View:
     dots.set_icon_name("open-menu-symbolic")
     return dots
 
+  # Abstract methods to be implemented by subclasses
+  def show_empty_expense(self) -> None: pass
+  def show_add_expense(self) -> None: pass
+  def show_search_expense(self) -> None: pass
+  def show_expense_info(self, data: Expense) -> None: pass
 
 class AdwView(View):
   def __init__(self):
@@ -88,11 +123,6 @@ class AdwView(View):
     self._stack = None # type: Adw.Stack
     self._views = [] # List for lazy loading of views
 
-    # TODO for testing purposes
-    self.data_model.append(ExampleObject(1, "Expense1", 23.5))
-    self.data_model.append(ExampleObject(2, "Expense2", 12.0))
-    self.data_model.append(ExampleObject(3, "Expense3", 5.75))
-    
   def on_activate(self, app: Adw.Application) -> None:
     self._build(app)
   
@@ -209,10 +239,10 @@ class AdwView(View):
   
   def _build_listbox(self) -> Gtk.ListBox:
 
-    def on_build_row(item: ExampleObject, user_data: Any) -> Gtk.Widget:
+    def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
       image = Gtk.Image.new_from_icon_name("view-list-symbolic")
-      label1 = Gtk.Label(label=item._name, halign=Gtk.Align.START)
-      label2 = Gtk.Label(label=f"{item._credit_balance:.2f}", halign=Gtk.Align.START)
+      label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
+      label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", halign=Gtk.Align.START)
       label2.add_css_class("caption")
 
       vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
@@ -237,12 +267,11 @@ class AdwView(View):
     listbox.connect("selected-rows-changed", on_listbox_row_activated)
     listbox.add_css_class("boxed-list-separate")
     listbox.bind_model(self.data_model, on_build_row, None)
+
     return listbox
 
-  def show_empty_expense(self) -> None:
-    self._stack.set_visible_child_name("empty")
-
   def show_about(self, action: Gio.SimpleAction, param: Any):
+  
     self._about = Adw.AboutDialog()
     self._about.set_title("About")
     # Makes the dialog always appear in from of the parent window
@@ -278,3 +307,18 @@ class AdwView(View):
     # myappicon.png must be uploaded in ~/.local/share/icons or /usr/share/icons
 
     self._about.present(self.window)
+    
+  def show_empty_expense(self) -> None:
+    self._stack.set_visible_child_name("empty")
+
+  def show_add_expense(self) -> None:
+    print("Add expense clicked")
+    # TODO
+
+  def show_search_expense(self) -> None: 
+    print("Search expense clicked")
+    # TODO
+
+  def show_expense_info(self, data: Expense) -> None:
+    print(f"Show expense info clicked for {data.id}")
+    # TODO

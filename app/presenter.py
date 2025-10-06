@@ -8,17 +8,24 @@ class Presenter(ViewHandler):
     self.view = view
         
   def run(self, application_id: str):
+    self.update_expenses()
     self.view.set_handler(self)
     run(application_id=application_id, on_activate=self.view.on_activate)
 
+  def update_expenses(self):
+    expenses = self.model.get_expenses()
+    self.view.update(expenses)
+
   def on_add_expense_clicked(self) -> None:
-    print("Add expense clicked")
+    self.view.show_add_expense()
     pass # TODO
   
   def on_search_expense_clicked(self) -> None:
-    print("Search expense clicked")
+    expenses = self.model.get_expenses()
+    self.view.update(expenses)
+    self.view.show_search_expense()
     pass # TODO
   
   def on_show_expense_info_clicked(self, data) -> None:
-    print(f"Show expense info clicked for {data.id}")
+    self.view.show_expense_info(data)
     pass # TODO
