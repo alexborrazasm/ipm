@@ -269,41 +269,59 @@ class AdwView(View):
     listbox.bind_model(self.data_model, on_build_row, None)
 
     return listbox
-  
+
   def _build_expense_info(self, data: Expense) -> Adw.ToolbarView:
-    # Info layout
-    info_box = Gtk.Box(
-        orientation=Gtk.Orientation.VERTICAL,
-        spacing=12,
-        margin_top=24,
-        margin_bottom=24,
-        margin_start=24,
-        margin_end=24
-    )
-
-    # Example fields
-    title_label = Gtk.Label(label=f"Expense: {data.description}")
-    title_label.set_css_classes(["title-1"])
-    title_label.set_halign(Gtk.Align.START)
-    info_box.append(title_label)
-
-    amount_label = Gtk.Label(label=f"Amount: {data.amount:.2f} €")
-    amount_label.set_halign(Gtk.Align.START)
-    info_box.append(amount_label)
-
-    date_label = Gtk.Label(label=f"Date: {data.date}")
-    date_label.set_halign(Gtk.Align.START)
-    info_box.append(date_label)
-
-    # Wrap it inside a scroll view in case it grows
     scrolled = Gtk.ScrolledWindow()
-    scrolled.set_child(info_box)
+    scrolled.set_vexpand(True)
+    scrolled.set_hexpand(True)
+    scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
-    # Build a ToolbarView
-    view = Adw.ToolbarView()
-    view.set_content(scrolled)
+    listbox = Gtk.ListBox()
+    listbox.add_css_class("boxed-list")  # Cambiado de "boxed-list-separate"
+    listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+    # Set a minimum width for the listbox
+    listbox.set_size_request(300, -1)
 
-    return view
+    # Description
+    row = Adw.ActionRow(title="Description", subtitle=data.description)
+    listbox.append(row)
+
+    # Date
+    row = Adw.ActionRow(title="Date", subtitle=data.date)
+    listbox.append(row)
+
+    # Amount
+    row = Adw.ActionRow(title="Amount", subtitle=f"€{data.amount:.2f}")
+    listbox.append(row)
+
+    # Friends
+    row = Adw.ActionRow(title="Friends", subtitle=str(data.num_friends))
+    listbox.append(row)
+
+    # Credit Balance
+    balance_row = Adw.ActionRow(
+        title="Balance",
+        subtitle=f"{data.credit_balance:+.2f} €"
+    )
+    balance_row.add_css_class("success" if data.credit_balance >= 0 else "error")
+    listbox.append(balance_row)
+
+    # Center the listbox horizontally
+    outer_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+                       halign=Gtk.Align.CENTER,
+                       spacing=16,
+                       margin_top=16,
+                       margin_bottom=16,
+                       margin_start=16,
+                       margin_end=16)
+    outer_box.append(listbox)
+
+    scrolled.set_child(outer_box)
+
+    toolbar_view = Adw.ToolbarView()
+    toolbar_view.set_content(scrolled)
+    
+    return toolbar_view
 
   def show_about(self, action: Gio.SimpleAction, param: Any):
   
