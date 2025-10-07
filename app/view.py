@@ -15,6 +15,7 @@ def run(application_id: str, on_activate: Callable) -> None:
   app.run()
 
 
+# Abstract presenter interface
 class ViewHandler(Protocol):
   def on_add_expense_clicked() -> None: pass
   def on_search_expense_clicked() -> None: pass
@@ -22,6 +23,7 @@ class ViewHandler(Protocol):
   def get_friends_by_expense(self, expense_id) -> list[dict]: pass
 
 
+# Data models
 class Friend(GObject.GObject):
   def __init__(self, id, name, credit_balance, debit_balance):
     super().__init__()
@@ -115,6 +117,7 @@ class Expense(GObject.GObject):
     )
 
 
+# Abstract view interface
 class View:
   def __init__(self):
     self.handler = None
@@ -176,6 +179,7 @@ class View:
   def show_expense_info(self, data: Expense) -> None: pass
 
 
+# Concrete implementation of the view using GTK and ADW
 class AdwView(View):
   def __init__(self):
     super().__init__()
@@ -184,6 +188,8 @@ class AdwView(View):
     self._about = None # type: Adw.AboutDialog
     self._sidebar_header = None # type: Adw.HeaderBar
     self._split_view = None # type: Adw.NavigationSplitView
+    self._content_page = None # type: Adw.NavigationPage
+    self._sidebar_page = None # type: Gtk.Widget
 
     # Stack of views
     self._stack = None # type: Adw.Stack
@@ -199,17 +205,22 @@ class AdwView(View):
     win.set_default_size(800, 600)
 
     # Left panel (expenses list)
-    sidebar_page = self._build_expenses_list()
+    self._sidebar_page = self._build_expenses_list()
 
     # Right panel (content)
     self._stack = Adw.ViewStack()
-    #content_page = self._build_empty_expense()
-    content_page = self._build_loading_page()
+    loading_page = self._build_loading_page()
     
+    self._stack.add_titled(loading_page, "loading", "Loading")
+    self._views.append("loading")
+
+    self._content_page = Adw.NavigationPage(child=self._stack)
+    self._content_page.set_title("Splitwithme")
+
     # Split view
     self._split_view = Adw.NavigationSplitView()
-    self._split_view.set_sidebar(sidebar_page)
-    self._split_view.set_content(content_page)
+    self._split_view.set_sidebar(self._sidebar_page)
+    self._split_view.set_content(self._content_page)
     self._split_view.set_max_sidebar_width(500)
     self._split_view.set_min_sidebar_width(300)
     
@@ -295,10 +306,6 @@ class AdwView(View):
     # Header bar (unique per page)
     header = Adw.HeaderBar()
     toolbar_view.add_top_bar(header)
-    
-    # Add to navigation view
-    self._stack.add_titled(toolbar_view, "empty", "Empty")
-    self._views.append("empty")
 
     # Navigation page
     page = Adw.NavigationPage(child=self._stack)
@@ -337,15 +344,7 @@ class AdwView(View):
     header.set_title_widget(Gtk.Label(label="Splitwithme"))
     toolbar_view.add_top_bar(header)
 
-    # Add to navigation view
-    self._stack.add_titled(toolbar_view, "loading", "Loading")
-    self._views.append("loading")
-
-    # NavigationPage
-    page = Adw.NavigationPage(child=self._stack)
-    page.set_title("Splitwithme")
-
-    return page
+    return toolbar_view
 
   def _build_listbox_expenses(self) -> Gtk.ListBox:
 
@@ -443,11 +442,7 @@ class AdwView(View):
     header.set_title_widget(Gtk.Label(label=data.description))
     toolbar_view.add_top_bar(header)
 
-    # Navigation page
-    page = Adw.NavigationPage(child=toolbar_view)
-    page.set_title(data.description)
-
-    return page
+    return toolbar_view
 
   def show_about(self, action: Gio.SimpleAction, param: Any):
   
@@ -488,6 +483,10 @@ class AdwView(View):
     self._about.present(self.window)
     
   def show_empty_expense(self) -> None:
+    if not "empty" in self._views:
+      empty = self._build_empty_expense()
+      self._stack.add_titled(empty, "empty", "Empty")
+      self._views.append("empty")
     self._stack.set_visible_child_name("empty")
 
   def show_add_expense(self) -> None:
@@ -502,6 +501,6 @@ class AdwView(View):
   def show_expense_info(self, data: Expense) -> None:
     if not f"info{data.id}" in self._views:
       info = self._build_expense_info(data)
-      self._views.append(f"info{data.id}")
       self._stack.add_titled(info, f"info{data.id}", data.description)
+      self._views.append(f"info{data.id}")
     self._stack.set_visible_child_name(f"info{data.id}")
