@@ -19,6 +19,7 @@ class ViewHandler(Protocol):
   def on_add_expense_clicked() -> None: pass
   def on_search_expense_clicked() -> None: pass
   def on_show_expense_info_clicked(self, data: Expense) -> None: pass
+  def get_friends_by_expense(self, expense_id) -> list[dict]: pass
 
 
 class Friend(GObject.GObject):
@@ -54,7 +55,7 @@ class Friend(GObject.GObject):
 
 class Expense(GObject.GObject):
   def __init__(self, id, description, date, amount, num_friends , 
-               credit_balance, friends):
+               credit_balance):
     super().__init__()
     self._id = id
     self._description = description
@@ -62,7 +63,7 @@ class Expense(GObject.GObject):
     self._amount = amount
     self._num_friends = num_friends
     self._credit_balance = credit_balance
-    self._friends = friends # List of Friend objects
+    self._friends = None # List of Friend objects
 
   @GObject.Property(type=int)
   def id(self):
@@ -99,8 +100,13 @@ class Expense(GObject.GObject):
 
   @GObject.Property(type=GObject.TYPE_PYOBJECT)
   def friends(self):
-    return self._friends  
+    return self._friends
 
+  
+
+
+
+  
   def __repr__(self):
     return (
       f"Expense(id={self._id}, description={self._description}, "
@@ -117,14 +123,32 @@ class View:
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
     
-  def update_expenses(self, data: list) -> None:
+  def update(self, data: list) -> None:
     self.data_model.remove_all()
+
     for item in data:
-      object = Expense(
-        item['id'], item['description'], item['date'], 
-        item['amount'], item['num_friends'], item['credit_balance'], None
-      )
-      self.data_model.append(object)
+        expense = Expense(
+            item['id'],
+            item['description'],
+            item['date'],
+            item['amount'],
+            item['num_friends'],
+            item['credit_balance']
+        )
+
+        friends_data = self.handler.get_friends_by_expense(expense.id)
+
+        expense._friends = [
+            Friend(
+                f["id"],
+                f["name"],
+                f["credit_balance"],
+                f["debit_balance"]
+            )
+            for f in friends_data
+        ] if friends_data else []
+
+        self.data_model.append(expense)
     
   def build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
@@ -188,7 +212,6 @@ class AdwView(View):
     self._split_view.set_content(content_page)
     self._split_view.set_max_sidebar_width(500)
     self._split_view.set_min_sidebar_width(300)
-    self._split_view.collapse_sidebar()cdcsdcsc
     
     # Breakpoint to collapse sidebar on small windows
     breakpoint = Adw.Breakpoint.new(Adw.BreakpointCondition.parse(
