@@ -20,6 +20,7 @@ class ViewHandler(Protocol):
   def on_search_expense_clicked() -> None: pass
   def on_show_expense_info_clicked(self, data: Expense) -> None: pass
 
+
 class Friend(GObject.GObject):
   def __init__(self, id, name, credit_balance, debit_balance):
     super().__init__()
@@ -48,10 +49,7 @@ class Friend(GObject.GObject):
 
   @GObject.Property(type=float)
   def debit_balance(self):
-    return self._debit_balance
-
-  def set_debit_balance(self, debit_balance):
-    self._debit_balance = debit_balance  
+    return self._debit_balance 
 
 
 class Expense(GObject.GObject):
