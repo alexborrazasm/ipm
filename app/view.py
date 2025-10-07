@@ -53,7 +53,8 @@ class Friend(GObject.GObject):
 
 
 class Expense(GObject.GObject):
-  def __init__(self, id, description, date, amount, num_friends , credit_balance, friends):
+  def __init__(self, id, description, date, amount, num_friends , 
+               credit_balance, friends):
     super().__init__()
     self._id = id
     self._description = description
@@ -61,7 +62,7 @@ class Expense(GObject.GObject):
     self._amount = amount
     self._num_friends = num_friends
     self._credit_balance = credit_balance
-    self._friends = friends 
+    self._friends = friends # List of Friend objects
 
   @GObject.Property(type=int)
   def id(self):
@@ -116,26 +117,14 @@ class View:
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
     
-  def update(self, data: list) -> None:
+  def update_expenses(self, data: list) -> None:
     self.data_model.remove_all()
-
     for item in data:
-      friends_list = Gio.ListStore(item_type=Friend)
-
-      for friend_data in item.get('friends', []):
-        friend_object = Friend(
-          friend_data['id'], friend_data['name'],
-          friend_data['credit_balance'], friend_data['debit_balance']
-        )
-        friends_list.append(friend_object)
-
-    for item in data:
-      example_object = Expense(
+      object = Expense(
         item['id'], item['description'], item['date'], 
-        item['amount'], item['num_friends'], item['credit_balance'],
-        friends_list
+        item['amount'], item['num_friends'], item['credit_balance'], None
       )
-      self.data_model.append(example_object)
+      self.data_model.append(object)
     
   def build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
@@ -190,14 +179,16 @@ class AdwView(View):
 
     # Right panel (content)
     self._stack = Adw.ViewStack()
-    content_page = self._build_empty_expense()
+    #content_page = self._build_empty_expense()
+    content_page = self._build_loading_page()
     
     # Split view
     self._split_view = Adw.NavigationSplitView()
     self._split_view.set_sidebar(sidebar_page)
     self._split_view.set_content(content_page)
-    self._split_view.set_sidebar_width_fraction(40)  # Sidebar takes 40% of width
-    self._split_view.set_show_content(True)
+    self._split_view.set_max_sidebar_width(500)
+    self._split_view.set_min_sidebar_width(300)
+    self._split_view.collapse_sidebar()cdcsdcsc
     
     # Breakpoint to collapse sidebar on small windows
     breakpoint = Adw.Breakpoint.new(Adw.BreakpointCondition.parse(
@@ -292,6 +283,47 @@ class AdwView(View):
 
     return page
 
+  def _build_loading_page(self) -> Adw.NavigationPage:
+    # Main content box
+    content_box = Gtk.Box(
+        orientation=Gtk.Orientation.VERTICAL,
+        spacing=12,
+        halign=Gtk.Align.CENTER,
+        valign=Gtk.Align.CENTER,
+        vexpand=True,
+        hexpand=True
+    )
+
+    # Spinner (loading indicator)
+    spinner = Adw.Spinner()
+    spinner.set_size_request(64, 64)
+    content_box.append(spinner)
+
+    # Label text
+    label = Gtk.Label(label="Loading...")
+    label.set_margin_top(12)
+    label.set_css_classes(["title-2"])
+    content_box.append(label)
+
+    # ToolbarView
+    toolbar_view = Adw.ToolbarView()
+    toolbar_view.set_content(content_box)
+
+    # HeaderBar
+    header = Adw.HeaderBar()
+    header.set_title_widget(Gtk.Label(label="Splitwithme"))
+    toolbar_view.add_top_bar(header)
+
+    # Add to navigation view
+    self._stack.add_titled(toolbar_view, "loading", "Loading")
+    self._views.append("loading")
+
+    # NavigationPage
+    page = Adw.NavigationPage(child=self._stack)
+    page.set_title("Splitwithme")
+
+    return page
+
   def _build_listbox_expenses(self) -> Gtk.ListBox:
 
     def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
@@ -316,7 +348,7 @@ class AdwView(View):
     def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
       idx = widget.get_selected_row().get_index()
       self.handler.on_show_expense_info_clicked(self.data_model[idx])
-      self._split_view.set_show_content(True)
+      self._split_view.set_show_content(True) # Show content on small windows
         
     listbox = Gtk.ListBox(hexpand=True)
     listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
