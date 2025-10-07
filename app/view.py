@@ -305,17 +305,6 @@ class AdwView(View):
     )
     balance_row.add_css_class("success" if data.credit_balance >= 0 else "error")
     listbox.append(balance_row)
-
-    # Outer box for margins and centering
-    outer_box = Gtk.Box(
-        orientation=Gtk.Orientation.VERTICAL,
-        hexpand=True,
-        spacing=16,
-        margin_top=16,
-        margin_bottom=16,
-        margin_start=16,
-        margin_end=16
-    )
     
     # Clamp to limit max width
     clamp = Adw.Clamp()
