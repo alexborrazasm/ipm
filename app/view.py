@@ -273,33 +273,30 @@ class AdwView(View):
 
     return listbox
 
-  def _build_expense_info(self, data: Expense) -> Adw.ToolbarView:
+  def _build_expense_info(self, data: Expense) -> Adw.NavigationPage:
+
+    # Scrollable content
     scrolled = Gtk.ScrolledWindow()
     scrolled.set_vexpand(True)
     scrolled.set_hexpand(True)
     scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
-    listbox = Gtk.ListBox()
-    listbox.add_css_class("boxed-list")  # Cambiado de "boxed-list-separate"
+    # List container
+    listbox = Gtk.ListBox(hexpand=True)
+    listbox.add_css_class("boxed-list")
     listbox.set_selection_mode(Gtk.SelectionMode.NONE)
-    # Set a minimum width for the listbox
-    listbox.set_size_request(300, -1)
 
     # Description
-    row = Adw.ActionRow(title="Description", subtitle=data.description)
-    listbox.append(row)
+    listbox.append(Adw.ActionRow(title="Description", subtitle=data.description))
 
     # Date
-    row = Adw.ActionRow(title="Date", subtitle=data.date)
-    listbox.append(row)
+    listbox.append(Adw.ActionRow(title="Date", subtitle=data.date))
 
     # Amount
-    row = Adw.ActionRow(title="Amount", subtitle=f"€{data.amount:.2f}")
-    listbox.append(row)
+    listbox.append(Adw.ActionRow(title="Amount", subtitle=f"€{data.amount:.2f}"))
 
     # Friends
-    row = Adw.ActionRow(title="Friends", subtitle=str(data.num_friends))
-    listbox.append(row)
+    listbox.append(Adw.ActionRow(title="Friends", subtitle=str(data.num_friends)))
 
     # Credit Balance
     balance_row = Adw.ActionRow(
@@ -309,22 +306,51 @@ class AdwView(View):
     balance_row.add_css_class("success" if data.credit_balance >= 0 else "error")
     listbox.append(balance_row)
 
-    # Center the listbox horizontally
-    outer_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
-                       halign=Gtk.Align.CENTER,
-                       spacing=16,
-                       margin_top=16,
-                       margin_bottom=16,
-                       margin_start=16,
-                       margin_end=16)
-    outer_box.append(listbox)
+    # Outer box for margins and centering
+    outer_box = Gtk.Box(
+        orientation=Gtk.Orientation.VERTICAL,
+        hexpand=True,
+        spacing=16,
+        margin_top=16,
+        margin_bottom=16,
+        margin_start=16,
+        margin_end=16
+    )
+    
+    # Clamp to limit max width
+    clamp = Adw.Clamp()
+    clamp.set_child(listbox)
+    clamp.set_maximum_size(600)  # Max width
+    clamp.set_hexpand(True)
+
+    outer_box = Gtk.Box(
+        orientation=Gtk.Orientation.VERTICAL,
+        hexpand=True,
+        vexpand=True,
+        spacing=16,
+        margin_top=16,
+        margin_bottom=16,
+        margin_start=16,
+        margin_end=16
+    )
+    outer_box.append(clamp)
 
     scrolled.set_child(outer_box)
 
+    # Toolbar view (for header + content)
     toolbar_view = Adw.ToolbarView()
     toolbar_view.set_content(scrolled)
-    
-    return toolbar_view
+
+    # Header bar (unique for this page)
+    header = Adw.HeaderBar()
+    header.set_title_widget(Gtk.Label(label=data.description))
+    toolbar_view.add_top_bar(header)
+
+    # Navigation page
+    page = Adw.NavigationPage(child=toolbar_view)
+    page.set_title(data.description)
+
+    return page
 
   def show_about(self, action: Gio.SimpleAction, param: Any):
   
