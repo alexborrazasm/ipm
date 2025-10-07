@@ -79,30 +79,20 @@ class Model:
       return [] # TODO proper error handling
     
 
-  def get_friends_by_expenses(self, expense_id: int) -> list:
+  def get_friends_by_expenses(self, expense_id: int) -> dict:
     try:
       r = requests.get(f"{SERVER_URL}/expenses/{expense_id}/friends")
       if r.ok:
         return r.json()
       else:
-        return []
+        return {}
     except Exception as e:
       print(e)
-      return [] # TODO proper error handling
+      return {} # TODO proper error handling
     
 
 
-  def get_friends_info_by_expense(self, expense_id: int, friend_id: int) -> list:
-    try:
-      r = requests.get(f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}")
-      if r.ok:
-        return r.json()
-      else:
-        return [] 
-    except Exception as e:
-      print(e)
-      return [] # TODO proper error handling  
-    
+
 
 
 
