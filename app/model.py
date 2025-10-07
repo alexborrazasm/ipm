@@ -50,6 +50,7 @@ class Model:
     
   def add_expense(self, description: str, date: str, amount: float) -> dict:
     payload = {
+        # could be expense_id
         "description": description,
         "date": date,
         "amount": amount
@@ -79,18 +80,36 @@ class Model:
       return [] # TODO proper error handling
     
 
-  def get_friends_by_expenses(self, expense_id: int) -> dict:
+  def get_friends_by_expenses(self, expense_id: int) -> list:
     try:
       r = requests.get(f"{SERVER_URL}/expenses/{expense_id}/friends")
       if r.ok:
         return r.json()
       else:
-        return {}
+        return []
     except Exception as e:
       print(e)
-      return {} # TODO proper error handling
+      return [] # TODO proper error handling
     
 
+  def add_friend(self, name: str, credit_balance: float, debit_balance: float) -> dict:
+      payload = {   
+          # could be friend_id
+          "name": name,
+          "credit_balance": credit_balance,
+          "debit_balance": debit_balance
+      }
+
+      try:
+          r = requests.post(f"{SERVER_URL}/friends", json=payload)
+          if r.ok and r.content:
+              return r.json() 
+          else:
+              print(f"Failed to add friend: {r.status_code} {r.text}")
+              return {}
+      except Exception as e:
+          print(e)
+          return {}  # TODO: proper error handling
 
 
 
