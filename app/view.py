@@ -8,6 +8,7 @@ gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Gio, GObject, Adw
 
+
 def run(application_id: str, on_activate: Callable) -> None:
   app = Adw.Application(application_id=application_id)
   app.connect('activate', on_activate)
@@ -18,6 +19,7 @@ class ViewHandler(Protocol):
   def on_add_expense_clicked() -> None: pass
   def on_search_expense_clicked() -> None: pass
   def on_show_expense_info_clicked(self, data: Expense) -> None: pass
+
 
 class Expense(GObject.GObject):
   def __init__(self, id, description, date, amount, num_friends , credit_balance):
@@ -69,6 +71,7 @@ class Expense(GObject.GObject):
       f"num_friends={self._num_friends}, credit_balance={self._credit_balance})"
     )
 
+
 class View:
   def __init__(self):
     self.handler = None
@@ -111,6 +114,7 @@ class View:
   def show_search_expense(self) -> None: pass
   def show_expense_info(self, data: Expense) -> None: pass
 
+
 class AdwView(View):
   def __init__(self):
     super().__init__()
@@ -118,6 +122,7 @@ class AdwView(View):
     self._expenses_list = None # type: Gtk.ListBox
     self._about = None # type: Adw.AboutDialog
     self._sidebar_header = None # type: Adw.HeaderBar
+    self._split_view = None # type: Adw.NavigationSplitView
 
     # Stack of views
     self._stack = None # type: Adw.Stack
@@ -140,23 +145,22 @@ class AdwView(View):
     content_page = self._build_empty_expense()
     
     # Split view
-    split_view = Adw.NavigationSplitView()
-    split_view.set_sidebar(sidebar_page)
-    split_view.set_content(content_page)
-    split_view.set_sidebar_width_fraction(0.4)
-    
-    split_view.set_show_content(True)
+    self._split_view = Adw.NavigationSplitView()
+    self._split_view.set_sidebar(sidebar_page)
+    self._split_view.set_content(content_page)
+    self._split_view.set_sidebar_width_fraction(40)  # Sidebar takes 40% of width
+    self._split_view.set_show_content(True)
     
     # Breakpoint to collapse sidebar on small windows
     breakpoint = Adw.Breakpoint.new(Adw.BreakpointCondition.parse(
       "max-width: 600px"))
-    breakpoint.add_setter(split_view, "collapsed", True)
+    breakpoint.add_setter(self._split_view, "collapsed", True)
     # Show window controls when sidebar is collapsed
     breakpoint.add_setter(self._sidebar_header, "show_end_title_buttons", True)
     win.add_breakpoint(breakpoint)
     
     # Show the window
-    win.set_content(split_view)
+    win.set_content(self._split_view)
     win.present()
 
   def _build_expenses_list(self) -> Gtk.Widget:
@@ -264,6 +268,7 @@ class AdwView(View):
     def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
       idx = widget.get_selected_row().get_index()
       self.handler.on_show_expense_info_clicked(self.data_model[idx])
+      self._split_view.set_show_content(True)
         
     listbox = Gtk.ListBox(hexpand=True)
     listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
