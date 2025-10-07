@@ -9,9 +9,8 @@ class Presenter(ViewHandler):
         
   def run(self, application_id: str):
     expenses = self.model.get_expenses()
-    self.view.update(expenses)
-
     self.view.set_handler(self)
+    self.view.update(expenses)
     run(application_id=application_id, on_activate=self.view.on_activate)
 
   def get_friends_by_expenses(self, expense_id: int) -> list[dict]:
