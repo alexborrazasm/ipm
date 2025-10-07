@@ -48,7 +48,7 @@ class Model:
         print(e)
         return False  # TODO: proper error handling
     
-def add_expense(self, description: str, date: str, amount: float) -> dict:
+  def add_expense(self, description: str, date: str, amount: float) -> dict:
     payload = {
         "description": description,
         "date": date,
@@ -67,7 +67,42 @@ def add_expense(self, description: str, date: str, amount: float) -> dict:
         return {}  # TODO: proper error handling
 
 
-  
+  def get_friends(self) -> list:
+    try:
+      r = requests.get(f"{SERVER_URL}/friends")
+      if r.ok:
+        return r.json()
+      else:
+        return []
+    except Exception as e:
+      print(e)
+      return [] # TODO proper error handling
+    
+
+  def get_friends_by_expenses(self, expense_id: int) -> list:
+    try:
+      r = requests.get(f"{SERVER_URL}/expenses/{expense_id}/friends")
+      if r.ok:
+        return r.json()
+      else:
+        return []
+    except Exception as e:
+      print(e)
+      return [] # TODO proper error handling
+    
+
+
+  def get_friends_info_by_expense(self, expense_id: int, friend_id: int) -> list:
+    try:
+      r = requests.get(f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}")
+      if r.ok:
+        return r.json()
+      else:
+        return [] 
+    except Exception as e:
+      print(e)
+      return [] # TODO proper error handling  
+    
 
 
 
