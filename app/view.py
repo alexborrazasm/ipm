@@ -20,9 +20,42 @@ class ViewHandler(Protocol):
   def on_search_expense_clicked() -> None: pass
   def on_show_expense_info_clicked(self, data: Expense) -> None: pass
 
+class Friend(GObject.GObject):
+  def __init__(self, id, name, credit_balance, debit_balance):
+    super().__init__()
+    self._id = id
+    self._name = name
+    self._credit_balance = credit_balance
+    self._debit_balance = debit_balance
+
+  @GObject.Property(type=int)
+  def id(self):
+    return self._id
+
+  @GObject.Property(type=str)
+  def name(self):
+    return self._name
+
+  def set_name(self, name):
+    self._name = name
+
+  @GObject.Property(type=float)
+  def credit_balance(self):
+    return self._credit_balance
+
+  def set_credit_balance(self, credit_balance):
+    self._credit_balance = credit_balance  
+
+  @GObject.Property(type=float)
+  def debit_balance(self):
+    return self._debit_balance
+
+  def set_debit_balance(self, debit_balance):
+    self._debit_balance = debit_balance  
+
 
 class Expense(GObject.GObject):
-  def __init__(self, id, description, date, amount, num_friends , credit_balance):
+  def __init__(self, id, description, date, amount, num_friends , credit_balance, friends):
     super().__init__()
     self._id = id
     self._description = description
@@ -30,6 +63,7 @@ class Expense(GObject.GObject):
     self._amount = amount
     self._num_friends = num_friends
     self._credit_balance = credit_balance
+    self._friends = friends 
 
   @GObject.Property(type=int)
   def id(self):
@@ -64,6 +98,10 @@ class Expense(GObject.GObject):
   def credit_balance(self):
     return self._credit_balance
 
+  @GObject.Property(type=GObject.TYPE_PYOBJECT)
+  def friends(self):
+    return self._friends  
+
   def __repr__(self):
     return (
       f"Expense(id={self._id}, description={self._description}, "
@@ -82,10 +120,22 @@ class View:
     
   def update(self, data: list) -> None:
     self.data_model.remove_all()
+
+    for item in data:
+      friends_list = Gio.ListStore(item_type=Friend)
+
+      for friend_data in item.get('friends', []):
+        friend_object = Friend(
+          friend_data['id'], friend_data['name'],
+          friend_data['credit_balance'], friend_data['debit_balance']
+        )
+        friends_list.append(friend_object)
+
     for item in data:
       example_object = Expense(
         item['id'], item['description'], item['date'], 
-        item['amount'], item['num_friends'], item['credit_balance']
+        item['amount'], item['num_friends'], item['credit_balance'],
+        friends_list
       )
       self.data_model.append(example_object)
     
