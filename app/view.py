@@ -201,42 +201,45 @@ class AdwView(View):
     return page
 
   def _build_empty_expense(self) -> Adw.NavigationPage:
-      
-    content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
-    content_box.set_valign(Gtk.Align.CENTER)
-    content_box.set_halign(Gtk.Align.CENTER)
-    content_box.set_vexpand(True)
-    content_box.set_hexpand(True)
-    
+    # Main content
+    content_box = Gtk.Box(
+      orientation=Gtk.Orientation.VERTICAL,
+      spacing=12,
+      halign=Gtk.Align.CENTER,
+      valign=Gtk.Align.CENTER,
+      vexpand=True,
+      hexpand=True
+    )
+
     # Big icon
     icon = Gtk.Image.new_from_icon_name("dialog-information-symbolic")
     icon.set_pixel_size(96)
     content_box.append(icon)
-    
+
     # Text
     label = Gtk.Label(label="Pick an expense")
     label.set_margin_top(12)
     label.set_css_classes(["title-1"])
     content_box.append(label)
-    
-    # Add to stack of views
-    self._stack.add_titled(content_box, "empty", "Empty")
-    # Save for lazy loading
-    self._views.append(content_box)
-    
+
+    # Toolbar view
     toolbar_view = Adw.ToolbarView()
-    toolbar_view.set_content(self._stack)  # Stack as content
-    
-    # Header bar in the top
+    toolbar_view.set_content(content_box)
+
+    # Header bar (unique per page)
     header = Adw.HeaderBar()
     toolbar_view.add_top_bar(header)
     
+    # Add to navigation view
+    self._stack.add_titled(toolbar_view, "empty", "Empty")
+    self._views.append("empty")
+
     # Navigation page
-    page = Adw.NavigationPage(child=toolbar_view)
+    page = Adw.NavigationPage(child=self._stack)
     page.set_title("Splitwithme")
-    
+
     return page
-  
+
   def _build_listbox_expenses(self) -> Gtk.ListBox:
 
     def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
