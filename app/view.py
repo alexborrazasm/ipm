@@ -426,7 +426,7 @@ class AdwView(View):
         margin_start=16,
         margin_end=16
     )
-    outer_box.append(AdwView._get_clamp_content(self, listbox))
+    outer_box.append(AdwView._build_clamp_content(self, listbox))
 
     scrolled.set_child(outer_box)
 
