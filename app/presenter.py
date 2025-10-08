@@ -9,8 +9,13 @@ class Presenter(ViewHandler):
         
   def run(self, application_id: str):
     expenses = self.model.get_expenses()
+    friends = self.model.get_friends()
+
     self.view.set_handler(self)
-    self.view.update(expenses)
+
+    self.view.update_expenses(expenses)
+    self.view.update_friends(friends)
+
     run(application_id=application_id, on_activate=self.view.on_activate)
 
   def get_friends_by_expenses(self, expense_id: int) -> list[dict]:
@@ -22,11 +27,12 @@ class Presenter(ViewHandler):
   
   def on_search_expense_clicked(self) -> None:
     expenses = self.model.get_expenses()
-    self.view.update(expenses)
+    self.view.update_expenses(expenses)
     self.view.show_search_expense()
     pass # TODO
   
   def on_show_expense_info_clicked(self, data) -> None:
+    #TODO self.model.get_friends_by_expenses(self, data.id)
     self.view.show_expense_info(data)
 
 

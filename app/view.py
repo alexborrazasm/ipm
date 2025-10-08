@@ -116,38 +116,41 @@ class Expense(GObject.GObject):
 class View:
   def __init__(self):
     self.handler = None
-    self.data_model = Gio.ListStore(item_type=Expense)
+    self.data_model_friends = Gio.ListStore(item_type=Friend)
+    self.data_model_expenses = Gio.ListStore(item_type=Expense)
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
     
-  def update(self, data: list) -> None:
-    self.data_model.remove_all()
-
-    for item in data:
-        expense = Expense(
-            item['id'],
-            item['description'],
-            item['date'],
-            item['amount'],
-            item['num_friends'],
-            item['credit_balance']
-        )
-
-        friends_data = self.handler.get_friends_by_expense(expense.id)
-
-        expense._friends = [
-            Friend(
-                f["id"],
-                f["name"],
-                f["credit_balance"],
-                f["debit_balance"]
-            )
-            for f in friends_data
-        ] if friends_data else []
-
-        self.data_model.append(expense)
+  def update_friends(self, data:list) -> None:
+    self.data_model_friends.remove_all()
     
+    for item in data:
+      friend = Friend(
+        item["id"],
+        item["name"],
+        item["credit_balance"],
+        item["debit_balance"]
+      )
+
+      self.data_model_friends.append(friend)
+
+  def update_expenses(self, data:list) -> None:
+    self.data_model_expenses.remove_all()
+ 
+    for item in data:
+      expense = Expense(
+        item['id'],
+        item['description'],
+        item['date'],
+        item['amount'],
+        item['num_friends'],
+        item['credit_balance']
+      )
+
+      self.data_model_expenses.append(expense)
+
+
   def build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
     about_action.connect("activate", self.show_about)
@@ -364,14 +367,14 @@ class AdwView(View):
 
     def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
       idx = widget.get_selected_row().get_index()
-      self.handler.on_show_expense_info_clicked(self.data_model[idx])
+      self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
       self._split_view.set_show_content(True) # Show content on small windows
         
     listbox = Gtk.ListBox(hexpand=True)
     listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
     listbox.connect("selected-rows-changed", on_listbox_row_activated)
     listbox.add_css_class("boxed-list-separate")
-    listbox.bind_model(self.data_model, on_build_row, None)
+    listbox.bind_model(self.data_model_expenses, on_build_row, None)
 
     return listbox
 
