@@ -668,6 +668,8 @@ class AdwView(View):
       add_view = self._build_add_expense()
       self._stack.add_titled(add_view, "add_expense", "New Expense")
       self._views.append("add_expense")
+    
+    self._split_view.set_show_content(True) # Show content on small windows
     self._stack.set_visible_child_name("add_expense")
 
   def show_search_expense(self) -> None: 
