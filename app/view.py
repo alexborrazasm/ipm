@@ -116,14 +116,57 @@ class Expense(GObject.GObject):
 class View:
   def __init__(self):
     self.handler = None
-    self.data_model_friends = Gio.ListStore(item_type=Friend)
-    self.data_model_expenses = Gio.ListStore(item_type=Expense)
+    self.data_model = Gio.ListStore(item_type=Expense)
+    self.entry_description = None
+    self.entry_date = None
+    self.entry_amount = None
+    self.entry_friends = None
+    self.entry_credit_balance = None
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
-    
-  def update_friends(self, data:list) -> None:
-    self.data_model_friends.remove_all()
+
+  def get_entry_description() -> str:
+    return self.entry_description.get_text()
+
+  def get_entry_date() -> str:
+    return self.entry_date.get_text()
+
+  def get_entry_amount() -> str:
+    return self.entry_amount.get_text()
+
+  def get_entry_friends() -> str:
+    return self.entry_friends.get_text()
+
+  def get_entry_credit_balance() -> str:
+    return self.entry_credit_balance.get_text()        
+
+  def update(self, data: list) -> None:
+    self.data_model.remove_all()
+
+    for item in data:
+        expense = Expense(
+            item['id'],
+            item['description'],
+            item['date'],
+            item['amount'],
+            item['num_friends'],
+            item['credit_balance']
+        )
+
+        friends_data = self.handler.get_friends_by_expense(expense.id)
+
+        expense._friends = [
+            Friend(
+                f["id"],
+                f["name"],
+                f["credit_balance"],
+                f["debit_balance"]
+            )
+            for f in friends_data
+        ] if friends_data else []
+
+        self.data_model.append(expense)
     
     for item in data:
       friend = Friend(
@@ -379,12 +422,63 @@ class AdwView(View):
     return listbox
 
   # Clamp to limit max width
-  def _build_clamp_content(self, listbox: Gtk.ListBox) -> Adw.Clamp:
+  def _build_clamp_content(self, child: Gtk.Widget) -> Adw.Clamp:
     clamp = Adw.Clamp()
-    clamp.set_child(listbox)
+    clamp.set_child(child)
     clamp.set_maximum_size(600)  # Max width
     clamp.set_hexpand(True)
-    return clamp  
+    return clamp
+
+  def _build_add_expense(self) -> Adw.NavigationPage: 
+    # Scrollable content
+    scrolled = Gtk.ScrolledWindow()
+    scrolled.set_vexpand(True)
+    scrolled.set_hexpand(True)
+    scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+
+
+    form = Gtk.ListBox(
+      
+    )
+
+    self.entry_description = Adw.EntryRow(title="Description")
+    self.entry_date = Adw.EntryRow(title="Date")
+    self.entry_amount = Adw.EntryRow(title="Amount")
+    self.entry_friends = Adw.EntryRow(title="Friends")
+    self.entry_credit_balance = Adw.EntryRow(title="Credit balance")
+
+    form.append(self.entry_description)
+    form.append(self.entry_date)
+    form.append(self.entry_amount)
+    form.append(self.entry_friends)
+    form.append(self.entry_credit_balance)
+    form.add_css_class("boxed-list-separate")
+
+    outer_box = Gtk.Box(
+        orientation=Gtk.Orientation.VERTICAL,
+        hexpand=True,
+        vexpand=True,
+        spacing=16,
+        margin_top=16,
+        margin_bottom=16,
+        margin_start=16,
+        margin_end=16
+    )
+
+    outer_box.append(self._build_clamp_content(form))
+
+    scrolled.set_child(outer_box)
+
+    # Toolbar view (for header + content)
+    toolbar_view = Adw.ToolbarView()
+    toolbar_view.set_content(scrolled)
+
+    # Header bar (unique for this page)
+    header = Adw.HeaderBar()
+    header.set_title_widget(Gtk.Label(label="New Expense"))
+    toolbar_view.add_top_bar(header)
+
+    return toolbar_view
 
   def _build_expense_info(self, data: Expense) -> Adw.NavigationPage:
 
@@ -489,10 +583,14 @@ class AdwView(View):
       self._views.append("empty")
     self._stack.set_visible_child_name("empty")
 
-  def show_add_expense(self) -> None:
-    print("Add expense clicked")
-    self._stack.set_visible_child_name("empty")
-    # TODO
+  def show_add_expense(self) -> Gtk.Box:
+    #print("Add expense clicked")
+    #self._stack.set_visible_child_name("empty")
+    if not f"add_expense" in self._views:
+      add_view = self._build_add_expense()
+      self._stack.add_titled(add_view, "add_expense", "New Expense")
+      self._views.append("add_expense")
+    self._stack.set_visible_child_name("add_expense")
 
   def show_search_expense(self) -> None: 
     print("Search expense clicked")
