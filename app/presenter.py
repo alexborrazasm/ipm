@@ -32,7 +32,6 @@ class Presenter(ViewHandler):
     pass # TODO
   
   def on_show_expense_info_clicked(self, data) -> None:
-    #TODO self.model.get_friends_by_expenses(self, data.id)
     self.view.show_expense_info(data)
 
 
