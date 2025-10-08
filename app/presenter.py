@@ -33,4 +33,5 @@ class Presenter(ViewHandler):
     list = self.model.get_friends_by_expenses(data.id)
     self.view.show_expense_info(data, list)
 
-
+  def on_edit_expense_clicked(self, data) -> None:
+    self.view.show_edit_expense_info(data)

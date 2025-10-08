@@ -19,10 +19,12 @@ def run(application_id: str, on_activate: Callable) -> None:
 class ViewHandler(Protocol):
   def on_add_expense_clicked() -> None: pass
   def on_search_expense_clicked() -> None: pass
-  def on_show_expense_info_clicked(self, data: Expense) -> None: pass
+  def on_show_expense_info_clicked(data: Expense) -> None: pass
   def on_save_new_expense_clicked() -> None: pass
-  def on_cancel_add_expense_clicked(self) -> None: pass
-  def get_friends_by_expense(self, expense_id) -> list[dict]: pass
+  def on_cancel_add_expense_clicked() -> None: pass
+  def on_cancel_edit_expense_clicked() -> None: pass
+  def on_edit_expense_clicked(data) -> None: pass
+  def get_friends_by_expense(expense_id) -> list[dict]: pass
 
 
 # Data models
@@ -202,6 +204,7 @@ class View:
   def show_add_expense(self) -> None: pass
   def show_search_expense(self) -> None: pass
   def show_expense_info(self, data: Expense) -> None: pass
+  def show_edit_expense_info(self, expense: Expense) -> None: pass
 
 
 # Concrete implementation of the view using GTK and ADW
@@ -302,7 +305,7 @@ class AdwView(View):
     
     return page
 
-  def _build_empty_expense(self) -> Adw.NavigationPage:
+  def _build_empty_expense(self) -> Adw.ToolbarView:
     # Main content
     content_box = Gtk.Box(
       orientation=Gtk.Orientation.VERTICAL,
@@ -332,11 +335,7 @@ class AdwView(View):
     header = Adw.HeaderBar()
     toolbar_view.add_top_bar(header)
 
-    # Navigation page
-    page = Adw.NavigationPage(child=self._stack)
-    page.set_title("Splitwithme")
-
-    return page
+    return toolbar_view
 
   def _build_loading_page(self) -> Adw.NavigationPage:
     # Main content box
@@ -419,7 +418,81 @@ class AdwView(View):
     clamp.set_hexpand(True)
     return clamp
 
-  def _build_add_expense(self) -> Adw.NavigationPage: 
+
+  def _build_edit_expense(self, expense : Expense) -> Adw.NavigationPage:
+    
+    # Scrollable content
+    scrolled = Gtk.ScrolledWindow()
+    scrolled.set_vexpand(True)
+    scrolled.set_hexpand(True)
+    scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+
+    form = Gtk.ListBox(
+      
+    )
+
+    self.entry_description = Adw.EntryRow(title="Description")
+    self.entry_description.set_text(Expense.description)
+    
+    self.entry_date = Adw.EntryRow(title="Date")
+    self.entry_date.set_text(Expense.date)
+    
+    self.entry_amount = Adw.EntryRow(title="Amount")
+    self.entry_amount.set_text(Expense.amount)
+
+    self.entry_friends = Adw.EntryRow(title="Friends")
+    self.entry_friends.set_text(Expense.friends)
+
+
+    form.append(self.entry_description)
+    form.append(self.entry_date)
+    form.append(self.entry_amount)
+    form.append(self.entry_friends)
+    form.add_css_class("boxed-list-separate")
+
+    outer_box = Gtk.Box(
+        orientation=Gtk.Orientation.VERTICAL,
+        hexpand=True,
+        vexpand=True,
+        spacing=16,
+        margin_top=16,
+        margin_bottom=16,
+        margin_start=16,
+        margin_end=16
+    )
+    outer_box.append(self._build_clamp_content(form))
+
+    scrolled.set_child(outer_box)
+
+    # Toolbar view (for header + content)
+    toolbar_view = Adw.ToolbarView()
+    toolbar_view.set_content(scrolled)
+
+    # Header bar (unique for this page)
+    header = Adw.HeaderBar()
+    header.set_title_widget(Gtk.Label(label="New Expense"))
+    
+    cancel_button = Gtk.Button(label="Cancel")
+    cancel_button.add_css_class("destructive-action")
+    cancel_button.connect(
+      'clicked', lambda _wg: self.handler.on_cancel_edit_expense_clicked())    
+      
+    add_button = Gtk.Button(label="Modificar")
+    add_button.add_css_class("suggested-action")
+    add_button.connect(
+      'clicked', lambda _wg: self.handler.on_save_new_expense_clicked())    
+
+    header.set_show_end_title_buttons(False)  # hide window controls
+    header.pack_start(cancel_button)
+    header.pack_end(add_button)
+
+    toolbar_view.add_top_bar(header)
+
+    return toolbar_view
+
+
+
+  def _build_add_expense(self) -> Adw.ToolbarView: 
 
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
@@ -619,6 +692,12 @@ class AdwView(View):
     # Header bar (unique for this page)
     header = Adw.HeaderBar()
     header.set_title_widget(Gtk.Label(label=data.description))
+    edit_button = Gtk.Button(icon_name="document-edit-symbolic")
+    edit_button.connect(
+        'clicked', lambda _wg: self.handler.on_edit_expense_clicked(data))  
+    header.pack_end(edit_button)
+
+    toolbar_view.add_top_bar(header)
     # Bind reactive
     data.bind_property("description", header.get_title_widget(), "label", 
                        flags=GObject.BindingFlags.SYNC_CREATE)
@@ -704,3 +783,12 @@ class AdwView(View):
 
     # Show the view
     self._stack.set_visible_child_name(f"info{expense.id}")
+
+  def show_edit_expense_info(self, expense: Expense) -> None:
+    
+    if not f"edit{expense.id}" in self._views:
+      info = self._build_empty_expense()
+      self._stack.add_titled(info, f"edit{expense.id}", expense.description)
+      self._views.append(f"edit{expense.id}")
+
+    self._stack.set_visible_child_name(f"edit{expense.id}")
