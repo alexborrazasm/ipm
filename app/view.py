@@ -376,7 +376,7 @@ class AdwView(View):
     return listbox
 
   # Clamp to limit max width
-  def _get_clamp_content(self, listbox: Gtk.ListBox) -> Adw.Clamp:
+  def _build_clamp_content(self, listbox: Gtk.ListBox) -> Adw.Clamp:
     clamp = Adw.Clamp()
     clamp.set_child(listbox)
     clamp.set_maximum_size(600)  # Max width
