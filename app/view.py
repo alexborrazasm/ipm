@@ -415,12 +415,6 @@ class AdwView(View):
     )
     balance_row.add_css_class("success" if data.credit_balance >= 0 else "error")
     listbox.append(balance_row)
-    
-    ## Clamp to limit max width
-    #clamp = Adw.Clamp()
-    #clamp.set_child(listbox)
-    #clamp.set_maximum_size(600)  # Max width
-    #clamp.set_hexpand(True)
 
     outer_box = Gtk.Box(
         orientation=Gtk.Orientation.VERTICAL,
