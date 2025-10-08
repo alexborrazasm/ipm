@@ -116,7 +116,8 @@ class Expense(GObject.GObject):
 class View:
   def __init__(self):
     self.handler = None
-    self.data_model = Gio.ListStore(item_type=Expense)
+    self.data_model_friends = Gio.ListStore(item_type=Friend)
+    self.data_model_expenses = Gio.ListStore(item_type=Expense)
     self.entry_description = None
     self.entry_date = None
     self.entry_amount = None
@@ -177,6 +178,19 @@ class View:
       )
 
       self.data_model_friends.append(friend)
+
+  def update_friends(self, data:list) -> None:
+    self.data_model_friends.remove_all()
+    
+    for item in data:
+      friend = Friend(
+        item["id"],
+        item["name"],
+        item["credit_balance"],
+        item["debit_balance"]
+      )
+
+      self.data_model_friends.append(friend)    
 
   def update_expenses(self, data:list) -> None:
     self.data_model_expenses.remove_all()
