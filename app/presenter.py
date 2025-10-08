@@ -26,12 +26,11 @@ class Presenter(ViewHandler):
     pass # TODO
   
   def on_search_expense_clicked(self) -> None:
-    expenses = self.model.get_expenses()
-    self.view.update_expenses(expenses)
     self.view.show_search_expense()
     pass # TODO
   
   def on_show_expense_info_clicked(self, data) -> None:
-    self.view.show_expense_info(data)
+    list = self.model.get_friends_by_expenses(data.id)
+    self.view.show_expense_info(data, list)
 
 

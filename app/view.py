@@ -56,60 +56,28 @@ class Friend(GObject.GObject):
 
 
 class Expense(GObject.GObject):
-  def __init__(self, id, description, date, amount, num_friends , 
-               credit_balance):
+  id = GObject.Property(type=int)
+  description = GObject.Property(type=str)
+  date = GObject.Property(type=str)
+  amount = GObject.Property(type=float)
+  num_friends = GObject.Property(type=int)
+  credit_balance = GObject.Property(type=float)
+
+  def __init__(self, id, description, date, amount, num_friends, credit_balance):
     super().__init__()
-    self._id = id
-    self._description = description
-    self._date = date
-    self._amount = amount
-    self._num_friends = num_friends
-    self._credit_balance = credit_balance
-    self._friends = None # List of Friend objects
+    self.id = id
+    self.description = description
+    self.date = date
+    self.amount = amount
+    self.num_friends = num_friends
+    self.credit_balance = credit_balance
+    self.friends = Gio.ListStore(item_type=Friend)
 
-  @GObject.Property(type=int)
-  def id(self):
-    return self._id
+  def set_friends(self, friends: list[dict]):
+    self.friends.remove_all()
+    for f in friends:
+        self.friends.append(Friend(f["id"], f["name"], f["credit_balance"], f["debit_balance"]))
 
-  @GObject.Property(type=str)
-  def description(self):
-    return self._description
-
-  def set_description(self, description):
-    self._description = description
-
-  @GObject.Property(type=str)
-  def date(self):
-    return self._date
-  
-  def set_date(self, date):
-    self._date = date
-
-  @GObject.Property(type=float)
-  def amount(self):
-    return self._amount
-
-  def set_amount(self, amount):
-    self._amount = amount
-    
-  @GObject.Property(type=int)
-  def num_friends(self):
-    return self._num_friends
-
-  @GObject.Property(type=float)
-  def credit_balance(self):
-    return self._credit_balance
-
-  @GObject.Property(type=GObject.TYPE_PYOBJECT)
-  def friends(self):
-    return self._friends
-
-  def __repr__(self):
-    return (
-      f"Expense(id={self._id}, description={self._description}, "
-      f"date={self._date}, amount={self._amount}, "
-      f"num_friends={self._num_friends}, credit_balance={self._credit_balance})"
-    )
 
 
 # Abstract view interface
@@ -293,7 +261,7 @@ class AdwView(View):
 
   def _build_expenses_list(self) -> Gtk.Widget:
 
-    def _build_header_bar() -> Adw.HeaderBar:
+    def build_header_bar() -> Adw.HeaderBar:
       add_button = Gtk.Button(icon_name="list-add-symbolic")
       add_button.connect(
         'clicked', lambda _wg: self.handler.on_add_expense_clicked())    
@@ -311,7 +279,7 @@ class AdwView(View):
 
       return header
 
-    self._sidebar_header = _build_header_bar() # For use in responsive design
+    self._sidebar_header = build_header_bar() # For use in responsive design
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
       spacing=16, 
       margin_top=16,
@@ -409,6 +377,12 @@ class AdwView(View):
       label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", halign=Gtk.Align.START)
       label2.add_css_class("caption")
 
+      # Bind reactive
+      item.bind_property("description", label1, "label", 
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+      item.bind_property("credit_balance", label2, "label", 
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+
       vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
       vbox.append(label1)
       vbox.append(label2)
@@ -495,37 +469,101 @@ class AdwView(View):
     return toolbar_view
 
   def _build_expense_info(self, data: Expense) -> Adw.NavigationPage:
+    
+    def build_listbox_expense_info(data: Expense) -> Gtk.ListBox:
+
+      listbox = Gtk.ListBox(hexpand=True)
+      listbox.add_css_class("boxed-list")
+      listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+
+      # Description
+      row = Adw.ActionRow(title="Description", subtitle=data.description)
+      data.bind_property("description", row, "subtitle", 
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+      listbox.append(row)
+
+      # Date
+      row = Adw.ActionRow(title="Date", subtitle=data.date)
+      data.bind_property("date", row, "subtitle", 
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+      listbox.append(row)
+
+      # Amount
+      row = Adw.ActionRow(title="Amount", subtitle=f"€{data.amount:.2f}")
+      data.bind_property("amount", row, "subtitle", 
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+      listbox.append(row)
+
+      # Credit Balance
+      balance_row = Adw.ActionRow(title="Balance",
+          subtitle=f"{data.credit_balance:+.2f} €"
+      )
+      data.bind_property("credit_balance", balance_row, "subtitle", 
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+      balance_row.add_css_class("success" if data.credit_balance >= 0 else "error")
+      data.bind_property("credit_balance", balance_row, "subtitle", 
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+      listbox.append(balance_row)
+      
+      return listbox
+    
+    def build_listbox_friends_expense(friends_expense: list[Friend]) -> Gtk.ListBox:
+      # Create the ListBox container
+      listbox = Gtk.ListBox(hexpand=True)
+      listbox.add_css_class("boxed-list")
+      listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+
+      # Builder for each friend row 
+      def build_row(friend: Friend, user_data: Any) -> Gtk.Widget:
+        # Icon
+        image = Gtk.Image.new_from_icon_name("avatar-default-symbolic")
+
+        # Main labels
+        name_label = Gtk.Label(label=friend.name, halign=Gtk.Align.START)
+        credit = friend.credit_balance
+        debit = friend.debit_balance
+
+        balance_label = Gtk.Label(
+            label=f"Credit: {credit:+.2f} €   |   Debit: {debit:+.2f} €",
+            halign=Gtk.Align.START
+        )
+        balance_label.add_css_class("caption")
+
+        # Apply color hint (optional)
+        if credit > 0:
+            balance_label.add_css_class("success")
+        else:
+            balance_label.add_css_class("error")
+
+        # Layout
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
+        vbox.append(name_label)
+        vbox.append(balance_label)
+
+        hbox = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            hexpand=True, spacing=16,
+            margin_start=8, margin_end=8,
+            margin_bottom=8, margin_top=8
+        )
+        hbox.append(image)
+        hbox.append(vbox)
+
+        return hbox
+
+      # Populate the list
+      for friend in friends_expense:
+          row = Gtk.ListBoxRow()
+          row.set_child(build_row(friend, None))
+          listbox.append(row)
+
+      return listbox
 
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
     scrolled.set_vexpand(True)
     scrolled.set_hexpand(True)
     scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-
-    # List container
-    listbox = Gtk.ListBox(hexpand=True)
-    listbox.add_css_class("boxed-list")
-    listbox.set_selection_mode(Gtk.SelectionMode.NONE)
-
-    # Description
-    listbox.append(Adw.ActionRow(title="Description", subtitle=data.description))
-
-    # Date
-    listbox.append(Adw.ActionRow(title="Date", subtitle=data.date))
-
-    # Amount
-    listbox.append(Adw.ActionRow(title="Amount", subtitle=f"€{data.amount:.2f}"))
-
-    # Friends
-    listbox.append(Adw.ActionRow(title="Friends", subtitle=str(data.num_friends)))
-
-    # Credit Balance
-    balance_row = Adw.ActionRow(
-        title="Balance",
-        subtitle=f"{data.credit_balance:+.2f} €"
-    )
-    balance_row.add_css_class("success" if data.credit_balance >= 0 else "error")
-    listbox.append(balance_row)
 
     outer_box = Gtk.Box(
         orientation=Gtk.Orientation.VERTICAL,
@@ -537,7 +575,16 @@ class AdwView(View):
         margin_start=16,
         margin_end=16
     )
-    outer_box.append(self._build_clamp_content(listbox))
+    
+    # Expense details
+    listbox_info = build_listbox_expense_info(data)
+    clamp_info = self._build_clamp_content(listbox_info)
+    outer_box.append(clamp_info)
+    
+    # Friends involved in the expense
+    listbox_friends = build_listbox_friends_expense(data.friends)
+    clamp_friends = self._build_clamp_content(listbox_friends)
+    outer_box.append(clamp_friends)
 
     scrolled.set_child(outer_box)
 
@@ -548,6 +595,10 @@ class AdwView(View):
     # Header bar (unique for this page)
     header = Adw.HeaderBar()
     header.set_title_widget(Gtk.Label(label=data.description))
+    # Bind reactive
+    data.bind_property("description", header.get_title_widget(), "label", 
+                       flags=GObject.BindingFlags.SYNC_CREATE)
+
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
@@ -608,11 +659,24 @@ class AdwView(View):
 
   def show_search_expense(self) -> None: 
     print("Search expense clicked")
-    # TODO
+    # for testing, modify an expense #TODO remove
+    self.data_model_expenses[1].description = "New description"
+    self.data_model_expenses[1].credit_balance += 10.0
+    self.data_model_expenses[1].amount += 5.0
+    self.data_model_expenses[1].date = "2024-05-01"
+    self.data_model_expenses[1].num_friends += 1
 
-  def show_expense_info(self, data: Expense) -> None:
-    if not f"info{data.id}" in self._views:
-      info = self._build_expense_info(data)
-      self._stack.add_titled(info, f"info{data.id}", data.description)
-      self._views.append(f"info{data.id}")
-    self._stack.set_visible_child_name(f"info{data.id}")
+  def show_expense_info(self, expense: Expense, friends_expense: list[dict]) -> None:
+    
+    # Lazy load the view only once
+    if not f"info{expense.id}" in self._views:
+      # Add friend data to expense
+      expense.set_friends(friends_expense)
+      # Build the view
+      info = self._build_expense_info(expense)
+      # Add to the stack
+      self._stack.add_titled(info, f"info{expense.id}", expense.description)
+      self._views.append(f"info{expense.id}")
+
+    # Show the view
+    self._stack.set_visible_child_name(f"info{expense.id}")
