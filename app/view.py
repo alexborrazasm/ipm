@@ -6,8 +6,10 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
-from gi.repository import Gtk, Gio, GObject, Adw
+from gi.repository import Gtk, Gio, GObject, Adw, GLib
 
+# Make GObject warnings raise Python exceptions
+GLib.log_set_always_fatal(GLib.LogLevelFlags.LEVEL_CRITICAL)
 
 def run(application_id: str, on_activate: Callable) -> None:
   app = Adw.Application(application_id=application_id)
@@ -697,7 +699,6 @@ class AdwView(View):
         'clicked', lambda _wg: self.handler.on_edit_expense_clicked(data))  
     header.pack_end(edit_button)
 
-    toolbar_view.add_top_bar(header)
     # Bind reactive
     data.bind_property("description", header.get_title_widget(), "label", 
                        flags=GObject.BindingFlags.SYNC_CREATE)
