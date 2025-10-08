@@ -104,11 +104,6 @@ class Expense(GObject.GObject):
   def friends(self):
     return self._friends
 
-  
-
-
-
-  
   def __repr__(self):
     return (
       f"Expense(id={self._id}, description={self._description}, "
