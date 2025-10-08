@@ -20,6 +20,8 @@ class ViewHandler(Protocol):
   def on_add_expense_clicked() -> None: pass
   def on_search_expense_clicked() -> None: pass
   def on_show_expense_info_clicked(self, data: Expense) -> None: pass
+  def on_save_new_expense_clicked() -> None: pass
+  def on_cancel_add_expense_clicked(self) -> None: pass
   def get_friends_by_expense(self, expense_id) -> list[dict]: pass
 
 
@@ -418,12 +420,12 @@ class AdwView(View):
     return clamp
 
   def _build_add_expense(self) -> Adw.NavigationPage: 
+
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
     scrolled.set_vexpand(True)
     scrolled.set_hexpand(True)
     scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-
 
     form = Gtk.ListBox(
       
@@ -433,13 +435,11 @@ class AdwView(View):
     self.entry_date = Adw.EntryRow(title="Date")
     self.entry_amount = Adw.EntryRow(title="Amount")
     self.entry_friends = Adw.EntryRow(title="Friends")
-    self.entry_credit_balance = Adw.EntryRow(title="Credit balance")
 
     form.append(self.entry_description)
     form.append(self.entry_date)
     form.append(self.entry_amount)
     form.append(self.entry_friends)
-    form.append(self.entry_credit_balance)
     form.add_css_class("boxed-list-separate")
 
     outer_box = Gtk.Box(
@@ -464,6 +464,21 @@ class AdwView(View):
     # Header bar (unique for this page)
     header = Adw.HeaderBar()
     header.set_title_widget(Gtk.Label(label="New Expense"))
+    
+    cancel_button = Gtk.Button(label="Cancel")
+    cancel_button.add_css_class("destructive-action")
+    cancel_button.connect(
+      'clicked', lambda _wg: self.handler.on_cancel_add_expense_clicked())    
+      
+    add_button = Gtk.Button(label="Add")
+    add_button.add_css_class("suggested-action")
+    add_button.connect(
+      'clicked', lambda _wg: self.handler.on_save_new_expense_clicked())    
+
+    header.set_show_end_title_buttons(False)  # hide window controls
+    header.pack_start(cancel_button)
+    header.pack_end(add_button)
+
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
@@ -649,8 +664,6 @@ class AdwView(View):
     self._stack.set_visible_child_name("empty")
 
   def show_add_expense(self) -> Gtk.Box:
-    #print("Add expense clicked")
-    #self._stack.set_visible_child_name("empty")
     if not f"add_expense" in self._views:
       add_view = self._build_add_expense()
       self._stack.add_titled(add_view, "add_expense", "New Expense")
