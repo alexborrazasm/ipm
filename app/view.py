@@ -375,6 +375,14 @@ class AdwView(View):
 
     return listbox
 
+  # Clamp to limit max width
+  def _get_clamp_content(self, listbox: Gtk.ListBox) -> Adw.Clamp:
+    clamp = Adw.Clamp()
+    clamp.set_child(listbox)
+    clamp.set_maximum_size(600)  # Max width
+    clamp.set_hexpand(True)
+    return clamp  
+
   def _build_expense_info(self, data: Expense) -> Adw.NavigationPage:
 
     # Scrollable content
@@ -408,11 +416,11 @@ class AdwView(View):
     balance_row.add_css_class("success" if data.credit_balance >= 0 else "error")
     listbox.append(balance_row)
     
-    # Clamp to limit max width
-    clamp = Adw.Clamp()
-    clamp.set_child(listbox)
-    clamp.set_maximum_size(600)  # Max width
-    clamp.set_hexpand(True)
+    ## Clamp to limit max width
+    #clamp = Adw.Clamp()
+    #clamp.set_child(listbox)
+    #clamp.set_maximum_size(600)  # Max width
+    #clamp.set_hexpand(True)
 
     outer_box = Gtk.Box(
         orientation=Gtk.Orientation.VERTICAL,
@@ -424,7 +432,7 @@ class AdwView(View):
         margin_start=16,
         margin_end=16
     )
-    outer_box.append(clamp)
+    outer_box.append(AdwView._get_clamp_content(self, listbox))
 
     scrolled.set_child(outer_box)
 
