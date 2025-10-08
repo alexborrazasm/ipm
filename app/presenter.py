@@ -35,3 +35,9 @@ class Presenter(ViewHandler):
 
   def on_edit_expense_clicked(self, data) -> None:
     self.view.show_edit_expense_info(data)
+
+  def on_cancel_add_expense_clicked(self) -> None:
+    self.view.show_empty_expense()
+
+  def on_cancel_edit_expense_clicked(self, data) -> None:
+    self.on_show_expense_info_clicked(data)

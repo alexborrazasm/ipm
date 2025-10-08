@@ -24,7 +24,7 @@ class ViewHandler(Protocol):
   def on_show_expense_info_clicked(data: Expense) -> None: pass
   def on_save_new_expense_clicked() -> None: pass
   def on_cancel_add_expense_clicked() -> None: pass
-  def on_cancel_edit_expense_clicked() -> None: pass
+  def on_cancel_edit_expense_clicked(data) -> None: pass
   def on_edit_expense_clicked(data) -> None: pass
   def get_friends_by_expense(expense_id) -> list[dict]: pass
 
@@ -429,21 +429,19 @@ class AdwView(View):
     scrolled.set_hexpand(True)
     scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
-    form = Gtk.ListBox(
-      
-    )
+    form = Gtk.ListBox()
 
     self.entry_description = Adw.EntryRow(title="Description")
-    self.entry_description.set_text(Expense.description)
+    self.entry_description.set_text(expense.description)
     
     self.entry_date = Adw.EntryRow(title="Date")
-    self.entry_date.set_text(Expense.date)
+    self.entry_date.set_text(expense.date)
     
     self.entry_amount = Adw.EntryRow(title="Amount")
-    self.entry_amount.set_text(Expense.amount)
+    self.entry_amount.set_text(f"{expense.amount}")
 
     self.entry_friends = Adw.EntryRow(title="Friends")
-    self.entry_friends.set_text(Expense.friends)
+    self.entry_friends.set_text(f"{expense.num_friends}")
 
 
     form.append(self.entry_description)
@@ -472,14 +470,14 @@ class AdwView(View):
 
     # Header bar (unique for this page)
     header = Adw.HeaderBar()
-    header.set_title_widget(Gtk.Label(label="New Expense"))
+    header.set_title_widget(Gtk.Label(label="Edit expense"))
     
     cancel_button = Gtk.Button(label="Cancel")
     cancel_button.add_css_class("destructive-action")
     cancel_button.connect(
-      'clicked', lambda _wg: self.handler.on_cancel_edit_expense_clicked())    
+      'clicked', lambda _wg: self.handler.on_cancel_edit_expense_clicked(expense))    
       
-    add_button = Gtk.Button(label="Modificar")
+    add_button = Gtk.Button(label="Done")
     add_button.add_css_class("suggested-action")
     add_button.connect(
       'clicked', lambda _wg: self.handler.on_save_new_expense_clicked())    
@@ -502,9 +500,7 @@ class AdwView(View):
     scrolled.set_hexpand(True)
     scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
-    form = Gtk.ListBox(
-      
-    )
+    form = Gtk.ListBox()
 
     self.entry_description = Adw.EntryRow(title="Description")
     self.entry_amount = Adw.EntryRow(title="Amount")
@@ -788,7 +784,7 @@ class AdwView(View):
   def show_edit_expense_info(self, expense: Expense) -> None:
     
     if not f"edit{expense.id}" in self._views:
-      info = self._build_empty_expense()
+      info = self._build_edit_expense(expense)
       self._stack.add_titled(info, f"edit{expense.id}", expense.description)
       self._views.append(f"edit{expense.id}")
 
