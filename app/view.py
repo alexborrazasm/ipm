@@ -432,14 +432,23 @@ class AdwView(View):
     )
 
     self.entry_description = Adw.EntryRow(title="Description")
-    self.entry_date = Adw.EntryRow(title="Date")
     self.entry_amount = Adw.EntryRow(title="Amount")
     self.entry_friends = Adw.EntryRow(title="Friends")
 
+    # Calendar widget
+    date_row = Adw.ActionRow(title="Date")
+    date_button = Gtk.MenuButton(icon_name = "x-office-calendar-symbolic")
+    self.entry_date = Gtk.Calendar()
+    date_popover = Gtk.Popover()
+    date_popover.set_child(self.entry_date)
+    date_button.set_popover(date_popover)
+    date_row.add_suffix(date_button)
+    date_row.set_activatable_widget(date_button)
+
     form.append(self.entry_description)
-    form.append(self.entry_date)
     form.append(self.entry_amount)
     form.append(self.entry_friends)
+    form.append(date_row)
     form.add_css_class("boxed-list-separate")
 
     outer_box = Gtk.Box(
@@ -528,7 +537,7 @@ class AdwView(View):
       listbox.add_css_class("boxed-list")
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
-      # Builder for each friend row 
+      # Builder for each friend row :)
       def build_row(friend: Friend, user_data: Any) -> Gtk.Widget:
         # Icon
         image = Gtk.Image.new_from_icon_name("avatar-default-symbolic")
