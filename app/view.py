@@ -28,6 +28,7 @@ class ViewHandler(Protocol):
   def on_edit_expense_clicked(self, data) -> None: pass
   def on_confirm_edit_expense_clicked(self, data) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
+  def delete_expense(self, id: int) -> None: pass
 
 
 # Data models
@@ -125,6 +126,13 @@ class View:
       )
 
       self.data_model_expenses.append(expense)
+
+  def remove_expense(self, id: int) -> None:
+    for i in range(len(self.data_model_expenses)):
+      expense = self.data_model_expenses[i]
+      if expense.id == id:
+        self.data_model_expenses.remove(i)
+        break
 
   def build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
@@ -356,9 +364,11 @@ class AdwView(View):
       return hbox
 
     def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
-      idx = widget.get_selected_row().get_index()
-      self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
-      self._split_view.set_show_content(True) # Show content on small windows
+      row = widget.get_selected_row()
+      if row is not None:
+        idx = row.get_index()
+        self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
+        self._split_view.set_show_content(True) # Show content on small windows
         
     listbox = Gtk.ListBox(hexpand=True)
     listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
@@ -524,13 +534,17 @@ class AdwView(View):
       row = Adw.ActionRow(title="Description")
       data.bind_property("description", row, "subtitle",
                          flags=GObject.BindingFlags.SYNC_CREATE)
-      listbox.append(row)
+      hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+      hbox.append(row)
+      listbox.append(hbox)
 
       # Date
       row = Adw.ActionRow(title="Date")
       data.bind_property("date", row, "subtitle",
                          flags=GObject.BindingFlags.SYNC_CREATE)
-      listbox.append(row)
+      hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+      hbox.append(row)
+      listbox.append(hbox)
 
       # Amount
       row = Adw.ActionRow(title="Amount")
@@ -539,7 +553,17 @@ class AdwView(View):
         if value not in (None, "") else "0.00 €",
         flags=GObject.BindingFlags.SYNC_CREATE
       )
-      listbox.append(row)
+      hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+      hbox.append(row)
+      listbox.append(hbox)
+ 
+      return listbox
+    
+    def build_listbox_balance(data: Expense) -> Gtk.ListBox:
+      
+      listbox = Gtk.ListBox(hexpand=True)
+      listbox.add_css_class("boxed-list")
+      listbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
       # Credit Balance
       balance_row = Adw.ActionRow(title="Balance")
@@ -548,7 +572,10 @@ class AdwView(View):
         if value not in (None, "") else "0.00 €",
         flags=GObject.BindingFlags.SYNC_CREATE
       )
-      listbox.append(balance_row)
+
+      hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+      hbox.append(balance_row)
+      listbox.append(hbox)
       
       return listbox
     
@@ -593,6 +620,38 @@ class AdwView(View):
 
       return hbox
     
+    def on_remove_expense_clicked(button, expense: Expense):
+      # Get the parent window from the button
+      window = button.get_root()
+
+      # Create confirmation dialog
+      dialog = Adw.MessageDialog(
+        transient_for=window,
+        modal=True,
+        heading="Confirm deletion",
+        body=f"Are you sure you want to remove '{expense.description}'?",
+      )
+
+      # Add action buttons
+      dialog.add_response("cancel", "Cancel")
+      dialog.add_response("remove", "Remove")
+
+      # Style the destructive one in red
+      dialog.set_response_appearance("remove", Adw.ResponseAppearance.DESTRUCTIVE)
+
+      # Connect signal when user responds
+      def on_response(dialog, response):
+        if response == "remove":
+          # Call your delete logic here:
+          self.handler.delete_expense(data.id)
+
+        dialog.destroy()
+
+      dialog.connect("response", on_response)
+
+      # Show the dialog
+      dialog.present()
+
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
     scrolled.set_vexpand(True)
@@ -611,18 +670,33 @@ class AdwView(View):
     )
     
     # Expense details
+    group_expenses = Adw.PreferencesGroup(title="Details")
     listbox_info = build_listbox_expense_info(data)
-    clamp_info = self._build_clamp_content(listbox_info)
+    group_expenses.add(listbox_info)
+    clamp_info = self._build_clamp_content(group_expenses)
     outer_box.append(clamp_info)
-    
+    listbox_balance = build_listbox_balance(data)
+    clamp_balance = self._build_clamp_content(listbox_balance)
+    outer_box.append(clamp_balance)
+
     # Friends involved in the expense
-    #listbox_friends = build_listbox_friends_expense(data.friends)
+    group_friends = Adw.PreferencesGroup(title="Friends")
     listbox_friends = Gtk.ListBox(hexpand=True)
     listbox_friends.add_css_class("boxed-list") 
+    listbox_friends.set_selection_mode(Gtk.SelectionMode.NONE)
     listbox_friends.bind_model(data.friends, on_build_row_friends, None)
 
-    clamp_friends = self._build_clamp_content(listbox_friends)
+    group_friends.add(listbox_friends)
+    clamp_friends = self._build_clamp_content(group_friends)
     outer_box.append(clamp_friends)
+    
+    # Remove expense button
+    remove_button = Gtk.Button(label="Remove expense")
+    remove_button.add_css_class("destructive-action")
+    remove_button.set_halign(Gtk.Align.CENTER)
+    remove_button.connect("clicked", on_remove_expense_clicked, data)
+
+    outer_box.append(remove_button)
 
     scrolled.set_child(outer_box)
 
@@ -747,3 +821,8 @@ class AdwView(View):
     self._stack.add_titled(info, f"edit{expense.id}", expense.description)
     # Show the view
     self._stack.set_visible_child_name(f"edit{expense.id}")
+
+  def remove_expense(self, id):
+    self._stack.remove(self._stack.get_child_by_name(f"info{id}"))
+    super().remove_expense(id)
+    

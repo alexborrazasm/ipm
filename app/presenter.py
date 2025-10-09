@@ -48,3 +48,9 @@ class Presenter(ViewHandler):
     pass # TODO
   def on_cancel_edit_expense_clicked(self, data) -> None:
     self.on_show_expense_info_clicked(data)
+    
+  # Delete expense
+  def delete_expense(self, id: int) -> None:
+    self.model.delete_expense(expense_id=id)
+    self.view.remove_expense(id)
+    self.view.show_empty_expense()
