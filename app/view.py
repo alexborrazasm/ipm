@@ -19,14 +19,14 @@ def run(application_id: str, on_activate: Callable) -> None:
 
 # Abstract presenter interface
 class ViewHandler(Protocol):
-  def on_add_expense_clicked() -> None: pass
-  def on_search_expense_clicked() -> None: pass
-  def on_show_expense_info_clicked(data: Expense) -> None: pass
-  def on_save_new_expense_clicked() -> None: pass
-  def on_cancel_add_expense_clicked() -> None: pass
-  def on_cancel_edit_expense_clicked(data) -> None: pass
-  def on_edit_expense_clicked(data) -> None: pass
-  def get_friends_by_expense(expense_id) -> list[dict]: pass
+  def on_add_expense_clicked(self) -> None: pass
+  def on_search_expense_clicked(self) -> None: pass
+  def on_show_expense_info_clicked(self, data: Expense) -> None: pass
+  def on_save_new_expense_clicked(self) -> None: pass
+  def on_cancel_add_expense_clicked(self) -> None: pass
+  def on_cancel_edit_expense_clicked(self, data) -> None: pass
+  def on_edit_expense_clicked(self, data) -> None: pass
+  def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
 
 
 # Data models
@@ -96,43 +96,6 @@ class View:
 
   def get_entry_credit_balance(self) -> str:
     return self.entry_credit_balance.get_text()        
-
-  def update(self, data: list) -> None:
-    self.data_model.remove_all()
-
-    for item in data:
-        expense = Expense(
-            item['id'],
-            item['description'],
-            item['date'],
-            item['amount'],
-            item['num_friends'],
-            item['credit_balance']
-        )
-
-        friends_data = self.handler.get_friends_by_expense(expense.id)
-
-        expense._friends = [
-            Friend(
-                f["id"],
-                f["name"],
-                f["credit_balance"],
-                f["debit_balance"]
-            )
-            for f in friends_data
-        ] if friends_data else []
-
-        self.data_model.append(expense)
-    
-    for item in data:
-      friend = Friend(
-        item["id"],
-        item["name"],
-        item["credit_balance"],
-        item["debit_balance"]
-      )
-
-      self.data_model_friends.append(friend)
 
   def update_friends(self, data:list) -> None:
     self.data_model_friends.remove_all()
@@ -753,11 +716,12 @@ class AdwView(View):
     self.data_model_expenses[1].friends[0].credit_balance += 10.0
     self.data_model_expenses[1].friends[0].debit_balance -= 5
 
-  def show_expense_info(self, expense: Expense, friends_expense: list[dict]) -> None:
+  def show_expense_info(self, expense: Expense) -> None:
     
     # Lazy load the view only once
     old = self._stack.get_child_by_name(f"info{expense.id}")
     if not old:
+      friends_expense = self.handler.get_friends_by_expense(expense.id)
       # Add friend data to expense
       expense.set_friends(friends_expense)
       # Build the view

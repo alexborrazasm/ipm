@@ -18,8 +18,8 @@ class Presenter(ViewHandler):
 
     run(application_id=application_id, on_activate=self.view.on_activate)
 
-  def get_friends_by_expenses(self, expense_id: int) -> list[dict]:
-    return self.model.get_friends_by_expenses(self, expense_id)
+  def get_friends_by_expense(self, expense_id: int) -> list[dict]:
+    return self.model.get_friends_by_expenses(expense_id)
 
   def on_add_expense_clicked(self) -> None:
     self.view.show_add_expense()
@@ -30,8 +30,7 @@ class Presenter(ViewHandler):
     pass # TODO
   
   def on_show_expense_info_clicked(self, data) -> None:
-    list = self.model.get_friends_by_expenses(data.id)
-    self.view.show_expense_info(data, list)
+    self.view.show_expense_info(data)
 
   def on_edit_expense_clicked(self, data) -> None:
     self.view.show_edit_expense_info(data)
