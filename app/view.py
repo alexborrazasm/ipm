@@ -204,7 +204,6 @@ class AdwView(View):
 
     # Stack of views
     self._stack = None # type: Adw.Stack
-    self._views = [] # List for lazy loading of views
 
   def on_activate(self, app: Adw.Application) -> None:
     self._build(app)
@@ -222,8 +221,8 @@ class AdwView(View):
     self._stack = Adw.ViewStack()
     loading_page = self._build_loading_page()
     
+    # Initial page is loading 
     self._stack.add_titled(loading_page, "loading", "Loading")
-    self._views.append("loading")
 
     self._content_page = Adw.NavigationPage(child=self._stack)
     self._content_page.set_title("Splitwithme")
@@ -723,18 +722,24 @@ class AdwView(View):
     self._about.present(self.window)
     
   def show_empty_expense(self) -> None:
-    if not "empty" in self._views:
+
+    old = self._stack.get_child_by_name("empty")
+    if not old:
       empty = self._build_empty_expense()
       self._stack.add_titled(empty, "empty", "Empty")
-      self._views.append("empty")
+    
     self._stack.set_visible_child_name("empty")
 
   def show_add_expense(self) -> Gtk.Box:
-    if not f"add_expense" in self._views:
-      add_view = self._build_add_expense()
-      self._stack.add_titled(add_view, "add_expense", "New Expense")
-      self._views.append("add_expense")
-    
+
+    old = self._stack.get_child_by_name("add_expense")
+    if old:
+      self._stack.remove(self._stack.get_child_by_name("add_expense"))
+
+    # Build the view
+    add_view = self._build_add_expense()
+    self._stack.add_titled(add_view, "add_expense", "New Expense")
+    # Show the view
     self._split_view.set_show_content(True) # Show content on small windows
     self._stack.set_visible_child_name("add_expense")
 
@@ -755,23 +760,27 @@ class AdwView(View):
   def show_expense_info(self, expense: Expense, friends_expense: list[dict]) -> None:
     
     # Lazy load the view only once
-    if not f"info{expense.id}" in self._views:
+    old = self._stack.get_child_by_name(f"info{expense.id}")
+    if not old:
       # Add friend data to expense
       expense.set_friends(friends_expense)
       # Build the view
       info = self._build_expense_info(expense)
       # Add to the stack
       self._stack.add_titled(info, f"info{expense.id}", expense.description)
-      self._views.append(f"info{expense.id}")
 
     # Show the view
     self._stack.set_visible_child_name(f"info{expense.id}")
 
   def show_edit_expense_info(self, expense: Expense) -> None:
-    
-    if not f"edit{expense.id}" in self._views:
-      info = self._build_edit_expense(expense)
-      self._stack.add_titled(info, f"edit{expense.id}", expense.description)
-      self._views.append(f"edit{expense.id}")
 
+    old = self._stack.get_child_by_name(f"edit{expense.id}")
+    # Remove previous edit view for this expense if exists 
+    if old:
+      self._stack.remove(self._stack.get_child_by_name(f"edit{expense.id}"))
+
+    # Build the view
+    info = self._build_edit_expense(expense)
+    self._stack.add_titled(info, f"edit{expense.id}", expense.description)
+    # Show the view
     self._stack.set_visible_child_name(f"edit{expense.id}")
