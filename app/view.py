@@ -22,10 +22,11 @@ class ViewHandler(Protocol):
   def on_add_expense_clicked(self) -> None: pass
   def on_search_expense_clicked(self) -> None: pass
   def on_show_expense_info_clicked(self, data: Expense) -> None: pass
-  def on_save_new_expense_clicked(self) -> None: pass
+  def on_confirm_add_new_expense_clicked(self) -> None: pass
   def on_cancel_add_expense_clicked(self) -> None: pass
   def on_cancel_edit_expense_clicked(self, data) -> None: pass
   def on_edit_expense_clicked(self, data) -> None: pass
+  def on_confirm_edit_expense_clicked(self, data) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
 
 
@@ -163,6 +164,12 @@ class AdwView(View):
     self._split_view = None # type: Adw.NavigationSplitView
     self._content_page = None # type: Adw.NavigationPage
     self._sidebar_page = None # type: Gtk.Widget
+    
+    # Forms
+    self._form_entry_description = None
+    self._form_entry_amount = None
+    self._form_entry_friends = None
+    self._form_entry_date = None
 
     # Stack of views
     self._stack = None # type: Adw.Stack
@@ -379,23 +386,19 @@ class AdwView(View):
 
     form = Gtk.ListBox()
 
-    self.entry_description = Adw.EntryRow(title="Description")
-    self.entry_description.set_text(expense.description)
+    self._form_entry_description = Adw.EntryRow(title="Description")
+    self._form_entry_description.set_text(expense.description)
     
-    self.entry_date = Adw.EntryRow(title="Date")
-    self.entry_date.set_text(expense.date)
+    self._form_entry_date = Adw.EntryRow(title="Date")
+    self._form_entry_date.set_text(expense.date)
     
-    self.entry_amount = Adw.EntryRow(title="Amount")
-    self.entry_amount.set_text(f"{expense.amount}")
-
-    self.entry_friends = Adw.EntryRow(title="Friends")
-    self.entry_friends.set_text(f"{expense.num_friends}")
+    self._form_entry_amount = Adw.EntryRow(title="Amount")
+    self._form_entry_amount.set_text(f"{expense.amount}")
 
 
-    form.append(self.entry_description)
-    form.append(self.entry_date)
-    form.append(self.entry_amount)
-    form.append(self.entry_friends)
+    form.append(self._form_entry_description)
+    form.append(self._form_entry_date)
+    form.append(self._form_entry_amount)
     form.add_css_class("boxed-list-separate")
 
     outer_box = Gtk.Box(
@@ -428,7 +431,7 @@ class AdwView(View):
     add_button = Gtk.Button(label="Done")
     add_button.add_css_class("suggested-action")
     add_button.connect(
-      'clicked', lambda _wg: self.handler.on_save_new_expense_clicked())    
+      'clicked', lambda _wg: self.handler.on_confirm_edit_expense_clicked(expense))    
 
     header.set_show_end_title_buttons(False)  # hide window controls
     header.pack_start(cancel_button)
@@ -448,23 +451,23 @@ class AdwView(View):
 
     form = Gtk.ListBox()
 
-    self.entry_description = Adw.EntryRow(title="Description")
-    self.entry_amount = Adw.EntryRow(title="Amount")
-    self.entry_friends = Adw.EntryRow(title="Friends")
+    self._form_entry_description = Adw.EntryRow(title="Description")
+    self._form_entry_amount = Adw.EntryRow(title="Amount")
+    self._form_entry_friends = Adw.EntryRow(title="Friends")
 
     # Calendar widget
     date_row = Adw.ActionRow(title="Date")
     date_button = Gtk.MenuButton(icon_name = "x-office-calendar-symbolic")
-    self.entry_date = Gtk.Calendar()
+    self._form_entry_date = Gtk.Calendar()
     date_popover = Gtk.Popover()
-    date_popover.set_child(self.entry_date)
+    date_popover.set_child(self._form_entry_date)
     date_button.set_popover(date_popover)
     date_row.add_suffix(date_button)
     date_row.set_activatable_widget(date_button)
 
-    form.append(self.entry_description)
-    form.append(self.entry_amount)
-    form.append(self.entry_friends)
+    form.append(self._form_entry_description)
+    form.append(self._form_entry_amount)
+    form.append(self._form_entry_friends)
     form.append(date_row)
     form.add_css_class("boxed-list-separate")
 
@@ -499,7 +502,7 @@ class AdwView(View):
     add_button = Gtk.Button(label="Add")
     add_button.add_css_class("suggested-action")
     add_button.connect(
-      'clicked', lambda _wg: self.handler.on_save_new_expense_clicked())    
+      'clicked', lambda _wg: self.handler.on_confirm_add_new_expense_clicked())    
 
     header.set_show_end_title_buttons(False)  # hide window controls
     header.pack_start(cancel_button)
