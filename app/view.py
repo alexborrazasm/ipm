@@ -162,7 +162,6 @@ class View:
 
       self.data_model_expenses.append(expense)
 
-
   def build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
     about_action.connect("activate", self.show_about)
@@ -319,7 +318,7 @@ class AdwView(View):
 
     return toolbar_view
 
-  def _build_loading_page(self) -> Adw.NavigationPage:
+  def _build_loading_page(self) -> Adw.ToolbarView:
     # Main content box
     content_box = Gtk.Box(
         orientation=Gtk.Orientation.VERTICAL,
@@ -407,8 +406,7 @@ class AdwView(View):
     clamp.set_hexpand(True)
     return clamp
 
-
-  def _build_edit_expense(self, expense : Expense) -> Adw.NavigationPage:
+  def _build_edit_expense(self, expense : Expense) -> Adw.ToolbarView:
     
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
@@ -476,8 +474,6 @@ class AdwView(View):
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
-
-
 
   def _build_add_expense(self) -> Adw.ToolbarView: 
 
@@ -550,7 +546,7 @@ class AdwView(View):
 
     return toolbar_view
 
-  def _build_expense_info(self, data: Expense) -> Adw.NavigationPage:
+  def _build_expense_info(self, data: Expense) -> Adw.ToolbarView:
     
     def build_listbox_expense_info(data: Expense) -> Gtk.ListBox:
 
