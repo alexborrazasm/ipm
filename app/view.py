@@ -31,35 +31,17 @@ class ViewHandler(Protocol):
 
 # Data models
 class Friend(GObject.GObject):
+  id = GObject.Property(type=int)
+  name = GObject.Property(type=str)
+  credit_balance = GObject.Property(type=float)
+  debit_balance = GObject.Property(type=float)
+
   def __init__(self, id, name, credit_balance, debit_balance):
     super().__init__()
-    self._id = id
-    self._name = name
-    self._credit_balance = credit_balance
-    self._debit_balance = debit_balance
-
-  @GObject.Property(type=int)
-  def id(self):
-    return self._id
-
-  @GObject.Property(type=str)
-  def name(self):
-    return self._name
-
-  def set_name(self, name):
-    self._name = name
-
-  @GObject.Property(type=float)
-  def credit_balance(self):
-    return self._credit_balance
-
-  def set_credit_balance(self, credit_balance):
-    self._credit_balance = credit_balance  
-
-  @GObject.Property(type=float)
-  def debit_balance(self):
-    return self._debit_balance 
-
+    self.id = id
+    self.name = name
+    self.credit_balance = credit_balance
+    self.debit_balance = debit_balance
 
 class Expense(GObject.GObject):
   id = GObject.Property(type=int)
@@ -85,7 +67,6 @@ class Expense(GObject.GObject):
         self.friends.append(Friend(f["id"], f["name"], f["credit_balance"], f["debit_balance"]))
 
 
-
 # Abstract view interface
 class View:
   def __init__(self):
@@ -101,19 +82,19 @@ class View:
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
 
-  def get_entry_description() -> str:
+  def get_entry_description(self) -> str:
     return self.entry_description.get_text()
 
-  def get_entry_date() -> str:
+  def get_entry_date(self) -> str:
     return self.entry_date.get_text()
 
-  def get_entry_amount() -> str:
+  def get_entry_amount(self) -> str:
     return self.entry_amount.get_text()
 
-  def get_entry_friends() -> str:
+  def get_entry_friends(self) -> str:
     return self.entry_friends.get_text()
 
-  def get_entry_credit_balance() -> str:
+  def get_entry_credit_balance(self) -> str:
     return self.entry_credit_balance.get_text()        
 
   def update(self, data: list) -> None:
@@ -375,16 +356,22 @@ class AdwView(View):
   def _build_listbox_expenses(self) -> Gtk.ListBox:
 
     def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
-      image = Gtk.Image.new_from_icon_name("view-list-symbolic")
-      label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
-      label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", halign=Gtk.Align.START)
-      label2.add_css_class("caption")
 
-      # Bind reactive
+      image = Gtk.Image.new_from_icon_name("view-list-symbolic")
+      
+      label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
+      # Bind expense description reactively
       item.bind_property("description", label1, "label", 
                          flags=GObject.BindingFlags.SYNC_CREATE)
+
+      label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", halign=Gtk.Align.START)
+      label2.add_css_class("caption")
+      # Bind credit balance reactively
       item.bind_property("credit_balance", label2, "label", 
-                         flags=GObject.BindingFlags.SYNC_CREATE)
+        transform_to=lambda binding, value: f"{float(value):.2f} €"
+        if value not in (None, "") else "0.00 €",
+        flags=GObject.BindingFlags.SYNC_CREATE
+      )
 
       vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
       vbox.append(label1)
@@ -397,6 +384,7 @@ class AdwView(View):
       )
       hbox.append(image)
       hbox.append(vbox)
+
       return hbox
 
     def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
@@ -572,88 +560,78 @@ class AdwView(View):
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
       # Description
-      row = Adw.ActionRow(title="Description", subtitle=data.description)
-      data.bind_property("description", row, "subtitle", 
+      row = Adw.ActionRow(title="Description")
+      data.bind_property("description", row, "subtitle",
                          flags=GObject.BindingFlags.SYNC_CREATE)
       listbox.append(row)
 
       # Date
-      row = Adw.ActionRow(title="Date", subtitle=data.date)
-      data.bind_property("date", row, "subtitle", 
+      row = Adw.ActionRow(title="Date")
+      data.bind_property("date", row, "subtitle",
                          flags=GObject.BindingFlags.SYNC_CREATE)
       listbox.append(row)
 
       # Amount
-      row = Adw.ActionRow(title="Amount", subtitle=f"€{data.amount:.2f}")
-      data.bind_property("amount", row, "subtitle", 
-                         flags=GObject.BindingFlags.SYNC_CREATE)
+      row = Adw.ActionRow(title="Amount")
+      data.bind_property("amount", row, "subtitle",
+        transform_to=lambda binding, value: f"{float(value):.2f} €"
+        if value not in (None, "") else "0.00 €",
+        flags=GObject.BindingFlags.SYNC_CREATE
+      )
       listbox.append(row)
 
       # Credit Balance
-      balance_row = Adw.ActionRow(title="Balance",
-          subtitle=f"{data.credit_balance:+.2f} €"
+      balance_row = Adw.ActionRow(title="Balance")
+      data.bind_property("credit_balance", balance_row, "subtitle", 
+        transform_to=lambda binding, value: f"{float(value):.2f} €"
+        if value not in (None, "") else "0.00 €",
+        flags=GObject.BindingFlags.SYNC_CREATE
       )
-      data.bind_property("credit_balance", balance_row, "subtitle", 
-                         flags=GObject.BindingFlags.SYNC_CREATE)
-      balance_row.add_css_class("success" if data.credit_balance >= 0 else "error")
-      data.bind_property("credit_balance", balance_row, "subtitle", 
-                         flags=GObject.BindingFlags.SYNC_CREATE)
       listbox.append(balance_row)
       
       return listbox
     
-    def build_listbox_friends_expense(friends_expense: list[Friend]) -> Gtk.ListBox:
-      # Create the ListBox container
-      listbox = Gtk.ListBox(hexpand=True)
-      listbox.add_css_class("boxed-list")
-      listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+    def on_build_row_friends(item: Friend, user_data: Any) -> Gtk.Widget:
+      # Icon
+      image = Gtk.Image.new_from_icon_name("avatar-default-symbolic")
+      
+      # Main labels
+      name_label = Gtk.Label(halign=Gtk.Align.START)
+      item.bind_property("name", name_label, "label", 
+                         flags=GObject.BindingFlags.SYNC_CREATE)
 
-      # Builder for each friend row :)
-      def build_row(friend: Friend, user_data: Any) -> Gtk.Widget:
-        # Icon
-        image = Gtk.Image.new_from_icon_name("avatar-default-symbolic")
+      balance_label = Gtk.Label(halign=Gtk.Align.START)
+      balance_label.add_css_class("caption")
 
-        # Main labels
-        name_label = Gtk.Label(label=friend.name, halign=Gtk.Align.START)
-        credit = friend.credit_balance
-        debit = friend.debit_balance
+      # Function to update balance label
+      def update_balance_label(_obj=None, _pspec=None):
+          credit = float(item.credit_balance)
+          debit = float(item.debit_balance)
+          balance_label.set_label(f"Credit: {credit:+.2f} €   |   "
+                                  f"Debit: {debit:+.2f} €")
 
-        balance_label = Gtk.Label(
-            label=f"Credit: {credit:+.2f} €   |   Debit: {debit:+.2f} €",
-            halign=Gtk.Align.START
-        )
-        balance_label.add_css_class("caption")
+      # Initial update
+      update_balance_label()
 
-        # Apply color hint (optional)
-        if credit > 0:
-            balance_label.add_css_class("success")
-        else:
-            balance_label.add_css_class("error")
+      # Connect to changes in credit_balance and debit_balance
+      item.connect("notify::credit-balance", update_balance_label)
+      item.connect("notify::debit-balance", update_balance_label)
 
-        # Layout
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
-        vbox.append(name_label)
-        vbox.append(balance_label)
+      # Layout
+      vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
+      vbox.append(name_label)
+      vbox.append(balance_label)
+      hbox = Gtk.Box(
+          orientation=Gtk.Orientation.HORIZONTAL,
+          hexpand=True, spacing=16,
+          margin_start=8, margin_end=8,
+          margin_bottom=8, margin_top=8
+      )
+      hbox.append(image)
+      hbox.append(vbox)
 
-        hbox = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL,
-            hexpand=True, spacing=16,
-            margin_start=8, margin_end=8,
-            margin_bottom=8, margin_top=8
-        )
-        hbox.append(image)
-        hbox.append(vbox)
-
-        return hbox
-
-      # Populate the list
-      for friend in friends_expense:
-          row = Gtk.ListBoxRow()
-          row.set_child(build_row(friend, None))
-          listbox.append(row)
-
-      return listbox
-
+      return hbox
+    
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
     scrolled.set_vexpand(True)
@@ -677,7 +655,11 @@ class AdwView(View):
     outer_box.append(clamp_info)
     
     # Friends involved in the expense
-    listbox_friends = build_listbox_friends_expense(data.friends)
+    #listbox_friends = build_listbox_friends_expense(data.friends)
+    listbox_friends = Gtk.ListBox(hexpand=True)
+    listbox_friends.add_css_class("boxed-list") 
+    listbox_friends.bind_model(data.friends, on_build_row_friends, None)
+
     clamp_friends = self._build_clamp_content(listbox_friends)
     outer_box.append(clamp_friends)
 
@@ -689,15 +671,14 @@ class AdwView(View):
 
     # Header bar (unique for this page)
     header = Adw.HeaderBar()
-    header.set_title_widget(Gtk.Label(label=data.description))
+    header.set_title_widget(Gtk.Label())
+    # Bind reactive title to expense description
+    data.bind_property("description", header.get_title_widget(), "label", 
+                       flags=GObject.BindingFlags.SYNC_CREATE)
     edit_button = Gtk.Button(icon_name="document-edit-symbolic")
     edit_button.connect(
         'clicked', lambda _wg: self.handler.on_edit_expense_clicked(data))  
     header.pack_end(edit_button)
-
-    # Bind reactive
-    data.bind_property("description", header.get_title_widget(), "label", 
-                       flags=GObject.BindingFlags.SYNC_CREATE)
 
     toolbar_view.add_top_bar(header)
 
@@ -761,10 +742,15 @@ class AdwView(View):
     print("Search expense clicked")
     # for testing, modify an expense #TODO remove
     self.data_model_expenses[1].description = "New description"
-    self.data_model_expenses[1].credit_balance += 10.0
+    self.data_model_expenses[1].credit_balance -= 10.0
     self.data_model_expenses[1].amount += 5.0
     self.data_model_expenses[1].date = "2024-05-01"
     self.data_model_expenses[1].num_friends += 1
+    self.data_model_expenses[1].friends.append(
+        Friend(99, "New Friend", 0.0, 0.0)
+    )
+    self.data_model_expenses[1].friends[0].credit_balance += 10.0
+    self.data_model_expenses[1].friends[0].debit_balance -= 5
 
   def show_expense_info(self, expense: Expense, friends_expense: list[dict]) -> None:
     
