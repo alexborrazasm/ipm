@@ -464,7 +464,7 @@ class AdwView(View):
     header = Adw.HeaderBar()
     header.set_title_widget(Gtk.Label(label="Edit expense"))
 
-    # Button Cancelar
+    # Button Cancel
     cancel_button = Gtk.Button(label="Cancel")
     cancel_button.add_css_class("destructive-action")
     cancel_button.connect(
@@ -484,8 +484,45 @@ class AdwView(View):
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
+
+
+  def _build_calendar_dialog(self, date_row: Adw.ActionRow): 
+
+    dialog = Adw.MessageDialog(
+        transient_for = self.window,
+        modal = True,
+        heading = "Select date"
+    )
+
+    calendar = Gtk.Calendar()
+    calendar.set_margin_top(12)
+    calendar.set_margin_bottom(12)
+    calendar.set_margin_start(12)
+    calendar.set_margin_end(12)
+    dialog.set_extra_child(calendar) 
+
+    dialog.add_response("cancel", "Cancel")
+    dialog.add_response("select", "Select")
+    dialog.set_default_response("select")
+    dialog.set_response_appearance("select", Adw.ResponseAppearance.SUGGESTED)
+
+    def on_response(d, response_id):
+        if response_id == "select":
+            date_obj = calendar.get_date()
+            year = date_obj.get_year()
+            month = date_obj.get_month() + 1  # Gtk uses 0-11 for months
+            day = date_obj.get_day_of_month()
+            formatted_date = f"{year}-{month:02d}-{day:02d}"
+
+            date_row.set_subtitle(formatted_date)
+            self._form_entry_date.set_text(formatted_date)
+        d.destroy()
+
+    dialog.connect("response", on_response)
+    dialog.present()
   
-  def _build_add_expense(self) -> Adw.ToolbarView: 
+  
+  def _build_add_expense(self) -> Adw.ToolbarView:
 
     def on_add_done_clicked(self):
         
@@ -507,35 +544,20 @@ class AdwView(View):
     self._form_entry_description = Adw.EntryRow(title="Description")
     self._form_entry_amount = Adw.EntryRow(title="Amount")
     self._form_entry_friends = Adw.EntryRow(title="Friends")
-    
     self._form_entry_date = Adw.EntryRow(title="Date")
     self._form_entry_date.set_editable(False)
+    self._form_entry_date.set_visible(False)
 
     # Calendar widget
     date_row = Adw.ActionRow(title="Select date")
-    date_button = Gtk.MenuButton(icon_name = "x-office-calendar-symbolic")
+    date_button = Gtk.Button(icon_name = "x-office-calendar-symbolic")
 
-    self._calendar = Gtk.Calendar()
+    date_button.connect(
+      'clicked', lambda _wg: self._build_calendar_dialog(date_row))
 
-    date_popover = Gtk.Popover()
-    date_popover.set_child(self._calendar)
-    date_button.set_popover(date_popover)
     date_row.add_suffix(date_button)
     date_row.set_activatable_widget(date_button)
-
-    def on_date_selected(calendar):
-
-      date_obj = calendar.get_date()
-      year = date_obj.get_year()
-      month = date_obj.get_month()
-      day = date_obj.get_day_of_month()
-
-      formatted_date = f"{year}-{month:02d}-{day:02d}"
-      date_row.set_title(formatted_date)
-      self._form_entry_date.set_text(formatted_date)
-
-
-    self._calendar.connect("day-selected", on_date_selected)
+    
 
     form.append(self._form_entry_description)
     form.append(self._form_entry_amount)
