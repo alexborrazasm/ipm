@@ -22,7 +22,7 @@ class ViewHandler(Protocol):
   def on_add_expense_clicked(self) -> None: pass
   def on_search_expense_clicked(self) -> None: pass
   def on_show_expense_info_clicked(self, data: Expense) -> None: pass
-  def on_confirm_add_new_expense_clicked(self) -> None: pass
+  def on_confirm_add_new_expense_clicked(self, data) -> None: pass
   def on_cancel_add_expense_clicked(self) -> None: pass
   def on_cancel_edit_expense_clicked(self, data) -> None: pass
   def on_edit_expense_clicked(self, data) -> None: pass
@@ -387,8 +387,7 @@ class AdwView(View):
     clamp.set_hexpand(True)
     return clamp
 
-  def _build_edit_expense(self, expense : Expense) -> Adw.ToolbarView:
-    
+  def _build_edit_expense(self, expense: Expense) -> Adw.ToolbarView:
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
     scrolled.set_vexpand(True)
@@ -406,7 +405,6 @@ class AdwView(View):
     self._form_entry_amount = Adw.EntryRow(title="Amount")
     self._form_entry_amount.set_text(f"{expense.amount}")
 
-
     form.append(self._form_entry_description)
     form.append(self._form_entry_date)
     form.append(self._form_entry_amount)
@@ -423,35 +421,59 @@ class AdwView(View):
         margin_end=16
     )
     outer_box.append(self._build_clamp_content(form))
-
     scrolled.set_child(outer_box)
 
     # Toolbar view (for header + content)
     toolbar_view = Adw.ToolbarView()
     toolbar_view.set_content(scrolled)
 
-    # Header bar (unique for this page)
+    # Header bar
     header = Adw.HeaderBar()
     header.set_title_widget(Gtk.Label(label="Edit expense"))
-    
+
+    # Botón Cancelar
     cancel_button = Gtk.Button(label="Cancel")
     cancel_button.add_css_class("destructive-action")
     cancel_button.connect(
-      'clicked', lambda _wg: self.handler.on_cancel_edit_expense_clicked(expense))    
-      
+        'clicked', lambda _wg: self.handler.on_cancel_edit_expense_clicked(expense)
+    )
+
+    # Botón Done
     add_button = Gtk.Button(label="Done")
     add_button.add_css_class("suggested-action")
     add_button.connect(
-      'clicked', lambda _wg: self.handler.on_confirm_edit_expense_clicked(expense))    
+        'clicked', lambda _wg: self._on_edit_done_clicked(expense.id)
+    )
 
-    header.set_show_end_title_buttons(False)  # hide window controls
+    header.set_show_end_title_buttons(False)
     header.pack_start(cancel_button)
     header.pack_end(add_button)
-
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
 
+  def _on_edit_done_clicked(self, expense_id):
+      
+      data = {
+          "id": expense_id,
+          "description": self._form_entry_description.get_text(),
+          "date": self._form_entry_date.get_text(),
+          "amount": float(self._form_entry_amount.get_text())
+      }
+
+      self.handler.on_confirm_edit_expense_clicked(data)
+
+  def _on_add_done_clicked(self):
+      
+      data = {
+          "description": self._form_entry_description.get_text(),
+          "date": self._form_entry_date.get_text(),
+          "amount": float(self._form_entry_amount.get_text())
+      }
+
+      self.handler.on_confirm_add_new_expense_clicked(data)
+
+  
   def _build_add_expense(self) -> Adw.ToolbarView: 
 
     # Scrollable content
@@ -465,16 +487,35 @@ class AdwView(View):
     self._form_entry_description = Adw.EntryRow(title="Description")
     self._form_entry_amount = Adw.EntryRow(title="Amount")
     self._form_entry_friends = Adw.EntryRow(title="Friends")
+    
+    self._form_entry_date = Adw.EntryRow(title="Date")
+    self._form_entry_date.set_editable(False)
 
     # Calendar widget
-    date_row = Adw.ActionRow(title="Date")
+    date_row = Adw.ActionRow(title="Select date")
     date_button = Gtk.MenuButton(icon_name = "x-office-calendar-symbolic")
-    self._form_entry_date = Gtk.Calendar()
+
+    self._calendar = Gtk.Calendar()
+
     date_popover = Gtk.Popover()
-    date_popover.set_child(self._form_entry_date)
+    date_popover.set_child(self._calendar)
     date_button.set_popover(date_popover)
     date_row.add_suffix(date_button)
     date_row.set_activatable_widget(date_button)
+
+    def on_date_selected(calendar):
+
+      date_obj = calendar.get_date()
+      year = date_obj.get_year()
+      month = date_obj.get_month()
+      day = date_obj.get_day_of_month()
+
+      formatted_date = f"{year}-{month:02d}-{day:02d}"
+      date_row.set_title(formatted_date)
+      self._form_entry_date.set_text(formatted_date)
+
+
+    self._calendar.connect("day-selected", on_date_selected)
 
     form.append(self._form_entry_description)
     form.append(self._form_entry_amount)
@@ -513,7 +554,7 @@ class AdwView(View):
     add_button = Gtk.Button(label="Add")
     add_button.add_css_class("suggested-action")
     add_button.connect(
-      'clicked', lambda _wg: self.handler.on_confirm_add_new_expense_clicked())    
+      'clicked', lambda _wg: self._on_add_done_clicked())
 
     header.set_show_end_title_buttons(False)  # hide window controls
     header.pack_start(cancel_button)

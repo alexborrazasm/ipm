@@ -25,9 +25,15 @@ class Presenter(ViewHandler):
   def on_add_expense_clicked(self) -> None:
     self.view.show_add_expense()
     pass # TODO
-  def on_confirm_add_new_expense_clicked(self):
-    print("Confirm add new expense clicked")
-    pass # TODO
+
+  def on_confirm_add_new_expense_clicked(self, data):
+    added_expense = self.model.add_expense(data["description"], data["date"], data["amount"])
+    self.view.show_empty_expense()
+    
+    #PROVISIONAL too many requests TODO manage dinamic view 
+    expenses = self.model.get_expenses()
+    self.view.update_expenses(expenses)
+
   def on_cancel_add_expense_clicked(self) -> None:
     self.view.show_empty_expense()
 
@@ -43,9 +49,15 @@ class Presenter(ViewHandler):
   # Edit expense
   def on_edit_expense_clicked(self, data) -> None:
     self.view.show_edit_expense_info(data)
-  def on_confirm_edit_expense_clicked(self, data) -> None:
-    print("Confirm edit expense clicked")
-    pass # TODO
+
+  def on_confirm_edit_expense_clicked(self, data):
+    edited_expense = self.model.put_expense(data["id"], data["description"], data["date"], data["amount"])
+    self.view.show_empty_expense()
+    
+    #PROVISIONAL too many requests TODO manage dinamic view  & "Expecting value: line 1 column 1 (char 0)"
+    expenses = self.model.get_expenses()
+    self.view.update_expenses(expenses)
+  
   def on_cancel_edit_expense_clicked(self, data) -> None:
     self.on_show_expense_info_clicked(data)
     
