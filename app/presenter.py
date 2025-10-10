@@ -8,13 +8,15 @@ class Presenter(ViewHandler):
     self.view = view
         
   def run(self, application_id: str):
+
     expenses = self.model.get_expenses()
     friends = self.model.get_friends()
 
     self.view.set_handler(self)
-
+    
     self.view.update_expenses(expenses)
     self.view.update_friends(friends)
+
 
     run(application_id=application_id, on_activate=self.view.on_activate)
 
@@ -75,4 +77,6 @@ class Presenter(ViewHandler):
     self.view.delete_expense(expense_id)
     self.view.show_expense_info(data)
 
-  def on_retry_conection(self) -> None:
+  #def on_retry_conection(self) -> None:
+  #def on_no_one_expense(self) -> None:
+    #self.view.show_no_one_expense()

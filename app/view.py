@@ -30,6 +30,7 @@ class ViewHandler(Protocol):
   def on_delete_expense(self, id: int) -> None: pass
   def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
+  def on_no_one_expense(self) -> None: pass
 
 # Data models
 class Friend(GObject.GObject):
@@ -99,7 +100,7 @@ class View:
 
   def update_expenses(self, data: list) -> None:
     self.data_model_expenses.remove_all()
- 
+
     for item in data:
       expense = Expense(
         item['id'],
@@ -165,6 +166,7 @@ class View:
 
   # Abstract methods to be implemented by subclasses
   def show_empty_expense(self) -> None: pass
+  def show_no_one_expense(self) -> None: pass
   def show_add_expense(self) -> None: pass
   def show_search_expense(self) -> None: pass
   def show_expense_info(self, data: Expense) -> None: pass
@@ -228,14 +230,16 @@ class AdwView(View):
     self._stack = Adw.ViewStack()
     loading_page = self._build_loading_page()
     no_internet_page = self._build_no_internet_page()
+    no_one_expense = self._build_no_one_expense()
 
     # Initial page is loading 
     self._stack.add_titled(loading_page, "loading", "Loading")
     self._stack.add_titled(no_internet_page, "no_internet", "No Internet")
-
+    self._stack.add_titled(no_one_expense, "no_one_expense", "No One Expense")
     # Check for internet
     if not self._check_internet_connection():
         self._stack.set_visible_child(no_internet_page)
+    
 
     self._content_page = Adw.NavigationPage(child=self._stack)
     self._content_page.set_title("Splitwithme")
@@ -318,6 +322,38 @@ class AdwView(View):
 
     # Text
     label = Gtk.Label(label="Pick an expense")
+    label.set_margin_top(12)
+    label.set_css_classes(["title-1"])
+    content_box.append(label)
+
+    # Toolbar view
+    toolbar_view = Adw.ToolbarView()
+    toolbar_view.set_content(content_box)
+
+    # Header bar (unique per page)
+    header = Adw.HeaderBar()
+    toolbar_view.add_top_bar(header)
+
+    return toolbar_view
+  
+  def _build_no_one_expense(self) -> Adw.ToolbarView:
+    # Main content
+    content_box = Gtk.Box(
+      orientation=Gtk.Orientation.VERTICAL,
+      spacing=12,
+      halign=Gtk.Align.CENTER,
+      valign=Gtk.Align.CENTER,
+      vexpand=True,
+      hexpand=True
+    )
+
+    # Big icon
+    icon = Gtk.Image.new_from_icon_name("list-add-symbolic")
+    icon.set_pixel_size(96)
+    content_box.append(icon)
+
+    # Text
+    label = Gtk.Label(label="Add an expense")
     label.set_margin_top(12)
     label.set_css_classes(["title-1"])
     content_box.append(label)
@@ -416,6 +452,7 @@ class AdwView(View):
     def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
 
       image = Gtk.Image.new_from_icon_name("view-list-symbolic")
+      
       
       label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
       # Bind expense description reactively
@@ -963,6 +1000,16 @@ class AdwView(View):
       self._stack.add_titled(empty, "empty", "Empty")
     
     self._stack.set_visible_child_name("empty")
+
+   
+  def show_no_one_expense(self) -> None:
+
+    old = self._stack.get_child_by_name("no_one_expense")
+    if not old:
+      no_one_expense = self._build_no_one_expense()
+      self._stack.add_titled(no_one_expense, "no_one_expense", "No One Expense")
+    
+    self._stack.set_visible_child_name("no_one_expense")
 
   def show_add_expense(self) -> Gtk.Box:
 
