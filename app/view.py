@@ -28,7 +28,7 @@ class ViewHandler(Protocol):
   def on_edit_expense_clicked(self, data) -> None: pass
   def on_confirm_edit_expense_clicked(self, data) -> None: pass
   def on_delete_expense(self, id: int) -> None: pass
-  def on_delete_friend_expense(self, expense_id: int, friend_id: int) -> None: pass
+  def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
 
 
@@ -127,23 +127,6 @@ class View:
       )
 
       self.data_model_expenses.append(expense)
-
-  def delete_friend_expenses(self, expense_id: int, friend_id: int) -> None:
-    # Search expense
-    for i in range(self.data_model_expenses.get_n_items()):
-      expense = self.data_model_expenses.get_item(i)
-      if expense.id == expense_id:
-        friends = expense.friends
-        # Copy to Python list
-        friends_copy = [friends.get_item(j) for j in range(friends.get_n_items())]
-
-        # Search and remove friend
-        for friend in friends_copy:
-          if friend.id == friend_id:
-            idx = friends_copy.index(friend)
-            friends.remove(idx)  # ahora seguro
-            break
-        break
 
   def delete_expense(self, id: int) -> None:
     for i in range(len(self.data_model_expenses)):
@@ -621,7 +604,7 @@ class AdwView(View):
       def on_response(dialog, response):
         if response == "remove":
           # Call your delete logic here:
-          self.handler.on_delete_friend_expense(expense.id, friend.id)
+          self.handler.on_delete_friend_expense(expense.id, friend.id, expense)
 
         dialog.destroy()
 
@@ -881,7 +864,7 @@ class AdwView(View):
     # Show the view
     self._stack.set_visible_child_name(f"edit{expense.id}")
 
-  def remove_expense(self, id):
+  def delete_expense(self, id):
+
     self._stack.remove(self._stack.get_child_by_name(f"info{id}"))
-    super().remove_expense(id)
-    
+    super().delete_expense(id)
