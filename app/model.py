@@ -17,7 +17,7 @@ class Model:
       print(e)
       return [] # TODO proper error handling
     
-  def put_expense(self, expense_id: int, description: str, date: str, amount: float) -> dict:
+  def put_expense(self, expense_id: int, description: str, date: str, amount: float) -> bool:
     payload = {
         "description": description,
         "date": date,
@@ -27,13 +27,13 @@ class Model:
     try:
       r = requests.put(f"{SERVER_URL}/expenses/{expense_id}", json=payload)
       if r.ok:
-        return r.json()
+        return True
       else:
         print(f"Failed to update expense {expense_id}: {r.status_code} {r.text}")
-        return {}
+        return False
     except Exception as e:
       print(e)
-      return {}  # TODO: proper error handling
+      return False  # TODO: proper error handling
   
   def delete_expense(self, expense_id: int) -> bool:
     try:

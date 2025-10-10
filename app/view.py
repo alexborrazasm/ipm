@@ -26,7 +26,7 @@ class ViewHandler(Protocol):
   def on_cancel_add_expense_clicked(self) -> None: pass
   def on_cancel_edit_expense_clicked(self, data) -> None: pass
   def on_edit_expense_clicked(self, data) -> None: pass
-  def on_confirm_edit_expense_clicked(self, data) -> None: pass
+  def on_confirm_edit_expense_clicked(self, payload, data) -> None: pass
   def on_delete_expense(self, id: int) -> None: pass
   def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
@@ -100,7 +100,9 @@ class View:
   def get_entry_credit_balance(self) -> str:
     return self.entry_credit_balance.get_text()        
 
-  def update_friends(self, data:list) -> None:
+  def clear_expenses_list_selection(self) -> None: pass
+
+  def update_friends(self, data: list) -> None:
     self.data_model_friends.remove_all()
     
     for item in data:
@@ -113,7 +115,7 @@ class View:
 
       self.data_model_friends.append(friend) 
 
-  def update_expenses(self, data:list) -> None:
+  def update_expenses(self, data: list) -> None:
     self.data_model_expenses.remove_all()
  
     for item in data:
@@ -128,7 +130,19 @@ class View:
 
       self.data_model_expenses.append(expense)
 
+  def update_expense(self, data: list) -> None:
+
+    id = data['id']
+    for i in range(len(self.data_model_expenses)):
+      expense = self.data_model_expenses[i]
+      if expense.id == id:
+        self.data_model_expenses[i].description = data['description']
+        self.data_model_expenses[i].date = data['date']
+        self.data_model_expenses[i].amount = data['amount']
+        break
+      
   def delete_expense(self, id: int) -> None:
+
     for i in range(len(self.data_model_expenses)):
       expense = self.data_model_expenses[i]
       if expense.id == id:
@@ -186,6 +200,9 @@ class AdwView(View):
   def on_activate(self, app: Adw.Application) -> None:
     self._build(app)
   
+  def clear_expenses_list_selection(self) -> None:
+    self._expenses_list.unselect_all()
+
   def _build(self, app: Adw.Application) -> None:
     self.window = win = Adw.ApplicationWindow()
     app.add_window(win)
@@ -388,6 +405,17 @@ class AdwView(View):
     return clamp
 
   def _build_edit_expense(self, expense: Expense) -> Adw.ToolbarView:
+
+    def on_edit_done_clicked(self, expense_id, data: Expense):
+
+      payload = {
+        "id": expense_id,
+        "description": self._form_entry_description.get_text(),
+        "date": self._form_entry_date.get_text(),
+        "amount": float(self._form_entry_amount.get_text())
+      }
+      self.handler.on_confirm_edit_expense_clicked(payload, data)
+
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
     scrolled.set_vexpand(True)
@@ -431,18 +459,18 @@ class AdwView(View):
     header = Adw.HeaderBar()
     header.set_title_widget(Gtk.Label(label="Edit expense"))
 
-    # Botón Cancelar
+    # Button Cancelar
     cancel_button = Gtk.Button(label="Cancel")
     cancel_button.add_css_class("destructive-action")
     cancel_button.connect(
         'clicked', lambda _wg: self.handler.on_cancel_edit_expense_clicked(expense)
     )
 
-    # Botón Done
+    # Button Done
     add_button = Gtk.Button(label="Done")
     add_button.add_css_class("suggested-action")
     add_button.connect(
-        'clicked', lambda _wg: self._on_edit_done_clicked(expense.id)
+        'clicked', lambda _wg: on_edit_done_clicked(self, expense.id, expense)
     )
 
     header.set_show_end_title_buttons(False)
@@ -451,30 +479,17 @@ class AdwView(View):
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
-
-  def _on_edit_done_clicked(self, expense_id):
-      
-      data = {
-          "id": expense_id,
-          "description": self._form_entry_description.get_text(),
-          "date": self._form_entry_date.get_text(),
-          "amount": float(self._form_entry_amount.get_text())
-      }
-
-      self.handler.on_confirm_edit_expense_clicked(data)
-
-  def _on_add_done_clicked(self):
-      
-      data = {
-          "description": self._form_entry_description.get_text(),
-          "date": self._form_entry_date.get_text(),
-          "amount": float(self._form_entry_amount.get_text())
-      }
-
-      self.handler.on_confirm_add_new_expense_clicked(data)
-
   
   def _build_add_expense(self) -> Adw.ToolbarView: 
+
+    def on_add_done_clicked(self):
+        
+      data = {
+        "description": self._form_entry_description.get_text(),
+        "date": self._form_entry_date.get_text(),
+        "amount": float(self._form_entry_amount.get_text())
+      }
+      self.handler.on_confirm_add_new_expense_clicked(data)
 
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
@@ -554,7 +569,7 @@ class AdwView(View):
     add_button = Gtk.Button(label="Add")
     add_button.add_css_class("suggested-action")
     add_button.connect(
-      'clicked', lambda _wg: self._on_add_done_clicked())
+      'clicked', lambda _wg: self.on_add_done_clicked(self))
 
     header.set_show_end_title_buttons(False)  # hide window controls
     header.pack_start(cancel_button)
