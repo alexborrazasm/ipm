@@ -129,15 +129,15 @@ class View:
       self.data_model_expenses.append(expense)
 
   def delete_friend_expenses(self, expense_id: int, friend_id: int) -> None:
-    # Buscar el expense
+    # Search expense
     for i in range(self.data_model_expenses.get_n_items()):
       expense = self.data_model_expenses.get_item(i)
       if expense.id == expense_id:
         friends = expense.friends
-        # Copiar los friends a lista de Python
+        # Copy to Python list
         friends_copy = [friends.get_item(j) for j in range(friends.get_n_items())]
 
-        # Buscar y eliminar
+        # Search and remove friend
         for friend in friends_copy:
           if friend.id == friend_id:
             idx = friends_copy.index(friend)
