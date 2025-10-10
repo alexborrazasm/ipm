@@ -567,7 +567,6 @@ class AdwView(View):
     header.set_title_widget(Gtk.Label(label="New Expense"))
     
     cancel_button = Gtk.Button(label="Cancel")
-    cancel_button.add_css_class("destructive-action")
     cancel_button.connect(
       'clicked', lambda _wg: self.handler.on_cancel_add_expense_clicked())    
       
