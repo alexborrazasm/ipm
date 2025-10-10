@@ -27,8 +27,9 @@ class ViewHandler(Protocol):
   def on_cancel_edit_expense_clicked(self, data) -> None: pass
   def on_edit_expense_clicked(self, data) -> None: pass
   def on_confirm_edit_expense_clicked(self, data) -> None: pass
+  def on_delete_expense(self, id: int) -> None: pass
+  def on_delete_friend_expense(self, expense_id: int, friend_id: int) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
-  def delete_expense(self, id: int) -> None: pass
 
 
 # Data models
@@ -110,7 +111,7 @@ class View:
         item["debit_balance"]
       )
 
-      self.data_model_friends.append(friend)    
+      self.data_model_friends.append(friend) 
 
   def update_expenses(self, data:list) -> None:
     self.data_model_expenses.remove_all()
@@ -127,7 +128,24 @@ class View:
 
       self.data_model_expenses.append(expense)
 
-  def remove_expense(self, id: int) -> None:
+  def delete_friend_expenses(self, expense_id: int, friend_id: int) -> None:
+    # Buscar el expense
+    for i in range(self.data_model_expenses.get_n_items()):
+      expense = self.data_model_expenses.get_item(i)
+      if expense.id == expense_id:
+        friends = expense.friends
+        # Copiar los friends a lista de Python
+        friends_copy = [friends.get_item(j) for j in range(friends.get_n_items())]
+
+        # Buscar y eliminar
+        for friend in friends_copy:
+          if friend.id == friend_id:
+            idx = friends_copy.index(friend)
+            friends.remove(idx)  # ahora seguro
+            break
+        break
+
+  def delete_expense(self, id: int) -> None:
     for i in range(len(self.data_model_expenses)):
       expense = self.data_model_expenses[i]
       if expense.id == id:
@@ -579,9 +597,49 @@ class AdwView(View):
       
       return listbox
     
-    def on_build_row_friends(item: Friend, user_data: Any) -> Gtk.Widget:
+    def on_remove_friend_expense_clicked(button, expense: Expense, 
+                                         friend: Friend) -> None:
+      # Get the parent window from the button
+      window = button.get_root()
+
+      # Create confirmation dialog
+      dialog = Adw.MessageDialog(
+        transient_for=window,
+        modal=True,
+        heading="Confirm deletion",
+        body=f"Are you sure you want to remove '{friend.name}'?",
+      )
+
+      # Add action buttons
+      dialog.add_response("cancel", "Cancel")
+      dialog.add_response("remove", "Remove")
+
+      # Style the destructive one in red
+      dialog.set_response_appearance("remove", Adw.ResponseAppearance.DESTRUCTIVE)
+
+      # Connect signal when user responds
+      def on_response(dialog, response):
+        if response == "remove":
+          # Call your delete logic here:
+          self.handler.on_delete_friend_expense(expense.id, friend.id)
+
+        dialog.destroy()
+
+      dialog.connect("response", on_response)
+
+      # Show the dialog
+      dialog.present()
+
+    def on_build_row_friends(item: Friend, expense: Expense) -> Gtk.Widget:
       # Icon
       image = Gtk.Image.new_from_icon_name("avatar-default-symbolic")
+      
+      # Remove button
+      delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic")
+      delete_button.add_css_class("flat")
+      delete_button.add_css_class("destructive-action")
+      delete_button.connect("clicked", on_remove_friend_expense_clicked, 
+                            expense, item)
       
       # Main labels
       name_label = Gtk.Label(halign=Gtk.Align.START)
@@ -617,6 +675,7 @@ class AdwView(View):
       )
       hbox.append(image)
       hbox.append(vbox)
+      hbox.append(delete_button)
 
       return hbox
     
@@ -642,8 +701,7 @@ class AdwView(View):
       # Connect signal when user responds
       def on_response(dialog, response):
         if response == "remove":
-          # Call your delete logic here:
-          self.handler.delete_expense(data.id)
+          self.handler.on_delete_expense(data.id)
 
         dialog.destroy()
 
@@ -684,7 +742,7 @@ class AdwView(View):
     listbox_friends = Gtk.ListBox(hexpand=True)
     listbox_friends.add_css_class("boxed-list") 
     listbox_friends.set_selection_mode(Gtk.SelectionMode.NONE)
-    listbox_friends.bind_model(data.friends, on_build_row_friends, None)
+    listbox_friends.bind_model(data.friends, on_build_row_friends, data)
 
     group_friends.add(listbox_friends)
     clamp_friends = self._build_clamp_content(group_friends)
@@ -792,6 +850,7 @@ class AdwView(View):
     )
     self.data_model_expenses[1].friends[0].credit_balance += 10.0
     self.data_model_expenses[1].friends[0].debit_balance -= 5
+    self.data_model_expenses[2].friends.remove(1)
 
   def show_expense_info(self, expense: Expense) -> None:
     

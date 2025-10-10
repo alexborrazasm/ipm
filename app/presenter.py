@@ -50,7 +50,14 @@ class Presenter(ViewHandler):
     self.on_show_expense_info_clicked(data)
     
   # Delete expense
-  def delete_expense(self, id: int) -> None:
+  def on_delete_expense(self, id: int) -> None:
+    # TODO manage API errors
     self.model.delete_expense(expense_id=id)
-    self.view.remove_expense(id)
+    self.view.delete_expense(id)
     self.view.show_empty_expense()
+  
+  # Remove a friend from one expense
+  def on_delete_friend_expense(self, expense_id: int, friend_id: int) -> None:
+    # TODO manage API errors
+    self.model.delete_friend_expense(expense_id, friend_id)
+    self.view.delete_friend_expenses(expense_id, friend_id)

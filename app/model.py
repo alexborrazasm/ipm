@@ -130,6 +130,18 @@ class Model:
       print(e)
       return False  # TODO: proper error handling
 
+  def delete_friend_expense(self, expense_id: int, friend_id: int) -> bool:
+    try:
+      r = requests.delete(f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}")
+      if r.ok:
+        return True
+      else:
+        print("ERROR get friends expense")
+        return False
+    except Exception as e:
+      print(e)
+      return False  # TODO: proper error handling
+
 
 
 
