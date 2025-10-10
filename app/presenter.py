@@ -27,12 +27,11 @@ class Presenter(ViewHandler):
     self.view.show_add_expense()
 
   def on_confirm_add_new_expense_clicked(self, data):
-    added_expense = self.model.add_expense(data["description"], data["date"], data["amount"])
-    self.view.show_empty_expense()
-    
-    #PROVISIONAL too many requests TODO manage dinamic view 
-    expenses = self.model.get_expenses()
-    self.view.update_expenses(expenses)
+    added_expense = self.model.add_expense(data["description"], data["date"],
+                                           data["amount"])
+    self.view.show_expense_info(self.view.add_expense(added_expense))
+    self.view.select_last_expenses_list_selection()
+    # TODO API errors    
 
   def on_cancel_add_expense_clicked(self) -> None:
     self.view.show_empty_expense()
@@ -55,7 +54,7 @@ class Presenter(ViewHandler):
                                     payload["date"], payload["amount"])
     if edited:
       self.view.update_expense(payload)
-      self.view.show_expense_info(data)
+      self.view.show_edited_expense_info(data)
     else:
       print("Error al editar api") # TODO
   

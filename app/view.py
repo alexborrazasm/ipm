@@ -85,23 +85,6 @@ class View:
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
 
-  def get_entry_description(self) -> str:
-    return self.entry_description.get_text()
-
-  def get_entry_date(self) -> str:
-    return self.entry_date.get_text()
-
-  def get_entry_amount(self) -> str:
-    return self.entry_amount.get_text()
-
-  def get_entry_friends(self) -> str:
-    return self.entry_friends.get_text()
-
-  def get_entry_credit_balance(self) -> str:
-    return self.entry_credit_balance.get_text()        
-
-  def clear_expenses_list_selection(self) -> None: pass
-
   def update_friends(self, data: list) -> None:
     self.data_model_friends.remove_all()
     
@@ -141,6 +124,19 @@ class View:
         self.data_model_expenses[i].amount = data['amount']
         break
       
+  def add_expense(self, item) -> Expense:
+    expense = Expense(
+      item['id'],
+      item['description'],
+      item['date'],
+      item['amount'],
+      item['num_friends'],
+      item['credit_balance']
+    )
+    self.data_model_expenses.append(expense)
+    
+    return expense
+    
   def delete_expense(self, id: int) -> None:
 
     for i in range(len(self.data_model_expenses)):
@@ -174,7 +170,9 @@ class View:
   def show_search_expense(self) -> None: pass
   def show_expense_info(self, data: Expense) -> None: pass
   def show_edit_expense_info(self, expense: Expense) -> None: pass
-
+  def clear_expenses_list_selection(self) -> None: pass
+  def show_edited_expense_info(self, expense: Expense) -> None: pass
+  def select_last_expenses_list_selection(self) -> None: pass
 
 # Concrete implementation of the view using GTK and ADW
 class AdwView(View):
@@ -202,6 +200,13 @@ class AdwView(View):
   
   def clear_expenses_list_selection(self) -> None:
     self._expenses_list.unselect_all()
+    
+  def select_last_expenses_list_selection(self) -> None:
+
+    total = self.data_model_expenses.get_n_items()
+    if total > 0:
+        last_row = self._expenses_list.get_row_at_index(total - 1)
+        self._expenses_list.select_row(last_row)
 
   def _build(self, app: Adw.Application) -> None:
     self.window = win = Adw.ApplicationWindow()
@@ -569,7 +574,7 @@ class AdwView(View):
     add_button = Gtk.Button(label="Add")
     add_button.add_css_class("suggested-action")
     add_button.connect(
-      'clicked', lambda _wg: self.on_add_done_clicked(self))
+      'clicked', lambda _wg: on_add_done_clicked(self))
 
     header.set_show_end_title_buttons(False)  # hide window controls
     header.pack_start(cancel_button)
@@ -903,6 +908,22 @@ class AdwView(View):
       info = self._build_expense_info(expense)
       # Add to the stack
       self._stack.add_titled(info, f"info{expense.id}", expense.description)
+
+    # Show the view
+    self._stack.set_visible_child_name(f"info{expense.id}")
+
+  def show_edited_expense_info(self, expense: Expense) -> None:
+    
+    # Remove old view
+    self._stack.remove(self._stack.get_child_by_name(f"info{expense.id}"))
+    # Update friend in expense
+    friends_expense = self.handler.get_friends_by_expense(expense.id)
+    # Add friend data to expense
+    expense.set_friends(friends_expense)
+    # Build the view
+    info = self._build_expense_info(expense)
+    # Add to the stack
+    self._stack.add_titled(info, f"info{expense.id}", expense.description)
 
     # Show the view
     self._stack.set_visible_child_name(f"info{expense.id}")
