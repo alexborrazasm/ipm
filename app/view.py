@@ -409,6 +409,58 @@ class AdwView(View):
     clamp.set_hexpand(True)
     return clamp
 
+  def _build_calendar_dialog(self, date_row: Adw.ActionRow): 
+
+    dialog = Adw.MessageDialog(
+        transient_for = self.window,
+        modal = True,
+        heading = "Select date"
+    )
+
+    box = Gtk.Box(
+        orientation=Gtk.Orientation.VERTICAL,
+        spacing=12,
+        margin_top=12,
+        margin_bottom=12,
+        margin_start=12,
+        margin_end=12,
+    )
+
+    calendar = Gtk.Calendar()
+
+    # Calendar style
+    calendar.add_css_class("calendar")  
+    calendar.add_css_class("flat")      
+    calendar.add_css_class("osd")     
+
+    calendar.set_margin_top(6)
+    calendar.set_margin_bottom(6)
+    calendar.set_margin_start(6)
+    calendar.set_margin_end(6)
+
+    box.append(calendar)
+    dialog.set_extra_child(box)
+
+    dialog.add_response("cancel", "Cancel")
+    dialog.add_response("select", "Select")
+    dialog.set_default_response("select")
+    dialog.set_response_appearance("select", Adw.ResponseAppearance.SUGGESTED)
+
+    def on_response(d, response_id):
+        if response_id == "select":
+            date_obj = calendar.get_date()
+            year = date_obj.get_year()
+            month = date_obj.get_month() + 1  # Gtk uses 0-11 for months
+            day = date_obj.get_day_of_month()
+            formatted_date = f"{year}-{month:02d}-{day:02d}"
+
+            date_row.set_subtitle(formatted_date)
+            self._form_entry_date.set_text(formatted_date)
+        d.destroy()
+
+    dialog.connect("response", on_response)
+    dialog.present()  
+
   def _build_edit_expense(self, expense: Expense) -> Adw.ToolbarView:
 
     def on_edit_done_clicked(self, expense_id, data: Expense):
@@ -484,42 +536,6 @@ class AdwView(View):
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
-
-
-  def _build_calendar_dialog(self, date_row: Adw.ActionRow): 
-
-    dialog = Adw.MessageDialog(
-        transient_for = self.window,
-        modal = True,
-        heading = "Select date"
-    )
-
-    calendar = Gtk.Calendar()
-    calendar.set_margin_top(12)
-    calendar.set_margin_bottom(12)
-    calendar.set_margin_start(12)
-    calendar.set_margin_end(12)
-    dialog.set_extra_child(calendar) 
-
-    dialog.add_response("cancel", "Cancel")
-    dialog.add_response("select", "Select")
-    dialog.set_default_response("select")
-    dialog.set_response_appearance("select", Adw.ResponseAppearance.SUGGESTED)
-
-    def on_response(d, response_id):
-        if response_id == "select":
-            date_obj = calendar.get_date()
-            year = date_obj.get_year()
-            month = date_obj.get_month() + 1  # Gtk uses 0-11 for months
-            day = date_obj.get_day_of_month()
-            formatted_date = f"{year}-{month:02d}-{day:02d}"
-
-            date_row.set_subtitle(formatted_date)
-            self._form_entry_date.set_text(formatted_date)
-        d.destroy()
-
-    dialog.connect("response", on_response)
-    dialog.present()
   
   
   def _build_add_expense(self) -> Adw.ToolbarView:
