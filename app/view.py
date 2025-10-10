@@ -31,7 +31,6 @@ class ViewHandler(Protocol):
   def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
 
-
 # Data models
 class Friend(GObject.GObject):
   id = GObject.Property(type=int)
@@ -208,6 +207,14 @@ class AdwView(View):
         last_row = self._expenses_list.get_row_at_index(total - 1)
         self._expenses_list.select_row(last_row)
 
+  def _check_internet_connection(self) -> bool:
+      import socket
+      try:
+          socket.create_connection(("8.8.8.8", 53), timeout=2)
+          return True
+      except OSError:
+          return False
+
   def _build(self, app: Adw.Application) -> None:
     self.window = win = Adw.ApplicationWindow()
     app.add_window(win)
@@ -220,9 +227,15 @@ class AdwView(View):
     # Right panel (content)
     self._stack = Adw.ViewStack()
     loading_page = self._build_loading_page()
-    
+    no_internet_page = self._build_no_internet_page()
+
     # Initial page is loading 
     self._stack.add_titled(loading_page, "loading", "Loading")
+    self._stack.add_titled(no_internet_page, "no_internet", "No Internet")
+
+    # Check for internet
+    if not self._check_internet_connection():
+        self._stack.set_visible_child(no_internet_page)
 
     self._content_page = Adw.NavigationPage(child=self._stack)
     self._content_page.set_title("Splitwithme")
@@ -351,6 +364,52 @@ class AdwView(View):
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
+  
+  def _build_no_internet_page(self) -> Adw.ToolbarView:
+    # Main content box
+    content_box = Gtk.Box(
+        orientation=Gtk.Orientation.VERTICAL,
+        spacing=12,
+        halign=Gtk.Align.CENTER,
+        valign=Gtk.Align.CENTER,
+        vexpand=True,
+        hexpand=True
+    )
+
+    # Network error icon
+    icon = Gtk.Image.new_from_icon_name("network-error-symbolic")
+    icon.set_pixel_size(96)
+    content_box.append(icon)
+
+
+    title_label = Gtk.Label(label="No Internet Connection")
+    title_label.set_margin_top(12)
+    title_label.set_css_classes(["title-2"])
+    content_box.append(title_label)
+
+    subtitle_label = Gtk.Label(label="Please check your connection and try again.")
+    subtitle_label.set_css_classes(["body"])
+    subtitle_label.set_opacity(0.8)
+    content_box.append(subtitle_label)
+
+
+    retry_button = Gtk.Button(label="Retry")
+    retry_button.set_margin_top(18)
+    #retry_button.connect("clicked", self.handler.on_retry_conection(app))
+    content_box.append(retry_button)
+
+
+    # ToolbarView
+    toolbar_view = Adw.ToolbarView()
+    toolbar_view.set_content(content_box)
+
+    # HeaderBar
+    header = Adw.HeaderBar()
+    header.set_title_widget(Gtk.Label(label="Splitwithme"))
+    toolbar_view.add_top_bar(header)
+
+    return toolbar_view
+  
 
   def _build_listbox_expenses(self) -> Gtk.ListBox:
 

@@ -74,3 +74,5 @@ class Presenter(ViewHandler):
     self.model.delete_friend_expense(expense_id, friend_id)
     self.view.delete_expense(expense_id)
     self.view.show_expense_info(data)
+
+  def on_retry_conection(self) -> None:
