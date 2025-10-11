@@ -199,7 +199,10 @@ class AdwView(View):
     self._stack = None # type: Adw.Stack
 
   def on_activate(self, app: Adw.Application) -> None:
+    settings = Gtk.Settings.get_default()
+    settings.set_property("gtk-decoration-layout", ":minimize,maximize,close")
     self._build(app)
+
   
   def clear_expenses_list_selection(self) -> None:
     self._expenses_list.unselect_all()
