@@ -221,7 +221,6 @@ class AdwView(View):
     app.add_window(win)
     win.connect("destroy", lambda win: win.close())
     win.set_default_size(800, 600)
-    win.set_size_request(400, 200)
 
     # Left panel (expenses list)
     self._sidebar_page = self._build_side_bar()
@@ -255,75 +254,122 @@ class AdwView(View):
   def _build_side_bar(self) -> Gtk.Widget:
 
     def build_header_bar() -> Adw.HeaderBar:
+      main_header = Adw.HeaderBar()
+      title_label = Gtk.Label(label="Expenses")
+      main_header.set_title_widget(title_label)
+      main_header.set_show_end_title_buttons(False)
+      
       add_button = Gtk.Button(icon_name="list-add-symbolic")
-      add_button.connect(
-        'clicked', lambda _wg: self.handler.on_add_expense_clicked())    
+      add_button.connect('clicked', lambda _wg: self.handler.on_add_expense_clicked())
 
       search_button = Gtk.Button(icon_name="system-search-symbolic")
-      search_button.connect(
-        'clicked', lambda _wg: self.handler.on_search_expense_clicked())    
 
-      header = Adw.HeaderBar()
-      header.set_show_end_title_buttons(False)  # hide window controls
+      self.search_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+      self.search_box.set_hexpand(True)
+      self.search_box.set_visible(False)
+      self.search_box.add_css_class("toolbar")
+
+      self.search_entry = Gtk.SearchEntry()
+      self.search_entry.set_hexpand(True)
+
+      self.search_box.append(self.search_entry)
+
+      def toggle_search():
+          is_search_visible = self.search_box.get_visible()
+          self.search_box.set_visible(not is_search_visible)
+          
+          if self.search_box.get_visible():
+              self.search_entry.grab_focus()
+          else:
+              self.search_entry.set_text("")
+              if hasattr(self, 'filter_expenses'):
+                  self.filter_expenses(None)
+
+      self.toggle_search = toggle_search
+
+      def on_search_clicked(_wg):
+          toggle_search()
+
+      search_button.connect('clicked', on_search_clicked)
+
+      def on_search_stop(entry):
+          self.search_box.set_visible(False)
+          self.search_entry.set_text("")
+          if hasattr(self, 'filter_expenses'):
+              self.filter_expenses(None)
+
+      self.search_entry.connect('stop-search', on_search_stop)
+
+      shortcut_controller = Gtk.ShortcutController()
+      shortcut_controller.set_scope(Gtk.ShortcutScope.GLOBAL)
+      
+      trigger = Gtk.ShortcutTrigger.parse_string("<Ctrl>F")
+      action = Gtk.CallbackAction.new(lambda *args: toggle_search())
+      shortcut = Gtk.Shortcut.new(trigger, action)
+      shortcut_controller.add_shortcut(shortcut)
+      
+      self.window.add_controller(shortcut_controller)
+
       menu = self.build_menu()
-      header.pack_start(search_button)
-      header.pack_start(add_button)
-      header.pack_end(menu)
+      main_header.pack_start(search_button)
+      main_header.pack_start(add_button)
+      main_header.pack_end(menu)
 
-      return header
+      return main_header
 
     def build_listbox(self) -> Gtk.ListBox:
+        def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
+            image = Gtk.Image.new_from_icon_name("view-list-symbolic")
+            
+            label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
+            item.bind_property("description", label1, "label", 
+                               flags=GObject.BindingFlags.SYNC_CREATE)
 
-      def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
+            label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", 
+                               halign=Gtk.Align.START)
+            label2.add_css_class("caption")
+            item.bind_property("credit_balance", label2, "label", 
+              transform_to=lambda binding, value: f"{float(value):.2f} €"
+              if value not in (None, "") else "0.00 €",
+              flags=GObject.BindingFlags.SYNC_CREATE
+            )
 
-        image = Gtk.Image.new_from_icon_name("view-list-symbolic")
-        
-        label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
-        # Bind expense description reactively
-        item.bind_property("description", label1, "label", 
-                           flags=GObject.BindingFlags.SYNC_CREATE)
+            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, 
+                           spacing=2)
+            vbox.append(label1)
+            vbox.append(label2)
+            hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
+              hexpand=True, spacing=16,
+              margin_start=8, margin_end=8,
+              margin_bottom=8,
+              margin_top=8
+            )
+            hbox.append(image)
+            hbox.append(vbox)
 
-        label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", 
-                           halign=Gtk.Align.START)
-        label2.add_css_class("caption")
-        # Bind credit balance reactively
-        item.bind_property("credit_balance", label2, "label", 
-          transform_to=lambda binding, value: f"{float(value):.2f} €"
-          if value not in (None, "") else "0.00 €",
-          flags=GObject.BindingFlags.SYNC_CREATE
-        )
+            return hbox
 
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, 
-                       spacing=2)
-        vbox.append(label1)
-        vbox.append(label2)
-        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
-          hexpand=True, spacing=16,
-          margin_start=8, margin_end=8,
-          margin_bottom=8,
-          margin_top=8
-        )
-        hbox.append(image)
-        hbox.append(vbox)
+        def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
+            row = widget.get_selected_row()
+            if row is not None:
+                idx = row.get_index()
+                self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
+                self._split_view.set_show_content(True)
+                
+        listbox = Gtk.ListBox(hexpand=True)
+        listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        listbox.connect("selected-rows-changed", on_listbox_row_activated)
+        listbox.add_css_class("boxed-list-separate")
+        listbox.bind_model(self.data_model_expenses, on_build_row, None)
 
-        return hbox
+        return listbox
 
-      def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
-        row = widget.get_selected_row()
-        if row is not None:
-          idx = row.get_index()
-          self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
-          self._split_view.set_show_content(True) # Show content on small windows
-          
-      listbox = Gtk.ListBox(hexpand=True)
-      listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
-      listbox.connect("selected-rows-changed", on_listbox_row_activated)
-      listbox.add_css_class("boxed-list-separate")
-      listbox.bind_model(self.data_model_expenses, on_build_row, None)
+    self._sidebar_header = build_header_bar()
 
-      return listbox
+    header_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+    header_container.append(self._sidebar_header)
+    header_container.append(self.search_box)
 
-    self._sidebar_header = build_header_bar() # For use in responsive design
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
       spacing=16, 
       margin_top=16,
@@ -331,16 +377,18 @@ class AdwView(View):
       margin_start=16,
       margin_end=16
     )
+
     self._expenses_list = build_listbox(self)
     scrolledWindow = Gtk.ScrolledWindow()
-    scrolledWindow.set_vexpand(True) # Take all available vertical space 
+    scrolledWindow.set_vexpand(True)
     scrolledWindow.set_child(self._expenses_list)
     box.append(scrolledWindow)
+    
     toolbar = Adw.ToolbarView()
-    toolbar.add_top_bar(self._sidebar_header)
+    toolbar.add_top_bar(header_container)
     toolbar.set_content(box)
 
-    page = Adw.NavigationPage(title="Expenses", child=toolbar)
+    page = Adw.NavigationPage(child=toolbar)
     
     return page
 
