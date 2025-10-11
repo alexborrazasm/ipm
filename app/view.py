@@ -851,67 +851,84 @@ class AdwView(View):
       dialog.present()
 
     def on_add_credit_clicked(button, expense: Expense, friend: Friend):
-      # Get the parent window from the button
       window = button.get_root()
-
-      dialog = Adw.MessageDialog(
-        transient_for=window,
-        modal=True,
-        heading=f"Add credit to {friend.name}",
-      )
-
+      
       # Create SpinButton
       adjustment = Gtk.Adjustment(
-        value=0.0,             # start value
-        lower=-1_000_000_000,  # min (negativo)
-        upper=1_000_000_000,   # max (positivo)
-        step_increment=1,      # arrows
-        page_increment=10,     # PageUp/PageDown
-        page_size=0
+          value=0.0,
+          lower=-1_000_000_000,
+          upper=1_000_000_000,
+          step_increment=1,
+          page_increment=10,
+          page_size=0
       )
       spin = Gtk.SpinButton(adjustment=adjustment, digits=2)
       spin.set_value(0.0)
       spin.set_hexpand(True)
-      spin.set_activates_default(True)  # Permite Enter para confirmar
-      spin.set_can_focus(True) 
-
-      # Layout
-      box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-      box.set_margin_top(6)
-      box.set_margin_bottom(6)
-      box.set_margin_start(6)
-      box.set_margin_end(6)
-      box.append(spin)
-
-      dialog.set_extra_child(box)
-
-      # Buttons
-      dialog.add_response("cancel", "Cancel")
-      dialog.add_response("ok", "Add")
-      dialog.set_response_appearance("ok", Adw.ResponseAppearance.SUGGESTED)
-      dialog.set_default_response("ok")
-      dialog.set_close_response("cancel")
-
-      # Disable "Add" if the value = 0
-      def update_response_state(*_):
-        dialog.set_response_enabled("ok", spin.get_value() != 0)
-
-      spin.connect("value-changed", update_response_state)
-      update_response_state()
-
-      def on_response(dlg, response):
-        if response == "ok":
-          value = spin.get_value()
-          self.handler.on_confirm_add_credit_friend_expense(expense.id, friend.id,
-                                                            value, expense)
-        dlg.destroy()
-
-      dialog.connect("response", on_response)
-      dialog.present()
+      spin.set_halign(Gtk.Align.CENTER)
       
-      # Focus the spin button after GTK finishes rendering
-      # Lambda trick: execute spin.grab_focus(), then return False to run once
-      GLib.idle_add(lambda: (spin.grab_focus(), False)[1])
+      # Create dialog content
+      header = Adw.HeaderBar()
+      title_label = Gtk.Label(label="Add credit")
+      title_label.set_halign(Gtk.Align.CENTER)
+      title_label.set_hexpand(True)
+      header.set_title_widget(title_label)
+      header.set_show_end_title_buttons(False)
+      header.set_show_start_title_buttons(False)
+      
+      cancel_button = Gtk.Button(label="Cancel")
+      header.pack_start(cancel_button)
+      
+      add_button = Gtk.Button(label="Add")
+      add_button.add_css_class("suggested-action")
+      header.pack_end(add_button)
+      
+      content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+      content_box.set_margin_top(12)
+      content_box.set_margin_bottom(12)
+      content_box.set_margin_start(12)
+      content_box.set_margin_end(12)
+      content_box.set_halign(Gtk.Align.CENTER)
+      content_box.set_valign(Gtk.Align.CENTER)
+    
+      content_box.append(spin)
+      
+      content_box.append(Gtk.Label(label=f"to {friend.name}"))
+      
+      toolbar_view = Adw.ToolbarView()
+      toolbar_view.add_top_bar(header)
+      toolbar_view.set_content(content_box)
+      
+      dialog = Adw.Dialog()
+      dialog.set_child(toolbar_view)
+      dialog.set_content_width(300)
+      dialog.set_content_height(150)
+      
+      def on_dialog_mapped(widget):
+        spin.grab_focus()
+
+      dialog.connect("map", on_dialog_mapped)
+      
+      def on_cancel(btn):
+          dialog.close()
+      
+      def on_add(btn):
+          value = spin.get_value()
+          self.handler.on_confirm_add_credit_friend_expense(
+              expense.id, friend.id, value, expense
+          )
+          dialog.close()
+      
+      cancel_button.connect("clicked", on_cancel)
+      add_button.connect("clicked", on_add)
+      spin.set_activates_default(True)
+      
+      # Make Add button activate on Enter
+      def on_spin_activate(widget):
+          on_add(None)
+      spin.connect("activate", on_spin_activate)
+      
+      dialog.present(window)
 
     def on_build_row_friends(item: Friend, expense: Expense) -> Gtk.Widget:
       # Icon
