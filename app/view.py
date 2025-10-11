@@ -180,7 +180,11 @@ class View:
   def show_pick_an_expense(self) -> None: pass
   def show_no_one_expense(self) -> None: pass
   def set_sidebar_sensitive(self, boolean: bool): pass
+  def clear_search_filter_entry(self) -> None: pass
+<<<<<<< Updated upstream
   def show_add_friend_credit_expense_info(self, amount: float, expense: Expense) -> None: pass
+=======
+>>>>>>> Stashed changes
 
 # Concrete implementation of the view using GTK and ADW
 class AdwView(View):
@@ -193,6 +197,8 @@ class AdwView(View):
     self._split_view = None # type: Adw.NavigationSplitView
     self._content_page = None # type: Adw.NavigationPage
     self._sidebar_page = None # type: Gtk.Widget
+    self._search_box = None # type: Gtk.Box
+    self._search_entry = None
     
     # Forms
     self._form_entry_description = None
@@ -202,6 +208,29 @@ class AdwView(View):
     # Stack of views
     self._stack = None # type: Adw.Stack
 
+  def _filter_expenses(self, search_text=None):
+    if not search_text:
+      for i in range(len(self.data_model_expenses)):
+        row = self._expenses_list.get_row_at_index(i)
+        if row:
+          row.set_visible(True)
+    else:
+      search_text_lower = search_text.lower()
+      for i in range(len(self.data_model_expenses)):
+        expense = self.data_model_expenses[i]
+        row = self._expenses_list.get_row_at_index(i)
+        if row:
+          if search_text_lower in expense.description.lower():
+            row.set_visible(True)
+          else:
+            row.set_visible(False)
+  
+  def clear_filter_expense(self):
+    self._search_entry.set_text("")
+    self._search_box.set_visible(False)
+    self._filter_expenses(None)
+
+
   def on_activate(self, app: Adw.Application) -> None:
     settings = Gtk.Settings.get_default()
     settings.set_property("gtk-decoration-layout", ":minimize,maximize,close")
@@ -209,7 +238,8 @@ class AdwView(View):
   
   def clear_expenses_list_selection(self) -> None:
     self._expenses_list.unselect_all()
-    
+
+
   def select_last_expenses_list_selection(self) -> None:
 
     total = self.data_model_expenses.get_n_items()
@@ -218,7 +248,7 @@ class AdwView(View):
         self._expenses_list.select_row(last_row)
 
   def set_sidebar_sensitive(self, boolean: bool) -> None:
-    self._expenses_list.set_sensitive(boolean)
+    self._sidebar_page.set_sensitive(boolean)
 
   def _build(self, app: Adw.Application) -> None:
     self.window = win = Adw.ApplicationWindow()
@@ -255,6 +285,17 @@ class AdwView(View):
     win.set_content(self._split_view)
     win.present()
 
+  def toggle_search(self):
+    is_search_visible = self._search_box.get_visible()
+    self._search_box.set_visible(not is_search_visible)
+    
+    if self._search_box.get_visible():
+      self._search_entry.grab_focus()
+      self.clear_expenses_list_selection()
+    else:
+      self._search_entry.set_text("")
+      self._filter_expenses(None) 
+
   def _build_side_bar(self) -> Gtk.Widget:
 
     def build_header_bar() -> Adw.HeaderBar:
@@ -268,51 +309,10 @@ class AdwView(View):
 
       search_button = Gtk.Button(icon_name="system-search-symbolic")
 
-      self.search_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-      self.search_box.set_hexpand(True)
-      self.search_box.set_visible(False)
-      self.search_box.add_css_class("toolbar")
-
-      self.search_entry = Gtk.SearchEntry()
-      self.search_entry.set_hexpand(True)
-
-      self.search_box.append(self.search_entry)
-
-      def toggle_search():
-          is_search_visible = self.search_box.get_visible()
-          self.search_box.set_visible(not is_search_visible)
-          
-          if self.search_box.get_visible():
-              self.search_entry.grab_focus()
-          else:
-              self.search_entry.set_text("")
-              if hasattr(self, 'filter_expenses'):
-                  self.filter_expenses(None)
-
-      self.toggle_search = toggle_search
-
       def on_search_clicked(_wg):
-          toggle_search()
+        self.toggle_search()
 
       search_button.connect('clicked', on_search_clicked)
-
-      def on_search_stop(entry):
-          self.search_box.set_visible(False)
-          self.search_entry.set_text("")
-          if hasattr(self, 'filter_expenses'):
-              self.filter_expenses(None)
-
-      self.search_entry.connect('stop-search', on_search_stop)
-
-      shortcut_controller = Gtk.ShortcutController()
-      shortcut_controller.set_scope(Gtk.ShortcutScope.GLOBAL)
-      
-      trigger = Gtk.ShortcutTrigger.parse_string("<Ctrl>F")
-      action = Gtk.CallbackAction.new(lambda *args: toggle_search())
-      shortcut = Gtk.Shortcut.new(trigger, action)
-      shortcut_controller.add_shortcut(shortcut)
-      
-      self.window.add_controller(shortcut_controller)
 
       menu = self.build_menu()
       main_header.pack_start(search_button)
@@ -320,80 +320,120 @@ class AdwView(View):
       main_header.pack_end(menu)
 
       return main_header
-
+    
     def build_listbox(self) -> Gtk.ListBox:
-        def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
-            image = Gtk.Image.new_from_icon_name("view-list-symbolic")
-            
-            label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
-            item.bind_property("description", label1, "label", 
-                               flags=GObject.BindingFlags.SYNC_CREATE)
+      def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
+        image = Gtk.Image.new_from_icon_name("view-list-symbolic")
+        
+        label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
+        item.bind_property("description", label1, "label", 
+                            flags=GObject.BindingFlags.SYNC_CREATE)
 
-            label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", 
-                               halign=Gtk.Align.START)
-            label2.add_css_class("caption")
-            item.bind_property("credit_balance", label2, "label", 
-              transform_to=lambda binding, value: f"{float(value):.2f} €"
-              if value not in (None, "") else "0.00 €",
-              flags=GObject.BindingFlags.SYNC_CREATE
-            )
+        label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", 
+                            halign=Gtk.Align.START)
+        label2.add_css_class("caption")
+        item.bind_property("credit_balance", label2, "label", 
+          transform_to=lambda binding, value: f"{float(value):.2f} €"
+          if value not in (None, "") else "0.00 €",
+          flags=GObject.BindingFlags.SYNC_CREATE
+        )
 
-            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, 
-                           spacing=2)
-            vbox.append(label1)
-            vbox.append(label2)
-            hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
-              hexpand=True, spacing=16,
-              margin_start=8, margin_end=8,
-              margin_bottom=8,
-              margin_top=8
-            )
-            hbox.append(image)
-            hbox.append(vbox)
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, 
+                        spacing=2)
+        vbox.append(label1)
+        vbox.append(label2)
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
+          hexpand=True, spacing=16,
+          margin_start=8, margin_end=8,
+          margin_bottom=8,
+          margin_top=8
+        )
+        hbox.append(image)
+        hbox.append(vbox)
 
-            return hbox
+        return hbox
+      
+      def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
+        row = widget.get_selected_row()
+        if row is not None:
+          idx = row.get_index()
+          self.clear_filter_expense()
+          self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
+          self._split_view.set_show_content(True)
+              
+      listbox = Gtk.ListBox(hexpand=True)
+      listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
+      listbox.connect("selected-rows-changed", on_listbox_row_activated)
+      listbox.add_css_class("boxed-list-separate")
+      listbox.bind_model(self.data_model_expenses, on_build_row, None)
 
-        def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
-            row = widget.get_selected_row()
-            if row is not None:
-                idx = row.get_index()
-                self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
-                self._split_view.set_show_content(True)
-                
-        listbox = Gtk.ListBox(hexpand=True)
-        listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
-        listbox.connect("selected-rows-changed", on_listbox_row_activated)
-        listbox.add_css_class("boxed-list-separate")
-        listbox.bind_model(self.data_model_expenses, on_build_row, None)
+      return listbox
+    
+    def build_search() -> Gtk.Widget:
 
-        return listbox
+      search_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
+                           margin_start=16,
+                           margin_end=16)
+      search_box.set_hexpand(True)
+      search_box.set_visible(False)
+    
+      self._search_entry = Gtk.SearchEntry()
+      self._search_entry.set_hexpand(True)
 
+      search_box.append(self._search_entry)
+
+      def on_search_changed(entry):
+        search_text = entry.get_text()
+        self._filter_expenses(search_text)
+
+      def on_search_stop(entry):
+        self._search_box.set_visible(False)
+        self._search_entry.set_text("")
+        self._filter_expenses(None)
+
+      self._search_entry.connect('search-changed', on_search_changed)
+      self._search_entry.connect('stop-search', on_search_stop)
+
+      shortcut_controller = Gtk.ShortcutController()
+      shortcut_controller.set_scope(Gtk.ShortcutScope.GLOBAL)
+      
+      trigger = Gtk.ShortcutTrigger.parse_string("<Ctrl>F")
+      action = Gtk.CallbackAction.new(lambda *args: self.toggle_search())
+      shortcut = Gtk.Shortcut.new(trigger, action)
+      shortcut_controller.add_shortcut(shortcut)
+      
+      self.window.add_controller(shortcut_controller)
+
+      return search_box
+
+    header_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+    
     self._sidebar_header = build_header_bar()
-
-    header_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-    header_container.append(self._sidebar_header)
-    header_container.append(self.search_box)
+    self._search_box = build_search()
+    header_box.append(self._sidebar_header)
+    header_box.append(self._search_box)
 
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
       spacing=16, 
-      margin_top=16,
+      margin_top=8,
       margin_bottom=16,
       margin_start=16,
       margin_end=16
     )
-
+    
     self._expenses_list = build_listbox(self)
     scrolledWindow = Gtk.ScrolledWindow()
-    scrolledWindow.set_vexpand(True)
+    scrolledWindow.set_vexpand(True)  
     scrolledWindow.set_child(self._expenses_list)
     box.append(scrolledWindow)
     
     toolbar = Adw.ToolbarView()
-    toolbar.add_top_bar(header_container)
+    toolbar.add_top_bar(header_box)
     toolbar.set_content(box)
 
     page = Adw.NavigationPage(child=toolbar)
-    
+    page.set_title("Expenses")
+
     return page
 
   def _build_empty_expense_msg(self, msg: str, icon: str) -> Adw.ToolbarView:
@@ -615,14 +655,14 @@ class AdwView(View):
     form.add_css_class("boxed-list-separate")
 
     outer_box = Gtk.Box(
-        orientation=Gtk.Orientation.VERTICAL,
-        hexpand=True,
-        vexpand=True,
-        spacing=16,
-        margin_top=16,
-        margin_bottom=16,
-        margin_start=16,
-        margin_end=16
+      orientation=Gtk.Orientation.VERTICAL,
+      hexpand=True,
+      vexpand=True,
+      spacing=16,
+      margin_top=16,
+      margin_bottom=16,
+      margin_start=16,
+      margin_end=16
     )
     outer_box.append(self._build_clamp_content(form))
     scrolled.set_child(outer_box)
@@ -1096,7 +1136,7 @@ class AdwView(View):
     self._stack.set_visible_child_name("pick_an_expense")
 
   def show_no_one_expense(self) -> None:
-
+    
     old = self._stack.get_child_by_name("no_one_expense")
     if not old:
       no_one_expense = self._build_empty_expense_msg("Add an expense", 
@@ -1122,8 +1162,8 @@ class AdwView(View):
     print("Search expense clicked")
     # TODO
 
+
   def show_expense_info(self, expense: Expense) -> None:
-    
     # Lazy load the view only once
     old = self._stack.get_child_by_name(f"info{expense.id}")
     if not old:
