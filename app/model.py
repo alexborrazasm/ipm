@@ -153,6 +153,35 @@ class Model:
       print(e)
       return False  # TODO: proper error handling
 
+  def add_friend_expense(self, expense_id: int, friend_id: int) -> bool:
+    try:
+      r = requests.post(f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}")
+      if r.ok:
+        return True
+      else:
+        print("Failed to add friend to expense")
+        return False
+    except Exception as e:
+      print(e)
+      return False  # TODO: proper error handling  
+    
+  def modify_friend_credit(self, friend_id: int, credit_balance: float, debit_balance: float) -> bool:
+    payload = {
+      "credit_balance": credit_balance,
+      "debit_balance": debit_balance
+    }
+
+    try:
+      r = requests.patch(f"{SERVER_URL}/friends/{friend_id}", json=payload)
+      if r.ok:
+        return True
+      else:
+        print(f"Failed to update friend credit{friend_id}: {r.status_code} {r.text}")
+        return False
+    except Exception as e:
+      print(e)
+      return False  # TODO: proper error handling  
+
 
 
 
