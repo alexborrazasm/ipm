@@ -984,10 +984,6 @@ class AdwView(View):
       return row
 
     def on_add_friend_clicked(expense: Expense) -> None:
-<<<<<<< Updated upstream
-      print("add friend clicked")
-      pass
-=======
       win = self.window
 
       expense_friends_ids = {f.id for f in expense.friends}
@@ -1053,7 +1049,6 @@ class AdwView(View):
       dialog.present()      
 
 
->>>>>>> Stashed changes
     def on_remove_expense_clicked(button, expense: Expense):
       # Get the parent window from the button
       window = button.get_root()
