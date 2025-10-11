@@ -243,7 +243,7 @@ class AdwView(View):
     
     # Breakpoint to collapse sidebar on small windows
     breakpoint = Adw.Breakpoint.new(Adw.BreakpointCondition.parse(
-      "max-width: 600px"))
+      "max-width: 700px"))
     breakpoint.add_setter(self._split_view, "collapsed", True)
     # Show window controls when sidebar is collapsed
     breakpoint.add_setter(self._sidebar_header, "show_end_title_buttons", True)
