@@ -202,7 +202,6 @@ class AdwView(View):
     settings = Gtk.Settings.get_default()
     settings.set_property("gtk-decoration-layout", ":minimize,maximize,close")
     self._build(app)
-
   
   def clear_expenses_list_selection(self) -> None:
     self._expenses_list.unselect_all()
@@ -765,9 +764,22 @@ class AdwView(View):
       # Show the dialog
       dialog.present()
 
+    def on_add_credit_clicked(button, expense, friend):
+      print(f"Añadir crédito a {friend.name}")
+      # Tu lógica aquí
+
     def on_build_row_friends(item: Friend, expense: Expense) -> Gtk.Widget:
       # Icon
       image = Gtk.Image.new_from_icon_name("avatar-default-symbolic")
+      
+      # Add credit button
+      label = Gtk.Label(label="€")
+      label.set_margin_top(2)
+      label.set_margin_bottom(2)
+      add_credit_button = Gtk.Button()
+      add_credit_button.set_child(label)
+      add_credit_button.add_css_class("flat")  # igual que el de borrar
+      add_credit_button.connect("clicked", on_add_credit_clicked, expense, item)
       
       # Remove button
       delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic")
@@ -810,6 +822,7 @@ class AdwView(View):
       )
       hbox.append(image)
       hbox.append(vbox)
+      hbox.append(add_credit_button)
       hbox.append(delete_button)
 
       return hbox
