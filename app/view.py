@@ -179,6 +179,7 @@ class View:
   def show_no_internet(self) -> None: pass
   def show_pick_an_expense(self) -> None: pass
   def show_no_one_expense(self) -> None: pass
+  def set_sidebar_sensitive(self, boolean: bool): pass
 
 # Concrete implementation of the view using GTK and ADW
 class AdwView(View):
@@ -212,6 +213,9 @@ class AdwView(View):
     if total > 0:
         last_row = self._expenses_list.get_row_at_index(total - 1)
         self._expenses_list.select_row(last_row)
+
+  def set_sidebar_sensitive(self, boolean: bool) -> None:
+    self._expenses_list.set_sensitive(boolean)
 
   def _build(self, app: Adw.Application) -> None:
     self.window = win = Adw.ApplicationWindow()

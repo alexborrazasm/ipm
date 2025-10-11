@@ -26,6 +26,7 @@ class Presenter(ViewHandler):
   # Add new expense
   def on_add_expense_clicked(self) -> None:
     self.view.clear_expenses_list_selection()
+    self.view.set_sidebar_sensitive(False)
     self.view.show_add_expense()
 
   def on_confirm_add_new_expense_clicked(self, data):
@@ -33,10 +34,12 @@ class Presenter(ViewHandler):
                                            data["amount"])
     self.view.show_expense_info(self.view.add_expense(added_expense))
     self.view.select_last_expenses_list_selection()
+    self.view.set_sidebar_sensitive(True)
     # TODO API errors    
 
   def on_cancel_add_expense_clicked(self) -> None:
     self.view.show_empty_expense()
+    self.view.set_sidebar_sensitive(True)
 
   # Search expenses
   def on_search_expense_clicked(self) -> None:
@@ -50,6 +53,7 @@ class Presenter(ViewHandler):
   # Edit expense
   def on_edit_expense_clicked(self, data) -> None:
     self.view.show_edit_expense_info(data)
+    self.view.set_sidebar_sensitive(False)
 
   def on_confirm_edit_expense_clicked(self, payload, data):
     edited = self.model.put_expense(payload["id"], payload["description"], 
@@ -59,9 +63,12 @@ class Presenter(ViewHandler):
       self.view.show_edited_expense_info(data)
     else:
       print("Error al editar api") # TODO
+    
+    self.view.set_sidebar_sensitive(True)
   
   def on_cancel_edit_expense_clicked(self, data) -> None:
     self.on_show_expense_info_clicked(data)
+    self.view.set_sidebar_sensitive(True)
     
   # Delete expense
   def on_delete_expense(self, id: int) -> None:
