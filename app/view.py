@@ -722,14 +722,6 @@ class AdwView(View):
       row.set_selectable(False)
       listbox.append(row)
 
-      # Date
-      row = Adw.ActionRow(title="Date")
-      data.bind_property("date", row, "subtitle",
-                         flags=GObject.BindingFlags.SYNC_CREATE)
-      row.set_activatable(True)
-      row.set_selectable(False)
-      listbox.append(row)
-
       # Amount
       row = Adw.ActionRow(title="Amount")
       data.bind_property("amount", row, "subtitle",
@@ -741,6 +733,14 @@ class AdwView(View):
       row.set_selectable(False)
       listbox.append(row)
  
+      # Date
+      row = Adw.ActionRow(title="Date")
+      data.bind_property("date", row, "subtitle",
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+      row.set_activatable(True)
+      row.set_selectable(False)
+      listbox.append(row)
+
       return listbox
     
     def build_listbox_balance(data: Expense) -> Gtk.ListBox:
