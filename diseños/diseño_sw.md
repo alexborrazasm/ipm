@@ -1,6 +1,8 @@
+# Diagrama estático
+## 🧩 Diagrama de clases
+
 ```mermaid
 
-%% DIAGRAMA ESTÁTICO (DIAGRAMA DE CLASES)
 classDiagram
 
     class Presenter {
@@ -157,10 +159,14 @@ classDiagram
     Presenter --> View : view
     
 ```
+---
+
+# Diagrama dinámico 
+## ➡️ Diagrama de secuencia
 
 ```mermaid
 
-%% DIAGRAMA DINÁMICO (DIAGRAMA DE SECUENCIA)
+
 sequenceDiagram
     participant app as Main
 
