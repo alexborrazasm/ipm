@@ -774,6 +774,15 @@ class AdwView(View):
 
       return hbox
     
+    def build_add_friend_row(expense: Expense) -> Gtk.Widget:
+      row = Adw.ActionRow(title="Add friend")
+      row.add_prefix(Gtk.Image.new_from_icon_name("list-add-symbolic"))
+      row.set_activatable(True)
+      row.connect("activated", lambda _row: on_add_friend_clicked(expense))
+      return row
+
+    def on_add_friend_clicked(expense: Expense) -> None:
+      # TODO dialogo y tal
     def on_remove_expense_clicked(button, expense: Expense):
       # Get the parent window from the button
       window = button.get_root()
@@ -838,6 +847,8 @@ class AdwView(View):
     listbox_friends.add_css_class("boxed-list") 
     listbox_friends.set_selection_mode(Gtk.SelectionMode.NONE)
     listbox_friends.bind_model(data.friends, on_build_row_friends, data)
+    # Append "Add friend" row (always at bottom)
+    listbox_friends.append(build_add_friend_row(data))
     group_friends.add(listbox_friends)
     clamp_friends = self._build_clamp_content(group_friends)
     outer_box.append(clamp_friends)
