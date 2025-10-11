@@ -224,7 +224,7 @@ class AdwView(View):
     win.set_default_size(800, 600)
 
     # Left panel (expenses list)
-    self._sidebar_page = self._build_expenses_list()
+    self._sidebar_page = self._build_side_bar()
 
     # Right panel (content)
     self._stack = Adw.ViewStack()
@@ -252,7 +252,7 @@ class AdwView(View):
     win.set_content(self._split_view)
     win.present()
 
-  def _build_expenses_list(self) -> Gtk.Widget:
+  def _build_side_bar(self) -> Gtk.Widget:
 
     def build_header_bar() -> Adw.HeaderBar:
       add_button = Gtk.Button(icon_name="list-add-symbolic")
@@ -272,6 +272,57 @@ class AdwView(View):
 
       return header
 
+    def build_listbox(self) -> Gtk.ListBox:
+
+      def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
+
+        image = Gtk.Image.new_from_icon_name("view-list-symbolic")
+        
+        label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
+        # Bind expense description reactively
+        item.bind_property("description", label1, "label", 
+                           flags=GObject.BindingFlags.SYNC_CREATE)
+
+        label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", 
+                           halign=Gtk.Align.START)
+        label2.add_css_class("caption")
+        # Bind credit balance reactively
+        item.bind_property("credit_balance", label2, "label", 
+          transform_to=lambda binding, value: f"{float(value):.2f} €"
+          if value not in (None, "") else "0.00 €",
+          flags=GObject.BindingFlags.SYNC_CREATE
+        )
+
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, 
+                       spacing=2)
+        vbox.append(label1)
+        vbox.append(label2)
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
+          hexpand=True, spacing=16,
+          margin_start=8, margin_end=8,
+          margin_bottom=8,
+          margin_top=8
+        )
+        hbox.append(image)
+        hbox.append(vbox)
+
+        return hbox
+
+      def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
+        row = widget.get_selected_row()
+        if row is not None:
+          idx = row.get_index()
+          self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
+          self._split_view.set_show_content(True) # Show content on small windows
+          
+      listbox = Gtk.ListBox(hexpand=True)
+      listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
+      listbox.connect("selected-rows-changed", on_listbox_row_activated)
+      listbox.add_css_class("boxed-list-separate")
+      listbox.bind_model(self.data_model_expenses, on_build_row, None)
+
+      return listbox
+
     self._sidebar_header = build_header_bar() # For use in responsive design
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
       spacing=16, 
@@ -280,7 +331,7 @@ class AdwView(View):
       margin_start=16,
       margin_end=16
     )
-    self._expenses_list = self._build_listbox_expenses()
+    self._expenses_list = build_listbox(self)
     scrolledWindow = Gtk.ScrolledWindow()
     scrolledWindow.set_vexpand(True) # Take all available vertical space 
     scrolledWindow.set_child(self._expenses_list)
@@ -403,56 +454,6 @@ class AdwView(View):
 
     return toolbar_view
 
-  def _build_listbox_expenses(self) -> Gtk.ListBox:
-
-    def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
-
-      image = Gtk.Image.new_from_icon_name("view-list-symbolic")
-      
-      
-      label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
-      # Bind expense description reactively
-      item.bind_property("description", label1, "label", 
-                         flags=GObject.BindingFlags.SYNC_CREATE)
-
-      label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", halign=Gtk.Align.START)
-      label2.add_css_class("caption")
-      # Bind credit balance reactively
-      item.bind_property("credit_balance", label2, "label", 
-        transform_to=lambda binding, value: f"{float(value):.2f} €"
-        if value not in (None, "") else "0.00 €",
-        flags=GObject.BindingFlags.SYNC_CREATE
-      )
-
-      vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
-      vbox.append(label1)
-      vbox.append(label2)
-      hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
-        hexpand=True, spacing=16,
-        margin_start=8, margin_end=8,
-        margin_bottom=8,
-        margin_top=8
-      )
-      hbox.append(image)
-      hbox.append(vbox)
-
-      return hbox
-
-    def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
-      row = widget.get_selected_row()
-      if row is not None:
-        idx = row.get_index()
-        self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
-        self._split_view.set_show_content(True) # Show content on small windows
-        
-    listbox = Gtk.ListBox(hexpand=True)
-    listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
-    listbox.connect("selected-rows-changed", on_listbox_row_activated)
-    listbox.add_css_class("boxed-list-separate")
-    listbox.bind_model(self.data_model_expenses, on_build_row, None)
-
-    return listbox
-
   # Clamp to limit max width
   def _build_clamp_content(self, child: Gtk.Widget) -> Adw.Clamp:
     clamp = Adw.Clamp()
@@ -460,7 +461,6 @@ class AdwView(View):
     clamp.set_maximum_size(600)  # Max width
     clamp.set_hexpand(True)
     return clamp
-
 
   def _build_calendar(self, date: str | None = None) -> Adw.ActionRow:
     
@@ -504,7 +504,7 @@ class AdwView(View):
       if keyval == Gdk.KEY_Return or keyval == Gdk.KEY_KP_Enter:
         date_obj = calendar.get_date()
         year = date_obj.get_year()
-        month = date_obj.get_month() + 1
+        month = date_obj.get_month()
         day = date_obj.get_day_of_month()
         formatted_date = f"{year}-{month:02d}-{day:02d}"
         date_row.set_subtitle(formatted_date)
@@ -524,7 +524,6 @@ class AdwView(View):
     calendar.add_controller(key_controller)
 
     return date_row
-
 
   def _build_edit_expense(self, expense: Expense) -> Adw.ToolbarView:
 
@@ -1052,6 +1051,12 @@ class AdwView(View):
   def delete_expense(self, id):
 
     self._stack.remove(self._stack.get_child_by_name(f"info{id}"))
+
+    old = self._stack.get_child_by_name(f"edit{id}")
+    # Remove previous edit view for this expense if exists 
+    if old:
+      self._stack.remove(self._stack.get_child_by_name(f"edit{id}"))
+
     super().delete_expense(id)
   
   def show_empty_expense(self) -> None:
