@@ -181,10 +181,7 @@ class View:
   def show_no_one_expense(self) -> None: pass
   def set_sidebar_sensitive(self, boolean: bool): pass
   def clear_search_filter_entry(self) -> None: pass
-<<<<<<< Updated upstream
   def show_add_friend_credit_expense_info(self, amount: float, expense: Expense) -> None: pass
-=======
->>>>>>> Stashed changes
 
 # Concrete implementation of the view using GTK and ADW
 class AdwView(View):
