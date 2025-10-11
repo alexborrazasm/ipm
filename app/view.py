@@ -168,7 +168,6 @@ class View:
   def show_empty_expense(self) -> None: pass
   def show_no_one_expense(self) -> None: pass
   def show_add_expense(self) -> None: pass
-  def show_search_expense(self) -> None: pass
   def show_expense_info(self, data: Expense) -> None: pass
   def show_edit_expense_info(self, expense: Expense) -> None: pass
   def clear_expenses_list_selection(self) -> None: pass
@@ -196,7 +195,7 @@ class AdwView(View):
     self._sidebar_page = None # type: Gtk.Widget
     self._search_box = None # type: Gtk.Box
     self._search_entry = None
-    
+    self._search_button = None
     # Forms
     self._form_entry_description = None
     self._form_entry_amount = None
@@ -225,6 +224,7 @@ class AdwView(View):
   def clear_filter_expense(self):
     self._search_entry.set_text("")
     self._search_box.set_visible(False)
+    self._search_button.set_active(False)
     self._filter_expenses(None)
 
 
@@ -236,9 +236,7 @@ class AdwView(View):
   def clear_expenses_list_selection(self) -> None:
     self._expenses_list.unselect_all()
 
-
   def select_last_expenses_list_selection(self) -> None:
-
     total = self.data_model_expenses.get_n_items()
     if total > 0:
         last_row = self._expenses_list.get_row_at_index(total - 1)
@@ -286,13 +284,15 @@ class AdwView(View):
   def toggle_search(self):
     is_search_visible = self._search_box.get_visible()
     self._search_box.set_visible(not is_search_visible)
-    
+
     if self._search_box.get_visible():
       self._search_entry.grab_focus()
       self.clear_expenses_list_selection()
+      self._search_button.set_active(True)
     else:
       self._search_entry.set_text("")
-      self._filter_expenses(None) 
+      self._filter_expenses(None)
+      self._search_button.set_active(False)
 
   def _build_side_bar(self) -> Gtk.Widget:
 
@@ -305,7 +305,8 @@ class AdwView(View):
       add_button = Gtk.Button(icon_name="list-add-symbolic")
       add_button.connect('clicked', lambda _wg: self.handler.on_add_expense_clicked())
 
-      search_button = Gtk.Button(icon_name="system-search-symbolic")
+      search_button = Gtk.ToggleButton(icon_name="system-search-symbolic")
+      self._search_button = search_button
 
       def on_search_clicked(_wg):
         self.toggle_search()
@@ -368,7 +369,6 @@ class AdwView(View):
       return listbox
     
     def build_search() -> Gtk.Widget:
-
       search_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
                            margin_start=16,
                            margin_end=16)
@@ -383,12 +383,11 @@ class AdwView(View):
       def on_search_changed(entry):
         search_text = entry.get_text()
         self._filter_expenses(search_text)
-
       def on_search_stop(entry):
         self._search_box.set_visible(False)
         self._search_entry.set_text("")
         self._filter_expenses(None)
-
+        
       self._search_entry.connect('search-changed', on_search_changed)
       self._search_entry.connect('stop-search', on_search_stop)
 
@@ -515,7 +514,6 @@ class AdwView(View):
     icon.set_pixel_size(96)
     content_box.append(icon)
 
-
     title_label = Gtk.Label(label="No Internet Connection")
     title_label.set_margin_top(12)
     title_label.set_css_classes(["title-2"])
@@ -526,12 +524,10 @@ class AdwView(View):
     subtitle_label.set_opacity(0.8)
     content_box.append(subtitle_label)
 
-
     retry_button = Gtk.Button(label="Retry")
     retry_button.set_margin_top(18)
     #retry_button.connect("clicked", self.handler.on_retry_conection(app))
     content_box.append(retry_button)
-
 
     # ToolbarView
     toolbar_view = Adw.ToolbarView()
@@ -1218,11 +1214,6 @@ class AdwView(View):
     # Show the view
     self._split_view.set_show_content(True) # Show content on small windows
     self._stack.set_visible_child_name("add_expense")
-
-  def show_search_expense(self) -> None: 
-    print("Search expense clicked")
-    # TODO
-
 
   def show_expense_info(self, expense: Expense) -> None:
     # Lazy load the view only once

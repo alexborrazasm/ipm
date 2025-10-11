@@ -41,11 +41,6 @@ class Presenter(ViewHandler):
     self.view.show_empty_expense()
     self.view.set_sidebar_sensitive(True)
 
-  # Search expenses
-  def on_search_expense_clicked(self) -> None:
-    self.view.show_search_expense()
-    pass # TODO
-  
   # Show expense
   def on_show_expense_info_clicked(self, data) -> None:
     self.view.show_expense_info(data)
