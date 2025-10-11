@@ -980,12 +980,80 @@ class AdwView(View):
       row = Adw.ActionRow(title="Add friend")
       row.add_prefix(Gtk.Image.new_from_icon_name("list-add-symbolic"))
       row.set_activatable(True)
-      row.connect("activated", lambda _row: on_add_friend_clicked(expense))
+      row.connect("activated", lambda r: on_add_friend_clicked(expense))
       return row
 
     def on_add_friend_clicked(expense: Expense) -> None:
+<<<<<<< Updated upstream
       print("add friend clicked")
       pass
+=======
+      win = self.window
+
+      expense_friends_ids = {f.id for f in expense.friends}
+      available_friends = [
+        f for f in self.data_model_friends if f.id not in expense_friends_ids
+      ]
+
+      if not available_friends:
+        dialog = Adw.MessageDialog(
+          transient_for=win,
+          modal=True,
+          heading="No more friends available",
+          body="You have already added all your friends to this expense.",
+        )
+
+        dialog.add_response("ok", "OK")
+        dialog.set_response_appearance("ok", Adw.ResponseAppearance.SUGGESTED)
+        dialog.connect("response", lambda d, r: d.destroy())
+        dialog.present()
+        return
+
+      dialog = Adw.MessageDialog(
+        transient_for=win,
+        modal=True,
+        heading="Add a friend",
+        body="Select a friend to add to this expense:",
+      )
+
+      listbox = Gtk.ListBox()
+      listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
+      listbox.add_css_class("boxed-list")
+
+      friend_map = {}
+
+      for friend in available_friends:
+        row = Adw.ActionRow(title=friend.name)
+        row.set_activatable(True)
+        listbox.append(row)
+        friend_map[row] = friend
+
+      scrolled = Gtk.ScrolledWindow()
+      scrolled.set_child(listbox)
+      scrolled.set_min_content_height(200)
+      scrolled.set_vexpand(True)
+
+      dialog.set_extra_child(scrolled)
+
+      dialog.add_response("cancel", "Cancel")
+      dialog.add_response("add", "Add")
+      dialog.set_response_appearance("add", Adw.ResponseAppearance.SUGGESTED)
+      dialog.set_default_response("add")
+
+      def on_response(dialog, response):
+        if response == "add":
+          selected_row = listbox.get_selected_row()
+          if selected_row:
+            selected_friend = friend_map[selected_row]
+            self.handler.on_add_friend_expense(expense.id, selected_friend.id, expense)
+        dialog.destroy()
+
+      dialog.connect("response", on_response)
+
+      dialog.present()      
+
+
+>>>>>>> Stashed changes
     def on_remove_expense_clicked(button, expense: Expense):
       # Get the parent window from the button
       window = button.get_root()
