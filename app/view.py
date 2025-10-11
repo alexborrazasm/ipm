@@ -1,12 +1,13 @@
 from __future__ import annotations
 from typing import Callable, Protocol, Any
+from datetime import datetime
 
 import gi
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
-from gi.repository import Gtk, Gio, GObject, Adw, GLib
+from gi.repository import Gtk, Gio, GObject, Adw, GLib, Gdk
 
 # Make GObject warnings raise Python exceptions
 GLib.log_set_always_fatal(GLib.LogLevelFlags.LEVEL_CRITICAL)
@@ -510,6 +511,7 @@ class AdwView(View):
     scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
     form = Gtk.ListBox()
+    form.set_selection_mode(Gtk.SelectionMode.NONE)
 
     self._form_entry_description = Adw.EntryRow(title="Description")
     self._form_entry_description.set_text(expense.description)
@@ -572,10 +574,58 @@ class AdwView(View):
         
       data = {
         "description": self._form_entry_description.get_text(),
-        "date": self._form_entry_date.get_text(),
+        "date": self._form_entry_date,
         "amount": float(self._form_entry_amount.get_text())
       }
       self.handler.on_confirm_add_new_expense_clicked(data)
+
+    def build_calendar(date_row: Adw.ActionRow) -> None:
+      now = datetime.now()
+      formatted_date = f"{now.year}-{now.month:02d}-{now.day:02d}"
+      date_row.set_subtitle(formatted_date)
+      self._form_entry_date = formatted_date
+
+      calendar = Gtk.Calendar()
+      date_popover = Gtk.Popover()
+      date_popover.set_child(calendar)
+      date_popover.set_parent(date_row)
+      
+      def on_row_activated(row):
+        date_popover.popup()
+
+      def on_date_selected(gesture, n_press, x, y):
+        if n_press == 1 or n_press == 2: 
+          date_obj = calendar.get_date()
+          year = date_obj.get_year()
+          month = date_obj.get_month() + 1
+          day = date_obj.get_day_of_month()
+          formatted_date = f"{year}-{month:02d}-{day:02d}"
+          date_row.set_subtitle(formatted_date)
+          self._form_entry_date = formatted_date
+          date_popover.popdown()
+
+      def on_key_pressed(controller, keyval, keycode, state):
+        if keyval == Gdk.KEY_Return or keyval == Gdk.KEY_KP_Enter:
+          date_obj = calendar.get_date()
+          year = date_obj.get_year()
+          month = date_obj.get_month() + 1
+          day = date_obj.get_day_of_month()
+          formatted_date = f"{year}-{month:02d}-{day:02d}"
+          date_row.set_subtitle(formatted_date)
+          self._form_entry_date = formatted_date
+          date_popover.popdown()
+          return True
+        return False
+
+      date_row.connect("activated", on_row_activated)
+
+      gesture = Gtk.GestureClick.new()
+      gesture.connect("released", on_date_selected)
+      calendar.add_controller(gesture)
+
+      key_controller = Gtk.EventControllerKey.new()
+      key_controller.connect("key-pressed", on_key_pressed)
+      calendar.add_controller(key_controller)
 
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
@@ -588,12 +638,21 @@ class AdwView(View):
     form.add_css_class("boxed-list-separate")
 
     self._form_entry_description = Adw.EntryRow(title="Description")
-    self._form_entry_date = Adw.EntryRow(title="Date")
     self._form_entry_amount = Adw.EntryRow(title="Amount")
 
+    # Calendar widget
+    date_row = Adw.ActionRow(title="Date")
+    date_row.set_activatable(True)
+    date_row.set_selectable(False)
+    calendar_icon = Gtk.Image()
+    calendar_icon.set_from_icon_name("x-office-calendar-symbolic")
+    calendar_icon.set_margin_end(10)
+    date_row.add_suffix(calendar_icon)
+    build_calendar(date_row)
+
     form.append(self._form_entry_description)
-    form.append(self._form_entry_date)
     form.append(self._form_entry_amount)
+    form.append(date_row)
 
     outer_box = Gtk.Box(
         orientation=Gtk.Orientation.VERTICAL,
