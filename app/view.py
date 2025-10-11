@@ -174,6 +174,9 @@ class View:
   def clear_expenses_list_selection(self) -> None: pass
   def show_edited_expense_info(self, expense: Expense) -> None: pass
   def select_last_expenses_list_selection(self) -> None: pass
+  def show_no_one_expense(self) -> None: pass
+  def show_loading(self) -> None: pass
+  def show_no_internet(self) -> None: pass
 
 # Concrete implementation of the view using GTK and ADW
 class AdwView(View):
@@ -190,7 +193,6 @@ class AdwView(View):
     # Forms
     self._form_entry_description = None
     self._form_entry_amount = None
-    self._form_entry_friends = None
     self._form_entry_date = None
 
     # Stack of views
@@ -209,14 +211,6 @@ class AdwView(View):
         last_row = self._expenses_list.get_row_at_index(total - 1)
         self._expenses_list.select_row(last_row)
 
-  def _check_internet_connection(self) -> bool:
-      import socket
-      try:
-          socket.create_connection(("8.8.8.8", 53), timeout=2)
-          return True
-      except OSError:
-          return False
-
   def _build(self, app: Adw.Application) -> None:
     self.window = win = Adw.ApplicationWindow()
     app.add_window(win)
@@ -228,17 +222,10 @@ class AdwView(View):
 
     # Right panel (content)
     self._stack = Adw.ViewStack()
-    loading_page = self._build_loading_page()
-    no_internet_page = self._build_no_internet_page()
     no_one_expense = self._build_no_one_expense()
 
     # Initial page is loading 
-    self._stack.add_titled(loading_page, "loading", "Loading")
-    self._stack.add_titled(no_internet_page, "no_internet", "No Internet")
     self._stack.add_titled(no_one_expense, "no_one_expense", "No One Expense")
-    # Check for internet
-    if not self._check_internet_connection():
-        self._stack.set_visible_child(no_internet_page)
     
 
     self._content_page = Adw.NavigationPage(child=self._stack)
@@ -445,7 +432,6 @@ class AdwView(View):
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
-  
 
   def _build_listbox_expenses(self) -> Gtk.ListBox:
 
@@ -505,58 +491,6 @@ class AdwView(View):
     clamp.set_hexpand(True)
     return clamp
 
-  def _build_calendar_dialog(self, date_row: Adw.ActionRow): 
-
-    dialog = Adw.MessageDialog(
-        transient_for = self.window,
-        modal = True,
-        heading = "Select date"
-    )
-
-    box = Gtk.Box(
-        orientation=Gtk.Orientation.VERTICAL,
-        spacing=12,
-        margin_top=12,
-        margin_bottom=12,
-        margin_start=12,
-        margin_end=12,
-    )
-
-    calendar = Gtk.Calendar()
-
-    # Calendar style
-    calendar.add_css_class("calendar")  
-    calendar.add_css_class("flat")      
-    calendar.add_css_class("osd")     
-
-    calendar.set_margin_top(6)
-    calendar.set_margin_bottom(6)
-    calendar.set_margin_start(6)
-    calendar.set_margin_end(6)
-
-    box.append(calendar)
-    dialog.set_extra_child(box)
-
-    dialog.add_response("cancel", "Cancel")
-    dialog.add_response("select", "Select")
-    dialog.set_default_response("select")
-    dialog.set_response_appearance("select", Adw.ResponseAppearance.SUGGESTED)
-
-    def on_response(d, response_id):
-        if response_id == "select":
-            date_obj = calendar.get_date()
-            year = date_obj.get_year()
-            month = date_obj.get_month() + 1  # Gtk uses 0-11 for months
-            day = date_obj.get_day_of_month()
-            formatted_date = f"{year}-{month:02d}-{day:02d}"
-
-            date_row.set_subtitle(formatted_date)
-            self._form_entry_date.set_text(formatted_date)
-        d.destroy()
-
-    dialog.connect("response", on_response)
-    dialog.present()  
-
   def _build_edit_expense(self, expense: Expense) -> Adw.ToolbarView:
 
     def on_edit_done_clicked(self, expense_id, data: Expense):
@@ -614,7 +548,6 @@ class AdwView(View):
 
     # Button Cancel
     cancel_button = Gtk.Button(label="Cancel")
-    cancel_button.add_css_class("destructive-action")
     cancel_button.connect(
         'clicked', lambda _wg: self.handler.on_cancel_edit_expense_clicked(expense)
     )
@@ -632,7 +565,6 @@ class AdwView(View):
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
-  
   
   def _build_add_expense(self) -> Adw.ToolbarView:
 
@@ -652,30 +584,16 @@ class AdwView(View):
     scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
     form = Gtk.ListBox()
+    form.set_selection_mode(Gtk.SelectionMode.NONE)
+    form.add_css_class("boxed-list-separate")
 
     self._form_entry_description = Adw.EntryRow(title="Description")
-    self._form_entry_amount = Adw.EntryRow(title="Amount")
-    self._form_entry_friends = Adw.EntryRow(title="Friends")
     self._form_entry_date = Adw.EntryRow(title="Date")
-    self._form_entry_date.set_editable(False)
-    self._form_entry_date.set_visible(False)
-
-    # Calendar widget
-    date_row = Adw.ActionRow(title="Select date")
-    date_button = Gtk.Button(icon_name = "x-office-calendar-symbolic")
-
-    date_button.connect(
-      'clicked', lambda _wg: self._build_calendar_dialog(date_row))
-
-    date_row.add_suffix(date_button)
-    date_row.set_activatable_widget(date_button)
-    
+    self._form_entry_amount = Adw.EntryRow(title="Amount")
 
     form.append(self._form_entry_description)
+    form.append(self._form_entry_date)
     form.append(self._form_entry_amount)
-    form.append(self._form_entry_friends)
-    form.append(date_row)
-    form.add_css_class("boxed-list-separate")
 
     outer_box = Gtk.Box(
         orientation=Gtk.Orientation.VERTICAL,
@@ -729,17 +647,17 @@ class AdwView(View):
       row = Adw.ActionRow(title="Description")
       data.bind_property("description", row, "subtitle",
                          flags=GObject.BindingFlags.SYNC_CREATE)
-      hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-      hbox.append(row)
-      listbox.append(hbox)
+      row.set_activatable(True)
+      row.set_selectable(False)
+      listbox.append(row)
 
       # Date
       row = Adw.ActionRow(title="Date")
       data.bind_property("date", row, "subtitle",
                          flags=GObject.BindingFlags.SYNC_CREATE)
-      hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-      hbox.append(row)
-      listbox.append(hbox)
+      row.set_activatable(True)
+      row.set_selectable(False)
+      listbox.append(row)
 
       # Amount
       row = Adw.ActionRow(title="Amount")
@@ -748,9 +666,9 @@ class AdwView(View):
         if value not in (None, "") else "0.00 €",
         flags=GObject.BindingFlags.SYNC_CREATE
       )
-      hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-      hbox.append(row)
-      listbox.append(hbox)
+      row.set_activatable(True)
+      row.set_selectable(False)
+      listbox.append(row)
  
       return listbox
     
@@ -767,10 +685,10 @@ class AdwView(View):
         if value not in (None, "") else "0.00 €",
         flags=GObject.BindingFlags.SYNC_CREATE
       )
+      balance_row.set_activatable(True)
+      balance_row.set_selectable(False)
 
-      hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-      hbox.append(balance_row)
-      listbox.append(hbox)
+      listbox.append(balance_row)
       
       return listbox
     
@@ -920,7 +838,6 @@ class AdwView(View):
     listbox_friends.add_css_class("boxed-list") 
     listbox_friends.set_selection_mode(Gtk.SelectionMode.NONE)
     listbox_friends.bind_model(data.friends, on_build_row_friends, data)
-
     group_friends.add(listbox_friends)
     clamp_friends = self._build_clamp_content(group_friends)
     outer_box.append(clamp_friends)
@@ -1001,7 +918,6 @@ class AdwView(View):
     
     self._stack.set_visible_child_name("empty")
 
-   
   def show_no_one_expense(self) -> None:
 
     old = self._stack.get_child_by_name("no_one_expense")
@@ -1026,18 +942,7 @@ class AdwView(View):
 
   def show_search_expense(self) -> None: 
     print("Search expense clicked")
-    # for testing, modify an expense #TODO remove
-    self.data_model_expenses[1].description = "New description"
-    self.data_model_expenses[1].credit_balance -= 10.0
-    self.data_model_expenses[1].amount += 5.0
-    self.data_model_expenses[1].date = "2024-05-01"
-    self.data_model_expenses[1].num_friends += 1
-    self.data_model_expenses[1].friends.append(
-        Friend(99, "New Friend", 0.0, 0.0)
-    )
-    self.data_model_expenses[1].friends[0].credit_balance += 10.0
-    self.data_model_expenses[1].friends[0].debit_balance -= 5
-    self.data_model_expenses[2].friends.remove(1)
+    # TODO
 
   def show_expense_info(self, expense: Expense) -> None:
     
@@ -1083,6 +988,15 @@ class AdwView(View):
     self._stack.add_titled(info, f"edit{expense.id}", expense.description)
     # Show the view
     self._stack.set_visible_child_name(f"edit{expense.id}")
+
+  def show_no_one_expense(self) -> None:
+    print("Show no one expense")
+  
+  def show_loading(self) -> None:
+    print("Show loading")
+
+  def show_no_internet(self) -> None:
+    print("Show no internet")
 
   def delete_expense(self, id):
 
