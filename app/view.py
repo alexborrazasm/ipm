@@ -783,6 +783,7 @@ class AdwView(View):
 
     def on_add_friend_clicked(expense: Expense) -> None:
       # TODO dialogo y tal
+      pass
     def on_remove_expense_clicked(button, expense: Expense):
       # Get the parent window from the button
       window = button.get_root()
