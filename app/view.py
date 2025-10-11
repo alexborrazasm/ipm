@@ -194,8 +194,8 @@ class AdwView(View):
     self._content_page = None # type: Adw.NavigationPage
     self._sidebar_page = None # type: Gtk.Widget
     self._search_box = None # type: Gtk.Box
-    self._search_entry = None
-    self._search_button = None
+    self._search_entry = None # type: Gtk.SearchEntry
+    self._search_button = None # type: Gtk.ToggleButton
     # Forms
     self._form_entry_description = None
     self._form_entry_amount = None
