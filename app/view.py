@@ -9,9 +9,6 @@ gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Gio, GObject, Adw, GLib, Gdk
 
-# Make GObject warnings raise Python exceptions
-GLib.log_set_always_fatal(GLib.LogLevelFlags.LEVEL_CRITICAL)
-
 def run(application_id: str, on_activate: Callable) -> None:
   app = Adw.Application(application_id=application_id)
   app.connect('activate', on_activate)
