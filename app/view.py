@@ -252,6 +252,7 @@ class AdwView(View):
     app.add_window(win)
     win.connect("destroy", lambda win: win.close())
     win.set_default_size(800, 600)
+    win.set_size_request(400, 200)
 
     # Left panel (expenses list)
     self._sidebar_page = self._build_side_bar()
