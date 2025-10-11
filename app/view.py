@@ -938,9 +938,10 @@ class AdwView(View):
       label = Gtk.Label(label="€")
       label.set_margin_top(2)
       label.set_margin_bottom(2)
+      label.add_css_class("title-3")
       add_credit_button = Gtk.Button()
       add_credit_button.set_child(label)
-      add_credit_button.add_css_class("flat")  # igual que el de borrar
+      add_credit_button.add_css_class("flat")
       add_credit_button.connect("clicked", on_add_credit_clicked, expense, item)
       
       # Remove button
