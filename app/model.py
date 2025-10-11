@@ -165,14 +165,12 @@ class Model:
       print(e)
       return False  # TODO: proper error handling  
     
-  def modify_friend_credit(self, friend_id: int, credit_balance: float, debit_balance: float) -> bool:
-    payload = {
-      "credit_balance": credit_balance,
-      "debit_balance": debit_balance
-    }
-
+  def add_friend_expense_credit(self, expense_id: int, friend_id: int, 
+                           amount: float) -> bool:
+    url = f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}"
+    params = {"amount": amount}
     try:
-      r = requests.patch(f"{SERVER_URL}/friends/{friend_id}", json=payload)
+      r = requests.put(url, params=params)
       if r.ok:
         return True
       else:

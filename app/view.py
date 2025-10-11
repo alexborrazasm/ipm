@@ -28,6 +28,9 @@ class ViewHandler(Protocol):
   def on_delete_expense(self, id: int) -> None: pass
   def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
+  def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int, 
+                                           amount: float, expense) -> None: 
+    pass
 
 # Data models
 class Friend(GObject.GObject):
@@ -177,6 +180,7 @@ class View:
   def show_pick_an_expense(self) -> None: pass
   def show_no_one_expense(self) -> None: pass
   def set_sidebar_sensitive(self, boolean: bool): pass
+  def show_add_friend_credit_expense_info(self, amount: float, expense: Expense) -> None: pass
 
 # Concrete implementation of the view using GTK and ADW
 class AdwView(View):
@@ -812,9 +816,68 @@ class AdwView(View):
       # Show the dialog
       dialog.present()
 
-    def on_add_credit_clicked(button, expense, friend):
-      print(f"Añadir crédito a {friend.name}")
-      # Tu lógica aquí
+    def on_add_credit_clicked(button, expense: Expense, friend: Friend):
+      # Get the parent window from the button
+      window = button.get_root()
+
+      dialog = Adw.MessageDialog(
+        transient_for=window,
+        modal=True,
+        heading=f"Add credit to {friend.name}",
+      )
+
+      # Create SpinButton
+      adjustment = Gtk.Adjustment(
+        value=0.0,             # start value
+        lower=-1_000_000_000,  # min (negativo)
+        upper=1_000_000_000,   # max (positivo)
+        step_increment=1,      # arrows
+        page_increment=10,     # PageUp/PageDown
+        page_size=0
+      )
+      spin = Gtk.SpinButton(adjustment=adjustment, digits=2)
+      spin.set_value(0.0)
+      spin.set_hexpand(True)
+      spin.set_activates_default(True)  # Permite Enter para confirmar
+      spin.set_can_focus(True) 
+
+      # Layout
+      box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+      box.set_margin_top(6)
+      box.set_margin_bottom(6)
+      box.set_margin_start(6)
+      box.set_margin_end(6)
+      box.append(spin)
+
+      dialog.set_extra_child(box)
+
+      # Buttons
+      dialog.add_response("cancel", "Cancel")
+      dialog.add_response("ok", "Add")
+      dialog.set_response_appearance("ok", Adw.ResponseAppearance.SUGGESTED)
+      dialog.set_default_response("ok")
+      dialog.set_close_response("cancel")
+
+      # Disable "Add" if the value = 0
+      def update_response_state(*_):
+        dialog.set_response_enabled("ok", spin.get_value() != 0)
+
+      spin.connect("value-changed", update_response_state)
+      update_response_state()
+
+      def on_response(dlg, response):
+        if response == "ok":
+          value = spin.get_value()
+          self.handler.on_confirm_add_credit_friend_expense(expense.id, friend.id,
+                                                            value, expense)
+        dlg.destroy()
+
+      dialog.connect("response", on_response)
+      dialog.present()
+      
+      # Focus the spin button after GTK finishes rendering
+      # Lambda trick: execute spin.grab_focus(), then return False to run once
+      GLib.idle_add(lambda: (spin.grab_focus(), False)[1])
 
     def on_build_row_friends(item: Friend, expense: Expense) -> Gtk.Widget:
       # Icon
@@ -883,7 +946,7 @@ class AdwView(View):
       return row
 
     def on_add_friend_clicked(expense: Expense) -> None:
-      # TODO dialogo y tal
+      print("add friend clicked")
       pass
     def on_remove_expense_clicked(button, expense: Expense):
       # Get the parent window from the button
@@ -1103,6 +1166,25 @@ class AdwView(View):
     self._stack.add_titled(info, f"edit{expense.id}", expense.description)
     # Show the view
     self._stack.set_visible_child_name(f"edit{expense.id}")
+
+  def show_add_friend_credit_expense_info(self, amount: float, 
+                                          expense: Expense) -> None:
+
+    # Remove old view
+    self._stack.remove(self._stack.get_child_by_name(f"info{expense.id}"))
+    
+    expense.credit_balance += amount
+    # Update friend in expense
+    friends_expense = self.handler.get_friends_by_expense(expense.id)
+    # Add friend data to expense
+    expense.set_friends(friends_expense)
+    # Build the view
+    info = self._build_expense_info(expense)
+    # Add to the stack
+    self._stack.add_titled(info, f"info{expense.id}", expense.description)
+
+    # Show the view
+    self._stack.set_visible_child_name(f"info{expense.id}")
 
   def show_loading(self) -> None:
     print("Show loading")

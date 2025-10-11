@@ -83,6 +83,11 @@ class Presenter(ViewHandler):
     self.model.delete_friend_expense(expense_id, friend_id)
     self.view.delete_expense(expense_id)
     self.view.show_expense_info(data)
+    
+  def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int, 
+                                           amount: float, expense) -> None:
+    self.model.add_friend_expense_credit(expense_id, friend_id, amount)
+    self.view.show_add_friend_credit_expense_info(amount, expense)
 
   #def on_retry_conection(self) -> None:
   #def on_no_one_expense(self) -> None:
