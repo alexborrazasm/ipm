@@ -31,7 +31,6 @@ class ViewHandler(Protocol):
   def on_delete_expense(self, id: int) -> None: pass
   def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
-  def on_no_one_expense(self) -> None: pass
 
 # Data models
 class Friend(GObject.GObject):
@@ -178,6 +177,8 @@ class View:
   def show_no_one_expense(self) -> None: pass
   def show_loading(self) -> None: pass
   def show_no_internet(self) -> None: pass
+  def show_pick_an_expense(self) -> None: pass
+  def show_no_one_expense(self) -> None: pass
 
 # Concrete implementation of the view using GTK and ADW
 class AdwView(View):
@@ -223,12 +224,8 @@ class AdwView(View):
 
     # Right panel (content)
     self._stack = Adw.ViewStack()
-    no_one_expense = self._build_no_one_expense()
-
-    # Initial page is loading 
-    self._stack.add_titled(no_one_expense, "no_one_expense", "No One Expense")
+    self.show_empty_expense()
     
-
     self._content_page = Adw.NavigationPage(child=self._stack)
     self._content_page.set_title("Splitwithme")
 
@@ -292,7 +289,7 @@ class AdwView(View):
     
     return page
 
-  def _build_empty_expense(self) -> Adw.ToolbarView:
+  def _build_empty_expense_msg(self, msg: str, icon: str) -> Adw.ToolbarView:
     # Main content
     content_box = Gtk.Box(
       orientation=Gtk.Orientation.VERTICAL,
@@ -304,46 +301,14 @@ class AdwView(View):
     )
 
     # Big icon
-    icon = Gtk.Image.new_from_icon_name("dialog-information-symbolic")
+    icon = Gtk.Image.new_from_icon_name(icon)
     icon.set_pixel_size(96)
+    icon.add_css_class("flat")
     content_box.append(icon)
 
     # Text
-    label = Gtk.Label(label="Pick an expense")
+    label = Gtk.Label(label=msg)
     label.set_margin_top(12)
-    label.set_css_classes(["title-1"])
-    content_box.append(label)
-
-    # Toolbar view
-    toolbar_view = Adw.ToolbarView()
-    toolbar_view.set_content(content_box)
-
-    # Header bar (unique per page)
-    header = Adw.HeaderBar()
-    toolbar_view.add_top_bar(header)
-
-    return toolbar_view
-  
-  def _build_no_one_expense(self) -> Adw.ToolbarView:
-    # Main content
-    content_box = Gtk.Box(
-      orientation=Gtk.Orientation.VERTICAL,
-      spacing=12,
-      halign=Gtk.Align.CENTER,
-      valign=Gtk.Align.CENTER,
-      vexpand=True,
-      hexpand=True
-    )
-
-    # Big icon
-    icon = Gtk.Image.new_from_icon_name("list-add-symbolic")
-    icon.set_pixel_size(96)
-    content_box.append(icon)
-
-    # Text
-    label = Gtk.Label(label="Add an expense")
-    label.set_margin_top(12)
-    label.set_css_classes(["title-1"])
     content_box.append(label)
 
     # Toolbar view
@@ -992,20 +957,22 @@ class AdwView(View):
 
     self._about.present(self.window)
     
-  def show_empty_expense(self) -> None:
+  def show_pick_an_expense(self) -> None:
 
-    old = self._stack.get_child_by_name("empty")
+    old = self._stack.get_child_by_name("pick_an_expense")
     if not old:
-      empty = self._build_empty_expense()
-      self._stack.add_titled(empty, "empty", "Empty")
+      pick_an_expense = self._build_empty_expense_msg("Pick an expense",
+                                            "dialog-information-symbolic")
+      self._stack.add_titled(pick_an_expense, "pick_an_expense", "Pick an expense")
     
-    self._stack.set_visible_child_name("empty")
+    self._stack.set_visible_child_name("pick_an_expense")
 
   def show_no_one_expense(self) -> None:
 
     old = self._stack.get_child_by_name("no_one_expense")
     if not old:
-      no_one_expense = self._build_no_one_expense()
+      no_one_expense = self._build_empty_expense_msg("Add an expense", 
+                                                     "list-add-symbolic")
       self._stack.add_titled(no_one_expense, "no_one_expense", "No One Expense")
     
     self._stack.set_visible_child_name("no_one_expense")
@@ -1072,9 +1039,6 @@ class AdwView(View):
     # Show the view
     self._stack.set_visible_child_name(f"edit{expense.id}")
 
-  def show_no_one_expense(self) -> None:
-    print("Show no one expense")
-  
   def show_loading(self) -> None:
     print("Show loading")
 
@@ -1085,3 +1049,9 @@ class AdwView(View):
 
     self._stack.remove(self._stack.get_child_by_name(f"info{id}"))
     super().delete_expense(id)
+  
+  def show_empty_expense(self) -> None:
+    if self.data_model_expenses.get_n_items() == 0:
+      self.show_no_one_expense()
+    else:
+      self.show_pick_an_expense()
