@@ -1,9 +1,34 @@
-# Diagramas dinámicos
+
 ---
-## 🙂 Diagrama User Journey
+
+# 🔨 Casos de Uso
+
+---
+- Añadir/Eliminar gasto
+- Ver lista de gastos
+- Editar gastos
+- Buscar gastos
+- Añadir/Eliminar amigos a gasto
+- Añadir/Eliminar aportación
+- Ver about
+
+---
+
+# ✏️ Wireframes
+![](images/main_screen.jpeg)
+![](images/search_and_add_expense.jpeg)
+![](images/edit_remove_exp_and_add_friend.jpeg)
+![](images/add_credit_and_remove_friend_errors.jpeg)
+![](images/about_and_scale.jpeg)
+
+---
+
+# 🔄 Diagramas dinámicos
+---
+##  Diagrama User Journey
 ```mermaid
 journey
-  title User Journey – Shared Expense Management
+  title Edit an expense
   section Start
     Open the application: 5: User
     Initialize model, view, and presenter (run, on_activate): 4: System
@@ -11,30 +36,17 @@ journey
   section Exploration
     View list of expenses: 3: User
     Load expenses: 3: System
-  section Add expense
-    Click "Add expense": 4: User
-    Show new expense form (show_add_expense): 4: System
-    Fill in fields: 5: User
-    Confirm: 5: User
-    Save new expense: 4: System
-    Update list: 5: System
   section View and edit expense
     Select an existing expense: 4: User
     Display expense details: 4: System
     Edit expense data: 3: User
     Save changes: 4: System
     Update view with edited data: 4: System
-  section Delete or error
-    Delete expense/friend: 2: User
-    Confirm deletion: 3: User
-    Remove expense/friend and update list: 3: System
-    If connection fails, show error: 2: System
   section Close
     Review updated expenses: 4: User
     Close the application satisfied: 5: User
 ```
-
-## 🔄 Diagrama de flujo  
+## Diagrama de flujo  
 ```mermaid
 flowchart LR
 
@@ -63,4 +75,3 @@ flowchart LR
 
     F --> |View| D
 ```
----

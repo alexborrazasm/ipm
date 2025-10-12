@@ -1,5 +1,8 @@
-# Diagrama estático
-## 🧩 Diagrama de clases
+
+---
+# 🧩 Diagrama estático
+---
+## Diagrama de clases
 
 ```mermaid
 
@@ -14,13 +17,14 @@ classDiagram
         + on_add_expense_clicked() 
         + on_confirm_add_new_expense_clicked(data: Any) 
         + on_cancel_add_expense_clicked() 
-        + on_search_expense_clicked() 
         + on_show_expense_info_clicked(data: Expense)
         + on_edit_expense_clicked(data: Any)
         + on_confirm_edit_expense_clicked(payload: Any, data: Any)
         + on_cancel_edit_expense_clicked(data: Any)
         + on_delete_expense(id: int)
         + on_delete_friend_expense(expense_id: int, friend_id: int, data: Expense)
+        + on_confirm_add_credit_friend_expense(expense_id: int, friend_id: int, amount: float, expense)
+        + on_add_friend_expense(expense_id: Any, friend_id: Any, data: Any):
     }
 
     class Model {
@@ -36,6 +40,8 @@ classDiagram
         + add_friend(name: str, credit_balance: float, debit_balance: float) dict
         + delete_friend(friend_id: int) bool
         + delete_friend_expense(expense_id: int, friend_id: int) bool
+        + add_friend_expense(expense_id: int, friend_id: int) bool
+        + add_friend_expense_credit(expense_id: int, friend_id: int, amount: float) bool
     }
 
     class ViewHandler {
@@ -51,6 +57,7 @@ classDiagram
         + on_delete_expense(id: int) 
         + on_delete_friend_expense(expense_id: int, friend_id: int, data: Expense) 
         + get_friends_by_expense(expense_id: int) list[dict]
+        + on_confirm_add_credit_friend_expense(expense_id: int, friend_id: int, amount: float, expense: Any)
     }
 
     class Friend {
@@ -85,25 +92,25 @@ classDiagram
         + set_handler(handler: ViewHandler) 
         + update_friends(data: list) 
         + update_expenses(data: list) 
-        + update_expense(data: dict) 
-        + add_expense(item: dict) Expense
+        + update_expense(data: list) 
+        + add_expense(item: Any) Expense
         + delete_expense(id: int) 
         + build_menu() Gtk.Widget
         + show_empty_expense() 
         + show_no_one_expense() 
         + show_add_expense() 
-        + show_search_expense() 
         + show_expense_info(data: Expense) 
         + show_edit_expense_info(expense: Expense) 
         + clear_expenses_list_selection() 
         + show_edited_expense_info(expense: Expense) 
         + select_last_expenses_list_selection() 
-        + show_n_one_expense
+        + show_no_one_expense
         + show_loading() 
         + show_no_internet() 
         + show_pick_an_expense() 
-        + show_no_one_expense()
         + set_sidebar_sensitive(boolean: bool)
+        + clear_search_filter_entry()
+        + show_add_friend_credit_expense_info(amount: float, expense: Expense)
     }
 
     class AdwView {
@@ -114,15 +121,21 @@ classDiagram
         - _split_view: Adw.NavigationSplitView
         - _content_page: Adw.NavigationPage
         - _sidebar_page: Gtk.Widget
+        - _search_box: Gtk.box
+        - _search_entry: Gtk.SearchEntry
+        - _search_button: Gtk.ToggleButton
         - _form_entry_description
         - _form_entry_amount
         - _form_entry_date
         - _stack: Adw.ViewStack
+        - _filter_expenses(search_text):
+        + clear_filter_expense():
         + on_activate(app: Adw.Application) 
         + clear_expenses_list_selection() 
         + select_last_expenses_list_selection() 
         + set_sidebar_sensitive(boolean: bool)
         - _build(app: Adw.Application) 
+        + toggle_search():
         - _build_side_bar() Gtk.Widget
         - _build_empty_expense_msg() Adw.ToolbarView
         - _build_loading_page() Adw.ToolbarView
@@ -136,10 +149,10 @@ classDiagram
         + show_pick_an_expense()
         + show_no_one_expense()
         + show_add_expense() Gtk.Box
-        + show_search_expense()
         + show_expense_info(expense: Expense)
         + show_edited_expense_info(expense: Expense)
         + show_edit_expense_info(expense: Expense)
+        + show_add_friend_credit_expense_info(amount: float, expense: Expense)
         + show_loading()
         + show_no_internet()
         + delete_expense(id: int)
@@ -160,39 +173,68 @@ classDiagram
     
 ```
 ---
-
-# Diagrama dinámico 
-## ➡️ Diagrama de secuencia
+# 🔄 Diagramas dinámicos 
+---
+## Diagrama de secuencia Init
 
 ```mermaid
-
-
 sequenceDiagram
     participant app as Main
 
     create participant model as Model
     app ->> model: create
 
-    alt args contains "adw"
-        create participant view as View
-        app ->> view: create
-        create Participant Presenter
-        app ->> Presenter: create(model, view)
-        app ->> Presenter: run(application_id)
-        Presenter ->> view : set_handler(self)        
-        rect rgb(191, 223, 255)
-            create participant adw as Adw.Application
-            note right of Presenter: run(application_id, AdwView.on_activate)
-            Presenter ->> adw : create(application_id)
-            Presenter ->> adw : connect('activate', on_activate)
-            Presenter ->> adw : run()
-            note right of adw: Init Gtk and Adw
-        end
-        adw --) adw : 'activate'
-        note right of adw : When Gtk is ready, the signal 'activate' <br> is sent so its handler is run
-        adw ->> view: on_activate(app)
-        view ->> view : build(app)
+    create participant view as View
+    app ->> view: create
+    create Participant Presenter
+    app ->> Presenter: create(model, view)
+    app ->> Presenter: run(application_id)
+    Presenter ->> model: get_expenses()
+    model -->> Presenter: expenses
+    Presenter ->> model: get_friends()
+    model -->> Presenter: friends
+    Presenter ->> view : set_handler(self)  
+    Presenter ->> view : update_expenses(expenses)
+    Presenter ->> view : update_friends(friends) 
+
+    Presenter ->> view : run(application_id, on_activate=view.on_activate)
+
+    rect rgba(92, 130, 159, 1)
+        create participant adw as Adw.App
+        note right of view: view.run(application_id, AdwView.on_activate)
+        view ->> adw : Adw.App(application_id)
+        view ->> adw : connect('activate', on_activate)
+        view ->> adw : run()
     end
-        
+    adw -->> view: 'activate'
+    view ->> view : on_activate(app)
+    view ->> view : _build(app)
+    Note right of view: builds window, sidebar, stack...
+    view->>view: show_empty_expense()
+    Note right of view: depending on whether or not there are registered expenses
+    view-->>adw: win.present()
+   
+```
+## Diagrama de secuencia "Click Add Expense"
+```mermaid
+sequenceDiagram
+    actor User
+    participant View
+    participant Presenter
+    participant Model
+
+
+    User->>View: Click "Add Expense" button
+    View->>Presenter: on_add_expense_clicked()
+    Presenter->>View: show_add_expense()
+    View-->>User: Show add expense form
+
+    User->>View: Fill form and click "Add" button
+    View->>Presenter: on_confirm_add_new_expense_clicked(data)
+    Presenter->>Model: add_expense(description, date, amount)
+    Model-->>Presenter: New expense data
+    Presenter->>View: add_expense(expense_data)
+    Presenter->>View: show_expense_info(new_expense)
+    View-->>User: Display new expense details
 ```
 
