@@ -3,7 +3,7 @@
   > A continuación se ofrece el informe del analista de la semana 2 de trabajo 06/10/2025 - 12/10/2025 cuyo papel desempeña:
   > Daniel García Figueroa
 
-## Evaluación final de la semana 1
+## Evaluación final de la semana 2
 
    - Alexandre Borrazás Mancebo(Facilitador-Administrador).
    
