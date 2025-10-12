@@ -9,29 +9,38 @@ gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Gio, GObject, Adw, GLib, Gdk, Pango
 
+
+# Start Adwaita Application
 def run(application_id: str, on_activate: Callable) -> None:
   app = Adw.Application(application_id=application_id)
   app.connect('activate', on_activate)
   app.run()
 
 
-# Abstract presenter interface
+# ===== Abstract presenter interface =====
 class ViewHandler(Protocol):
+  def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
+  
   def on_add_expense_clicked(self) -> None: pass
-  def on_search_expense_clicked(self) -> None: pass
-  def on_show_expense_info_clicked(self, data: Expense) -> None: pass
   def on_confirm_add_new_expense_clicked(self, data) -> None: pass
   def on_cancel_add_expense_clicked(self) -> None: pass
-  def on_cancel_edit_expense_clicked(self, data) -> None: pass
+ 
+  def on_show_expense_info_clicked(self, data: Expense) -> None: pass
+  
   def on_edit_expense_clicked(self, data) -> None: pass
   def on_confirm_edit_expense_clicked(self, payload, data) -> None: pass
+  def on_cancel_edit_expense_clicked(self, data) -> None: pass
+  
   def on_delete_expense(self, id: int) -> None: pass
-  def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None: pass
-  def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
+  
+  def on_add_friend_expense(self, expense_id, friend_id, data) -> None: pass
+  def on_delete_friend_expense(self, expense_id: int, friend_id: int, 
+                               data) -> None: pass
   def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int, 
                                            amount: float, expense) -> None: pass
 
-# Data models
+# ===== START Data models =====
+# Data model representing a Friend 
 class Friend(GObject.GObject):
   id = GObject.Property(type=int)
   name = GObject.Property(type=str)
@@ -45,6 +54,7 @@ class Friend(GObject.GObject):
     self.credit_balance = credit_balance
     self.debit_balance = debit_balance
 
+# Data model representing an Expense 
 class Expense(GObject.GObject):
   id = GObject.Property(type=int)
   description = GObject.Property(type=str)
@@ -52,6 +62,7 @@ class Expense(GObject.GObject):
   amount = GObject.Property(type=float)
   num_friends = GObject.Property(type=int)
   credit_balance = GObject.Property(type=float)
+  friends = GObject.Property(type=Gio.ListStore)
 
   def __init__(self, id, description, date, amount, num_friends, credit_balance):
     super().__init__()
@@ -61,14 +72,15 @@ class Expense(GObject.GObject):
     self.amount = amount
     self.num_friends = num_friends
     self.credit_balance = credit_balance
-    self.friends = Gio.ListStore(item_type=Friend)
+    self.friends = Gio.ListStore.new(item_type=Friend)
 
   def set_friends(self, friends: list[dict]):
     self.friends.remove_all()
     for f in friends:
         self.friends.append(Friend(f["id"], f["name"], f["credit_balance"], f["debit_balance"]))
+# ===== END Data models =====
 
-
+# ===== START View classes =====
 # Abstract view interface
 class View:
   def __init__(self):
@@ -113,7 +125,6 @@ class View:
       self.data_model_expenses.append(expense)
 
   def update_expense(self, data: list) -> None:
-
     id = data['id']
     for i in range(len(self.data_model_expenses)):
       expense = self.data_model_expenses[i]
@@ -137,16 +148,15 @@ class View:
     return expense
     
   def delete_expense(self, id: int) -> None:
-
     for i in range(len(self.data_model_expenses)):
       expense = self.data_model_expenses[i]
       if expense.id == id:
         self.data_model_expenses.remove(i)
         break
 
-  def build_menu(self) -> Gtk.Widget:
+  def _build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
-    about_action.connect("activate", self.show_about)
+    about_action.connect("activate", self._show_about)
     self.window.add_action(about_action)
 
     # Create a new menu, containing that action
@@ -165,44 +175,66 @@ class View:
     return dots
 
   # Abstract methods to be implemented by subclasses
-  def show_empty_expense(self) -> None: pass
-  def show_add_expense(self) -> None: pass
-  def show_expense_info(self, data: Expense) -> None: pass
-  def show_edit_expense_info(self, expense: Expense) -> None: pass
+  def on_activate(self, app: Adw.Application) -> None: pass
   def clear_expenses_list_selection(self) -> None: pass
-  def show_edited_expense_info(self, expense: Expense) -> None: pass
   def select_last_expenses_list_selection(self) -> None: pass
-  def show_loading(self) -> None: pass
-  def show_no_internet(self) -> None: pass
+  def set_sidebar_sensitive(self, boolean: bool): pass
+
   def show_pick_an_expense(self) -> None: pass
   def show_no_one_expense(self) -> None: pass
-  def set_sidebar_sensitive(self, boolean: bool): pass
-  def clear_search_filter_entry(self) -> None: pass
+  def show_add_expense(self) -> None: pass
+  def show_expense_info(self, data: Expense) -> None: pass
+  def show_edited_expense_info(self, expense: Expense) -> None: pass
+  def show_edit_expense_info(self, expense: Expense) -> None: pass
   def show_add_friend_credit_expense_info(self, amount: float, expense: Expense) -> None: pass
+  def show_loading(self) -> None: pass
+  def show_no_internet(self) -> None: pass
+  def show_empty_expense(self) -> None: pass
 
 # Concrete implementation of the view using GTK and ADW
 class AdwView(View):
   def __init__(self):
     super().__init__()
-    self.window = None # type: Adw.ApplicationWindow
-    self._expenses_list = None # type: Gtk.ListBox
-    self._about = None # type: Adw.AboutDialog
+    self.window = None          # type: Adw.ApplicationWindow
+    self._expenses_list = None  # type: Gtk.ListBox
+    self._about = None          # type: Adw.AboutDialog
     self._sidebar_header = None # type: Adw.HeaderBar
-    self._split_view = None # type: Adw.NavigationSplitView
-    self._content_page = None # type: Adw.NavigationPage
-    self._sidebar_page = None # type: Gtk.Widget
-    self._search_box = None # type: Gtk.Box
-    self._search_entry = None # type: Gtk.SearchEntry
-    self._search_button = None # type: Gtk.ToggleButton
+    self._split_view = None     # type: Adw.NavigationSplitView
+    self._content_page = None   # type: Adw.NavigationPage
+    self._sidebar_page = None   # type: Gtk.Widget
+    self._search_box = None     # type: Gtk.Box
+    self._search_entry = None   # type: Gtk.SearchEntry
+    self._search_button = None  # type: Gtk.ToggleButton
+
     # Forms
-    self._form_entry_description = None
-    self._form_entry_amount = None
-    self._form_entry_date = None
+    self._form_entry_description = None # type: Adw.EntryRow
+    self._form_entry_amount = None      # type: Adw.EntryRow
+    self._form_entry_date = None        # type: Adw.EntryRow
 
     # Stack of views
     self._stack = None # type: Adw.Stack
 
-  def _filter_expenses(self, search_text=None):
+  # ===== START public methods =====
+  def on_activate(self, app: Adw.Application) -> None:
+    settings = Gtk.Settings.get_default()
+    settings.set_property("gtk-decoration-layout", ":minimize,maximize,close")
+    self._build(app)
+
+  def clear_expenses_list_selection(self) -> None:
+    self._expenses_list.unselect_all()  
+
+  def select_last_expenses_list_selection(self) -> None:
+    total = self.data_model_expenses.get_n_items()
+    if total > 0:
+        last_row = self._expenses_list.get_row_at_index(total - 1)
+        self._expenses_list.select_row(last_row)
+
+  def set_sidebar_sensitive(self, boolean: bool) -> None:
+    self._sidebar_page.set_sensitive(boolean)
+  # ===== END public methods =====
+
+  # ===== START Helper private methods =====
+  def _filter_expenses(self, search_text=None) -> None:
     if not search_text:
       for i in range(len(self.data_model_expenses)):
         row = self._expenses_list.get_row_at_index(i)
@@ -217,38 +249,72 @@ class AdwView(View):
           if search_text_lower in expense.description.lower():
             row.set_visible(True)
           else:
-            row.set_visible(False)
+            row.set_visible(False)            
   
-  def clear_filter_expense(self):
+  def _clear_filter_expense(self) -> None:
     self._search_entry.set_text("")
     self._search_box.set_visible(False)
     self._search_button.set_active(False)
     self._filter_expenses(None)
 
+  def _toggle_search(self):
+    is_search_visible = self._search_box.get_visible()
+    self._search_box.set_visible(not is_search_visible)
 
-  def on_activate(self, app: Adw.Application) -> None:
-    settings = Gtk.Settings.get_default()
-    settings.set_property("gtk-decoration-layout", ":minimize,maximize,close")
-    self._build(app)
+    if self._search_box.get_visible():
+      self._search_entry.grab_focus()
+      self.clear_expenses_list_selection()
+      self._search_button.set_active(True)
+    else:
+      self._search_entry.set_text("")
+      self._filter_expenses(None)
+      self._search_button.set_active(False)
+
+  def _show_about(self, action: Gio.SimpleAction, param: Any):
+    self._about = Adw.AboutDialog()
+    self._about.set_title("About")
+    # Makes the dialog always appear in from of the parent window
+    # Makes the parent window unresponsive while dialog is showing
+    self._about.set_application_name("Splitwithme")
+    self._about.set_developers([
+      "Nerea Pérez",
+      "Daniel García",
+      "Alexandre Borrazás"
+    ])
+    self._about.set_designers([
+      "Nerea Pérez",
+      "Daniel García",
+      "Alexandre Borrazás"
+    ])
+    self._about.set_copyright(
+      "Copyright 2025 Nerea Pérez Pértega"
+      ", Daniel García Figueroa "
+      "and Alexandre Borrazás Mancebo"
+    )
+    self._about.set_license_type(Gtk.License.GPL_3_0)
+    self._about.set_website(
+      "https://github.com/GEI-IPM-614G010222526/practica-de-escritorio-rage-against-the-machine"
+    )
+    self._about.set_version("0.1")
+    self._about.set_copyright(
+      "© 2025 Nerea Pérez Pértega"
+      ", Daniel García Figueroa"
+      " and Alexandre Borrazás Mancebo"
+    ) 
+
+    #self.about.set_application_icon("icon.png")
+    # myappicon.png must be uploaded in ~/.local/share/icons or /usr/share/icons
+
+    self._about.present(self.window)      
+  # ===== END Helper private methods ======  
   
-  def clear_expenses_list_selection(self) -> None:
-    self._expenses_list.unselect_all()
-
-  def select_last_expenses_list_selection(self) -> None:
-    total = self.data_model_expenses.get_n_items()
-    if total > 0:
-        last_row = self._expenses_list.get_row_at_index(total - 1)
-        self._expenses_list.select_row(last_row)
-
-  def set_sidebar_sensitive(self, boolean: bool) -> None:
-    self._sidebar_page.set_sensitive(boolean)
-
+  # ===== START building UI private methods =====
   def _build(self, app: Adw.Application) -> None:
     self.window = win = Adw.ApplicationWindow()
     app.add_window(win)
     win.connect("destroy", lambda win: win.close())
     win.set_default_size(800, 600)
-    win.set_size_request(400, 200)
+    win.set_size_request(450, 200)
 
     # Left panel (expenses list)
     self._sidebar_page = self._build_side_bar()
@@ -265,7 +331,7 @@ class AdwView(View):
     self._split_view.set_sidebar(self._sidebar_page)
     self._split_view.set_content(self._content_page)
     self._split_view.set_max_sidebar_width(500)
-    self._split_view.set_min_sidebar_width(300)
+    self._split_view.set_min_sidebar_width(250)
     
     # Breakpoint to collapse sidebar on small windows
     breakpoint = Adw.Breakpoint.new(Adw.BreakpointCondition.parse(
@@ -278,19 +344,6 @@ class AdwView(View):
     # Show the window
     win.set_content(self._split_view)
     win.present()
-
-  def toggle_search(self):
-    is_search_visible = self._search_box.get_visible()
-    self._search_box.set_visible(not is_search_visible)
-
-    if self._search_box.get_visible():
-      self._search_entry.grab_focus()
-      self.clear_expenses_list_selection()
-      self._search_button.set_active(True)
-    else:
-      self._search_entry.set_text("")
-      self._filter_expenses(None)
-      self._search_button.set_active(False)
 
   def _build_side_bar(self) -> Gtk.Widget:
 
@@ -309,11 +362,11 @@ class AdwView(View):
       self._search_button.set_tooltip_text("Search")     
 
       def on_search_clicked(_wg):
-        self.toggle_search()
+        self._toggle_search()
 
       self._search_button.connect('clicked', on_search_clicked)
 
-      menu = self.build_menu()
+      menu = self._build_menu()
       main_header.pack_start(self._search_button)
       main_header.pack_start(add_button)
       main_header.pack_end(menu)
@@ -359,7 +412,7 @@ class AdwView(View):
         row = widget.get_selected_row()
         if row is not None:
           idx = row.get_index()
-          self.clear_filter_expense()
+          self._clear_filter_expense()
           self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
           self._split_view.set_show_content(True)
               
@@ -398,7 +451,7 @@ class AdwView(View):
       shortcut_controller.set_scope(Gtk.ShortcutScope.GLOBAL)
       
       trigger = Gtk.ShortcutTrigger.parse_string("<Ctrl>F")
-      action = Gtk.CallbackAction.new(lambda *args: self.toggle_search())
+      action = Gtk.CallbackAction.new(lambda *args: self._toggle_search())
       shortcut = Gtk.Shortcut.new(trigger, action)
       shortcut_controller.add_shortcut(shortcut)
       
@@ -542,9 +595,9 @@ class AdwView(View):
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
-
-  # Clamp to limit max width
+  
   def _build_clamp_content(self, child: Gtk.Widget) -> Adw.Clamp:
+    # Clamp to limit max width
     clamp = Adw.Clamp()
     clamp.set_child(child)
     clamp.set_maximum_size(600)  # Max width
@@ -1251,47 +1304,10 @@ class AdwView(View):
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
+  # ===== END building UI private methods =====
 
-  def show_about(self, action: Gio.SimpleAction, param: Any):
-  
-    self._about = Adw.AboutDialog()
-    self._about.set_title("About")
-    # Makes the dialog always appear in from of the parent window
-    # Makes the parent window unresponsive while dialog is showing
-    self._about.set_application_name("Splitwithme")
-    self._about.set_developers([
-      "Nerea Pérez",
-      "Daniel García",
-      "Alexandre Borrazás"
-    ])
-    self._about.set_designers([
-      "Nerea Pérez",
-      "Daniel García",
-      "Alexandre Borrazás"
-    ])
-    self._about.set_copyright(
-      "Copyright 2025 Nerea Pérez Pértega"
-      ", Daniel García Figueroa "
-      "and Alexandre Borrazás Mancebo"
-    )
-    self._about.set_license_type(Gtk.License.GPL_3_0)
-    self._about.set_website(
-      "https://github.com/GEI-IPM-614G010222526/practica-de-escritorio-rage-against-the-machine"
-    )
-    self._about.set_version("0.1")
-    self._about.set_copyright(
-      "© 2025 Nerea Pérez Pértega"
-      ", Daniel García Figueroa"
-      " and Alexandre Borrazás Mancebo"
-    ) 
-
-    #self.about.set_application_icon("icon.png")
-    # myappicon.png must be uploaded in ~/.local/share/icons or /usr/share/icons
-
-    self._about.present(self.window)
-    
+  # ===== START Public methods to show views =====
   def show_pick_an_expense(self) -> None:
-
     old = self._stack.get_child_by_name("pick_an_expense")
     if not old:
       pick_an_expense = self._build_empty_expense_msg("Pick an Expense",
@@ -1301,7 +1317,6 @@ class AdwView(View):
     self._stack.set_visible_child_name("pick_an_expense")
 
   def show_no_one_expense(self) -> None:
-    
     old = self._stack.get_child_by_name("no_one_expense")
     if not old:
       no_one_expense = self._build_empty_expense_msg("Add an Expense", 
@@ -1311,7 +1326,6 @@ class AdwView(View):
     self._stack.set_visible_child_name("no_one_expense")
 
   def show_add_expense(self) -> Gtk.Box:
-
     old = self._stack.get_child_by_name("add_expense")
     if old:
       self._stack.remove(self._stack.get_child_by_name("add_expense"))
@@ -1339,7 +1353,6 @@ class AdwView(View):
     self._stack.set_visible_child_name(f"info{expense.id}")
 
   def show_edited_expense_info(self, expense: Expense) -> None:
-    
     # Remove old view
     self._stack.remove(self._stack.get_child_by_name(f"info{expense.id}"))
     # Update friend in expense
@@ -1355,7 +1368,6 @@ class AdwView(View):
     self._stack.set_visible_child_name(f"info{expense.id}")
 
   def show_edit_expense_info(self, expense: Expense) -> None:
-
     old = self._stack.get_child_by_name(f"edit{expense.id}")
     # Remove previous edit view for this expense if exists 
     if old:
@@ -1369,7 +1381,6 @@ class AdwView(View):
 
   def show_add_friend_credit_expense_info(self, amount: float, 
                                           expense: Expense) -> None:
-
     # Remove old view
     self._stack.remove(self._stack.get_child_by_name(f"info{expense.id}"))
     
@@ -1392,8 +1403,7 @@ class AdwView(View):
   def show_no_internet(self) -> None:
     print("Show no internet")
 
-  def delete_expense(self, id):
-
+  def delete_expense(self, id) -> None:
     self._stack.remove(self._stack.get_child_by_name(f"info{id}"))
 
     old = self._stack.get_child_by_name(f"edit{id}")
@@ -1408,3 +1418,6 @@ class AdwView(View):
       self.show_no_one_expense()
     else:
       self.show_pick_an_expense()
+# ===== END Public methods to show views =====
+
+# ===== END View classes =====

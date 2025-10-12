@@ -28,7 +28,8 @@ class Model:
       print(e)
       return [] # TODO proper error handling
     
-  def put_expense(self, expense_id: int, description: str, date: str, amount: float) -> bool:
+  def put_expense(self, expense_id: int, description: str, date: str, 
+                  amount: float) -> bool:
     payload = {
         "description": description,
         "date": date,
@@ -110,7 +111,8 @@ class Model:
       print(e)
       return [] # TODO proper error handling
     
-  def add_friend(self, name: str, credit_balance: float, debit_balance: float) -> dict:
+  def add_friend(self, name: str, credit_balance: float, 
+                 debit_balance: float) -> dict:
     payload = {   
       # could be friend_id
       "name": name,
@@ -169,7 +171,7 @@ class Model:
         return False  # TODO: proper error handling
     
   def add_friend_expense_credit(self, expense_id: int, friend_id: int, 
-                           amount: float) -> bool:
+                                amount: float) -> bool:
     url = f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}"
     params = {"amount": amount}
     try:

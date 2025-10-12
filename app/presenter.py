@@ -7,8 +7,7 @@ class Presenter(ViewHandler):
     self.model = model
     self.view = view
         
-  def run(self, application_id: str):
-
+  def run(self, application_id: str) -> None:
     expenses = self.model.get_expenses()
     friends = self.model.get_friends()
 
@@ -22,13 +21,13 @@ class Presenter(ViewHandler):
   def get_friends_by_expense(self, expense_id: int) -> list[dict]:
     return self.model.get_friends_by_expenses(expense_id)
 
-  # Add new expense
+  # ===== START Add Expense event handlers =====
   def on_add_expense_clicked(self) -> None:
     self.view.clear_expenses_list_selection()
     self.view.set_sidebar_sensitive(False)
     self.view.show_add_expense()
 
-  def on_confirm_add_new_expense_clicked(self, data):
+  def on_confirm_add_new_expense_clicked(self, data) -> None:
     added_expense = self.model.add_expense(data["description"], data["date"],
                                            data["amount"])
     self.view.show_expense_info(self.view.add_expense(added_expense))
@@ -39,17 +38,19 @@ class Presenter(ViewHandler):
   def on_cancel_add_expense_clicked(self) -> None:
     self.view.show_empty_expense()
     self.view.set_sidebar_sensitive(True)
+  # ===== END Add Expense event handlers =====
 
-  # Show expense
+  # ===== START Show Expense event handlers =====
   def on_show_expense_info_clicked(self, data) -> None:
     self.view.show_expense_info(data)
+  # ===== END Show Expense event handlers =====
 
-  # Edit expense
+  # ===== START Edit Expense event handlers =====
   def on_edit_expense_clicked(self, data) -> None:
     self.view.show_edit_expense_info(data)
     self.view.set_sidebar_sensitive(False)
 
-  def on_confirm_edit_expense_clicked(self, payload, data):
+  def on_confirm_edit_expense_clicked(self, payload, data) -> None:
     edited = self.model.put_expense(payload["id"], payload["description"], 
                                     payload["date"], payload["amount"])
     if edited:
@@ -63,16 +64,24 @@ class Presenter(ViewHandler):
   def on_cancel_edit_expense_clicked(self, data) -> None:
     self.on_show_expense_info_clicked(data)
     self.view.set_sidebar_sensitive(True)
-    
-  # Delete expense
+  # ===== END Edit Expense event handlers =====
+
+  # ===== START Delete Expense event handlers =====
   def on_delete_expense(self, id: int) -> None:
     # TODO manage API errors
     self.model.delete_expense(expense_id=id)
     self.view.delete_expense(id)
     self.view.show_empty_expense()
+  # ===== END Delete Expense event handlers =====
   
-  # Remove a friend from one expense
-  def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None:
+  # ===== START Friend Expense event handlers =====  
+  def on_add_friend_expense(self, expense_id, friend_id, data) -> None:
+    # TODO manage API errors
+    self.model.add_friend_expense(expense_id, friend_id)
+    self.view.show_edited_expense_info(data)
+
+  def on_delete_friend_expense(self, expense_id: int, friend_id: int, 
+                               data) -> None:
     # TODO manage API errors
     self.model.delete_friend_expense(expense_id, friend_id)
     self.view.show_edited_expense_info(data)
@@ -81,9 +90,7 @@ class Presenter(ViewHandler):
                                            amount: float, expense) -> None:
     self.model.add_friend_expense_credit(expense_id, friend_id, amount)
     self.view.show_add_friend_credit_expense_info(amount, expense)
+  # ===== END Friend Expense event handlers =====  
 
-  def on_add_friend_expense(self, expense_id, friend_id, data):
-    # TODO manage API errors
-    self.model.add_friend_expense(expense_id, friend_id)
-    self.view.show_edited_expense_info(data)
+  
   
