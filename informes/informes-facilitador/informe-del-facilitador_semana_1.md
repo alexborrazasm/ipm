@@ -75,7 +75,7 @@ facilitando las pruebas, mantenimiento y la escalabilidad.
 #### Responsabilidades
 Todos, primera reunión.
 
-#### Estado: 'Completada'
+#### Estado: `Completada`
 
 ### Configuración del entorno
 Para gestionar el entorno de trabajo he decido usar el gestor de paquetes
@@ -95,7 +95,7 @@ Dado que soy el único con experiencia con Nix me encargué yo.
 Nerea y Daniel, simplemente siguieron un pequeño tutorial de como instalar Nix 
 en sus máquinas y probaron que todo funcionase.
 
-#### Estado: 'Completada'
+#### Estado: `Completada`
 
 ### Resumen final
 

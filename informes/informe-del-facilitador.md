@@ -1,6 +1,6 @@
 # Informe del Facilitador-Administrador
 
-  > A continuación se ofrece una plantailla del informe que debe
+  > A continuación se ofrece una plantilla del informe que debe
   > generar la persona encargada de este role cada semana.
 
 
@@ -15,4 +15,4 @@
   - Conflictos, desviaciones, etc.
   
 
-## Estado del repositorio en la semama 1
+## Estado del repositorio en la semana 1
