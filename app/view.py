@@ -7,7 +7,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
-from gi.repository import Gtk, Gio, GObject, Adw, GLib, Gdk
+from gi.repository import Gtk, Gio, GObject, Adw, GLib, Gdk, Pango
 
 def run(application_id: str, on_activate: Callable) -> None:
   app = Adw.Application(application_id=application_id)
@@ -324,6 +324,9 @@ class AdwView(View):
         image = Gtk.Image.new_from_icon_name("view-list-symbolic")
         
         label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
+        label1.set_ellipsize(Pango.EllipsizeMode.END)  # Add "..."
+        label1.set_single_line_mode(True)  # Force single-line truncation
+        label1.set_xalign(0.0)  # Left align text
         item.bind_property("description", label1, "label", 
                             flags=GObject.BindingFlags.SYNC_CREATE)
 
@@ -1020,7 +1023,6 @@ class AdwView(View):
       # Create dialog
       dialog = Adw.Dialog()
       dialog.set_content_width(350)
-      dialog.set_content_height(450)
 
       # Header
       header = Adw.HeaderBar()
@@ -1042,9 +1044,6 @@ class AdwView(View):
       search_entry = Gtk.SearchEntry()
       search_entry.set_placeholder_text("Search friends...")
       search_entry.set_hexpand(True)
-      search_entry.set_margin_top(12)
-      search_entry.set_margin_start(12)
-      search_entry.set_margin_end(12)
 
       # Friends list
       listbox = Gtk.ListBox()
@@ -1087,16 +1086,17 @@ class AdwView(View):
 
       scrolled = Gtk.ScrolledWindow()
       scrolled.set_child(listbox)
+      scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC) 
       scrolled.set_min_content_height(200)
       scrolled.set_vexpand(True)
-
+      scrolled.set_hexpand(True)
+      
       # Dialog content
       content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
       content_box.set_margin_top(6)
       content_box.set_margin_bottom(12)
       content_box.set_margin_start(12)
       content_box.set_margin_end(12)
-      #content_box.append(Gtk.Label(label="Select a friend to add:"))
       content_box.append(search_entry)
       content_box.append(scrolled)
 
@@ -1238,9 +1238,13 @@ class AdwView(View):
 
     # Header bar (unique for this page)
     header = Adw.HeaderBar()
-    header.set_title_widget(Gtk.Label())
+    title = Gtk.Label()
+    title.set_ellipsize(Pango.EllipsizeMode.END)  # Add "..."
+    title.set_single_line_mode(True) # Force single-line truncation
+    title.set_xalign(0.0) # Left align text
+    header.set_title_widget(title)
     # Bind reactive title to expense description
-    data.bind_property("description", header.get_title_widget(), "label", 
+    data.bind_property("description", title, "label", 
                        flags=GObject.BindingFlags.SYNC_CREATE)
     edit_button = Gtk.Button(icon_name="document-edit-symbolic")
     edit_button.connect(
