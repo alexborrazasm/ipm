@@ -16,6 +16,13 @@
      - Evaluación cuantitativa 4.
 	 
 	 - Evaluación cualitativa. Durante esta semana, Nerea se centró principalmente en el diseño de la interfaz. En la parte del diseño UI, elaboró los casos de uso, los wireframes y tanto los diagramas de user journey como los de flujo. Por otro lado, realizó el diagrama estático de clases y los diagramas dinámicos de secuencia incluyendo los del inicio de la aplicación y del evento de "add expense". Su trabajo no sólo se quedó ahí dejando una visión clara tanto de la interfaz como de la lógica de la aplicación para su equipo sino que también formó parte del desarrollo en partes como "añadir gasto", el widget del calendario, "añadir amigo" y algunas funciones del model y presenter.
+
+  
+   - Daniel García Figueroa(Analista).
+   
+     - Evaluación cuantitativa 3.
+	 
+	 - Evaluación cualitativa. Me he encargado de realizar el desarrollo de la aplicación céntrandome en un incio en el model, comprendiendo bien como funciona la api y que devuelve ante cada solicitud para posteriormente unir las funcionalidades del view con el model a través del presenter. Además, con el fin de comprender también el view de la aplicación, realicé numerosas funcionalidades y me encargue de mejorar su accesibilidad, mejores iconos, buscadores, controladores, menos clicks para realizar una tarea...
    
 ## Retrospectiva de la semana 2
 
