@@ -165,14 +165,12 @@ class View:
 
   # Abstract methods to be implemented by subclasses
   def show_empty_expense(self) -> None: pass
-  def show_no_one_expense(self) -> None: pass
   def show_add_expense(self) -> None: pass
   def show_expense_info(self, data: Expense) -> None: pass
   def show_edit_expense_info(self, expense: Expense) -> None: pass
   def clear_expenses_list_selection(self) -> None: pass
   def show_edited_expense_info(self, expense: Expense) -> None: pass
   def select_last_expenses_list_selection(self) -> None: pass
-  def show_no_one_expense(self) -> None: pass
   def show_loading(self) -> None: pass
   def show_no_internet(self) -> None: pass
   def show_pick_an_expense(self) -> None: pass
