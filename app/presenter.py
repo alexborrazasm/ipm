@@ -76,8 +76,7 @@ class Presenter(ViewHandler):
   def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None:
     # TODO manage API errors
     self.model.delete_friend_expense(expense_id, friend_id)
-    self.view.delete_expense(expense_id)
-    self.view.show_expense_info(data)
+    self.view.show_edited_expense_info(data)
     
   def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int, 
                                            amount: float, expense) -> None:

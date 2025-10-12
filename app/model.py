@@ -147,7 +147,7 @@ class Model:
       if r.ok:
         return True
       else:
-        print("ERROR get friends expense")
+        print(f"Error delete: {r.text}")
         return False
     except Exception as e:
       print(e)
