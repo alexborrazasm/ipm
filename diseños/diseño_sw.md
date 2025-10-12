@@ -23,8 +23,8 @@ classDiagram
         + on_cancel_edit_expense_clicked(data: Any)
         + on_delete_expense(id: int)
         + on_delete_friend_expense(expense_id: int, friend_id: int, data: Expense)
-        + on_confirm_add_credit_friend_expense(expense_id: int, friend_id: int, amount: float, expense)
-        + on_add_friend_expense(expense_id: Any, friend_id: Any, data: Any):
+        + on_delete_friend_expense(expense_id: int, friend_id: int, data)
+        + on_confirm_add_credit_friend_expense(expense_id: int, friend_id: int, amount: float, expense: Any)
     }
 
     class Model {
@@ -46,17 +46,17 @@ classDiagram
 
     class ViewHandler {
         <<interface>>
+        + get_friends_by_expense(expense_id: int) list[dict]
         + on_add_expense_clicked() 
-        + on_search_expense_clicked() 
-        + on_show_expense_info_clicked(data: Expense) 
         + on_confirm_add_new_expense_clicked(data: Expense) 
-        + on_cancel_add_expense_clicked() 
-        + on_cancel_edit_expense_clicked(data: Expense) 
+        + on_cancel_add_expense_clicked()
+        + on_show_expense_info_clicked(data: Expense)
         + on_edit_expense_clicked(data: Expense) 
         + on_confirm_edit_expense_clicked(payload, data: Expense) 
+        + on_cancel_edit_expense_clicked(data: Expense) 
         + on_delete_expense(id: int) 
+        + on_add_friend_expense(expense_id, friend_id, data: Any)
         + on_delete_friend_expense(expense_id: int, friend_id: int, data: Expense) 
-        + get_friends_by_expense(expense_id: int) list[dict]
         + on_confirm_add_credit_friend_expense(expense_id: int, friend_id: int, amount: float, expense: Any)
     }
 
@@ -95,22 +95,21 @@ classDiagram
         + update_expense(data: list) 
         + add_expense(item: Any) Expense
         + delete_expense(id: int) 
-        + build_menu() Gtk.Widget
-        + show_empty_expense() 
-        + show_no_one_expense() 
+        - _build_menu() Gtk.Widget
+        + on_activate(app: Adw.Application)
+        + clear_expenses_list_selection() 
+        + select_last_expenses_list_selection() 
+        + set_sidebar_sensitive(boolean: bool)
+        + show_pick_an_expense() 
+        + show_no_one_expense
         + show_add_expense() 
         + show_expense_info(data: Expense) 
-        + show_edit_expense_info(expense: Expense) 
-        + clear_expenses_list_selection() 
         + show_edited_expense_info(expense: Expense) 
-        + select_last_expenses_list_selection() 
-        + show_no_one_expense
+        + show_edit_expense_info(expense: Expense) 
+        + show_add_friend_credit_expense_info(amount: float, expense: Expense)
         + show_loading() 
         + show_no_internet() 
-        + show_pick_an_expense() 
-        + set_sidebar_sensitive(boolean: bool)
-        + clear_search_filter_entry()
-        + show_add_friend_credit_expense_info(amount: float, expense: Expense)
+        + show_empty_expense() 
     }
 
     class AdwView {
@@ -128,14 +127,12 @@ classDiagram
         - _form_entry_amount
         - _form_entry_date
         - _stack: Adw.ViewStack
-        - _filter_expenses(search_text):
-        + clear_filter_expense():
-        + on_activate(app: Adw.Application) 
-        + clear_expenses_list_selection() 
-        + select_last_expenses_list_selection() 
-        + set_sidebar_sensitive(boolean: bool)
-        - _build(app: Adw.Application) 
-        + toggle_search():
+        - _filter_expenses(search_text: Any)
+        - _clear_filter_expense()
+        - _toggle_search()
+        - _toggle_search()
+        - _show_about(action: Gio.SimpleAction, param: Any) 
+        - _build(app: Adw.Application)
         - _build_side_bar() Gtk.Widget
         - _build_empty_expense_msg() Adw.ToolbarView
         - _build_loading_page() Adw.ToolbarView
@@ -145,18 +142,6 @@ classDiagram
         - _build_edit_expense(expense: Expense) Adw.ToolbarView
         - _build_add_expense() Adw.ToolbarView
         - _build_expense_info(data: Expense) Adw.ToolbarView
-        + show_about(action: Gio.SimpleAction, param: Any) 
-        + show_pick_an_expense()
-        + show_no_one_expense()
-        + show_add_expense() Gtk.Box
-        + show_expense_info(expense: Expense)
-        + show_edited_expense_info(expense: Expense)
-        + show_edit_expense_info(expense: Expense)
-        + show_add_friend_credit_expense_info(amount: float, expense: Expense)
-        + show_loading()
-        + show_no_internet()
-        + delete_expense(id: int)
-        + show_empty_expense()
     }
 
     %% Relationships

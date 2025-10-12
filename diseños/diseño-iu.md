@@ -74,4 +74,11 @@ flowchart LR
     H --> |Close| D
 
     F --> |View| D
+
+    E --> |Add Expense| D
+
+    C --> |Retry| A
 ```
+
+> Nota: "Loading Screen" y "No Internet Screen" están las vistas hechas pero no
+están conectadas al flujo de la aplicación (pendiente para la tarea 2)
