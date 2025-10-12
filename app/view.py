@@ -161,6 +161,7 @@ class View:
     dots = Gtk.MenuButton()
     dots.set_popover(popover)
     dots.set_icon_name("open-menu-symbolic")
+    dots.set_tooltip_text("Main Menu")
     return dots
 
   # Abstract methods to be implemented by subclasses
@@ -300,18 +301,20 @@ class AdwView(View):
       main_header.set_show_end_title_buttons(False)
       
       add_button = Gtk.Button(icon_name="list-add-symbolic")
-      add_button.connect('clicked', lambda _wg: self.handler.on_add_expense_clicked())
+      add_button.set_tooltip_text("Add An Expense")
+      add_button.connect('clicked', 
+                         lambda _wg: self.handler.on_add_expense_clicked())
 
-      search_button = Gtk.ToggleButton(icon_name="system-search-symbolic")
-      self._search_button = search_button
+      self._search_button = Gtk.ToggleButton(icon_name="system-search-symbolic")
+      self._search_button.set_tooltip_text("Search")     
 
       def on_search_clicked(_wg):
         self.toggle_search()
 
-      search_button.connect('clicked', on_search_clicked)
+      self._search_button.connect('clicked', on_search_clicked)
 
       menu = self.build_menu()
-      main_header.pack_start(search_button)
+      main_header.pack_start(self._search_button)
       main_header.pack_start(add_button)
       main_header.pack_end(menu)
 
@@ -667,7 +670,7 @@ class AdwView(View):
 
     # Header bar
     header = Adw.HeaderBar()
-    header.set_title_widget(Gtk.Label(label="Edit expense"))
+    header.set_title_widget(Gtk.Label(label="Edit Expense"))
 
     # Button Cancel
     cancel_button = Gtk.Button(label="Cancel")
@@ -865,11 +868,10 @@ class AdwView(View):
       spin = Gtk.SpinButton(adjustment=adjustment, digits=2)
       spin.set_value(0.0)
       spin.set_hexpand(True)
-      spin.set_halign(Gtk.Align.CENTER)
       
       # Create dialog content
       header = Adw.HeaderBar()
-      title_label = Gtk.Label(label="Add credit")
+      title_label = Gtk.Label(label="Add Credit")
       title_label.set_halign(Gtk.Align.CENTER)
       title_label.set_hexpand(True)
       header.set_title_widget(title_label)
@@ -888,7 +890,6 @@ class AdwView(View):
       content_box.set_margin_bottom(12)
       content_box.set_margin_start(12)
       content_box.set_margin_end(12)
-      content_box.set_halign(Gtk.Align.CENTER)
       content_box.set_valign(Gtk.Align.CENTER)
     
       content_box.append(spin)
@@ -935,19 +936,16 @@ class AdwView(View):
       image = Gtk.Image.new_from_icon_name("avatar-default-symbolic")
       
       # Add credit button
-      label = Gtk.Label(label="€")
-      label.set_margin_top(2)
-      label.set_margin_bottom(2)
-      label.add_css_class("title-3")
-      add_credit_button = Gtk.Button()
-      add_credit_button.set_child(label)
+      add_credit_button = Gtk.Button.new_from_icon_name("list-add-symbolic")
       add_credit_button.add_css_class("flat")
+      add_credit_button.set_tooltip_text("Add Credit")
       add_credit_button.connect("clicked", on_add_credit_clicked, expense, item)
       
       # Remove button
       delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic")
       delete_button.add_css_class("flat")
       delete_button.add_css_class("destructive-action")
+      delete_button.set_tooltip_text("Remove Friend")
       delete_button.connect("clicked", on_remove_friend_expense_clicked, 
                             expense, item)
       
@@ -991,7 +989,7 @@ class AdwView(View):
       return hbox
     
     def build_add_friend_row(expense: Expense) -> Gtk.Widget:
-      row = Adw.ActionRow(title="Add friend")
+      row = Adw.ActionRow(title="Add Friend")
       row.add_prefix(Gtk.Image.new_from_icon_name("list-add-symbolic"))
       row.set_activatable(True)
       row.connect("activated", on_add_friend_clicked, expense)
@@ -1246,7 +1244,8 @@ class AdwView(View):
                        flags=GObject.BindingFlags.SYNC_CREATE)
     edit_button = Gtk.Button(icon_name="document-edit-symbolic")
     edit_button.connect(
-        'clicked', lambda _wg: self.handler.on_edit_expense_clicked(data))  
+        'clicked', lambda _wg: self.handler.on_edit_expense_clicked(data))
+    edit_button.set_tooltip_text("Edit Expense")
     header.pack_end(edit_button)
 
     toolbar_view.add_top_bar(header)
@@ -1295,7 +1294,7 @@ class AdwView(View):
 
     old = self._stack.get_child_by_name("pick_an_expense")
     if not old:
-      pick_an_expense = self._build_empty_expense_msg("Pick an expense",
+      pick_an_expense = self._build_empty_expense_msg("Pick an Expense",
                                             "dialog-information-symbolic")
       self._stack.add_titled(pick_an_expense, "pick_an_expense", "Pick an expense")
     
@@ -1305,7 +1304,7 @@ class AdwView(View):
     
     old = self._stack.get_child_by_name("no_one_expense")
     if not old:
-      no_one_expense = self._build_empty_expense_msg("Add an expense", 
+      no_one_expense = self._build_empty_expense_msg("Add an Expense", 
                                                      "list-add-symbolic")
       self._stack.add_titled(no_one_expense, "no_one_expense", "No One Expense")
     
