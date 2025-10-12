@@ -1125,9 +1125,8 @@ class AdwView(View):
         add_button.set_sensitive(has_selection)
 
       listbox.connect("selected-rows-changed", on_selection_changed)
-      add_button.set_sensitive(False)  # Initially disabled
+      add_button.set_sensitive(False)
 
-      # Make Enter key trigger add action when a row is selected
       def on_row_activated(listbox, row):
         if row:
           on_add(None)
@@ -1152,7 +1151,6 @@ class AdwView(View):
       dialog.add_controller(shortcut_controller)
 
       dialog.present(window)
-
 
     def on_remove_expense_clicked(button, expense: Expense):
       # Get the parent window from the button

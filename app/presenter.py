@@ -17,7 +17,6 @@ class Presenter(ViewHandler):
     self.view.update_expenses(expenses)
     self.view.update_friends(friends)
 
-
     run(application_id=application_id, on_activate=self.view.on_activate)
 
   def get_friends_by_expense(self, expense_id: int) -> list[dict]:
