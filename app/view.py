@@ -257,7 +257,7 @@ class AdwView(View):
     self._search_button.set_active(False)
     self._filter_expenses(None)
 
-  def _toggle_search(self):
+  def _toggle_search(self) -> None:
     is_search_visible = self._search_box.get_visible()
     self._search_box.set_visible(not is_search_visible)
 
@@ -270,7 +270,7 @@ class AdwView(View):
       self._filter_expenses(None)
       self._search_button.set_active(False)
 
-  def _show_about(self, action: Gio.SimpleAction, param: Any):
+  def _show_about(self, action: Gio.SimpleAction, param: Any) -> None:
     self._about = Adw.AboutDialog()
     self._about.set_title("About")
     # Makes the dialog always appear in from of the parent window
