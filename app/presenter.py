@@ -83,6 +83,8 @@ class Presenter(ViewHandler):
     self.model.add_friend_expense_credit(expense_id, friend_id, amount)
     self.view.show_add_friend_credit_expense_info(amount, expense)
 
-  #def on_retry_conection(self) -> None:
-  #def on_no_one_expense(self) -> None:
-    #self.view.show_no_one_expense()
+  def on_add_friend_expense(self, expense_id, friend_id, data):
+    # TODO manage API errors
+    self.model.add_friend_expense(expense_id, friend_id)
+    self.view.show_edited_expense_info(data)
+  

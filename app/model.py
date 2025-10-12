@@ -152,18 +152,21 @@ class Model:
     except Exception as e:
       print(e)
       return False  # TODO: proper error handling
-
+    
   def add_friend_expense(self, expense_id: int, friend_id: int) -> bool:
     try:
-      r = requests.post(f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}")
+      r = requests.post(
+        f"{SERVER_URL}/expenses/{expense_id}/friends", 
+        params={"friend_id": friend_id}               
+      )
       if r.ok:
         return True
       else:
         print("Failed to add friend to expense")
         return False
     except Exception as e:
-      print(e)
-      return False  # TODO: proper error handling  
+        print(e)
+        return False  # TODO: proper error handling
     
   def add_friend_expense_credit(self, expense_id: int, friend_id: int, 
                            amount: float) -> bool:

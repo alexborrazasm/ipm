@@ -29,8 +29,7 @@ class ViewHandler(Protocol):
   def on_delete_friend_expense(self, expense_id: int, friend_id: int, data) -> None: pass
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
   def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int, 
-                                           amount: float, expense) -> None: 
-    pass
+                                           amount: float, expense) -> None: pass
 
 # Data models
 class Friend(GObject.GObject):
@@ -994,73 +993,165 @@ class AdwView(View):
       row = Adw.ActionRow(title="Add friend")
       row.add_prefix(Gtk.Image.new_from_icon_name("list-add-symbolic"))
       row.set_activatable(True)
-      row.connect("activated", lambda r: on_add_friend_clicked(expense))
+      row.connect("activated", on_add_friend_clicked, expense)
       return row
 
-    def on_add_friend_clicked(expense: Expense) -> None:
-      win = self.window
-
-      expense_friends_ids = {f.id for f in expense.friends}
+    def on_add_friend_clicked(row, expense: Expense) -> None:
+      window = row.get_root()
+      
+      expense_friend_ids = {f.id for f in expense.friends}
       available_friends = [
-        f for f in self.data_model_friends if f.id not in expense_friends_ids
+          f for f in self.data_model_friends if f.id not in expense_friend_ids
       ]
-
+      
       if not available_friends:
         dialog = Adw.MessageDialog(
-          transient_for=win,
+          transient_for=window,
           modal=True,
           heading="No more friends available",
-          body="You have already added all your friends to this expense.",
+          body="You have already added all your friends to this expense."
         )
-
         dialog.add_response("ok", "OK")
         dialog.set_response_appearance("ok", Adw.ResponseAppearance.SUGGESTED)
-        dialog.connect("response", lambda d, r: d.destroy())
+        dialog.connect("response", lambda d, r: d.close())
         dialog.present()
         return
 
-      dialog = Adw.MessageDialog(
-        transient_for=win,
-        modal=True,
-        heading="Add a friend",
-        body="Select a friend to add to this expense:",
-      )
+      # Create dialog
+      dialog = Adw.Dialog()
+      dialog.set_content_width(350)
+      dialog.set_content_height(450)
 
+      # Header
+      header = Adw.HeaderBar()
+      title_label = Gtk.Label(label="Add Friend")
+      title_label.set_halign(Gtk.Align.CENTER)
+      title_label.set_hexpand(True)
+      header.set_title_widget(title_label)
+      header.set_show_end_title_buttons(False)
+      header.set_show_start_title_buttons(False)
+
+      cancel_button = Gtk.Button(label="Cancel")
+      header.pack_start(cancel_button)
+
+      add_button = Gtk.Button(label="Add")
+      add_button.add_css_class("suggested-action")
+      header.pack_end(add_button)
+
+      # Search Entry
+      search_entry = Gtk.SearchEntry()
+      search_entry.set_placeholder_text("Search friends...")
+      search_entry.set_hexpand(True)
+      search_entry.set_margin_top(12)
+      search_entry.set_margin_start(12)
+      search_entry.set_margin_end(12)
+
+      # Friends list
       listbox = Gtk.ListBox()
-      listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
+      listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
       listbox.add_css_class("boxed-list")
 
       friend_map = {}
+      all_friend_rows = [] 
 
-      for friend in available_friends:
+      def create_friend_row(friend):
         row = Adw.ActionRow(title=friend.name)
         row.set_activatable(True)
         listbox.append(row)
         friend_map[row] = friend
+        all_friend_rows.append((row, friend))
+        return row
+
+      for friend in available_friends:
+        create_friend_row(friend)
+
+      # Filter function
+      def filter_friends(search_text=None):
+        if not search_text:
+          for row, friend in all_friend_rows:
+            row.set_visible(True)
+        else:
+            search_text_lower = search_text.lower()
+            for row, friend in all_friend_rows:
+              if search_text_lower in friend.name.lower():
+                row.set_visible(True)
+              else:
+                row.set_visible(False)
+
+      # Connect search entry
+      def on_search_changed(entry):
+        search_text = entry.get_text()
+        filter_friends(search_text)
+
+      search_entry.connect('search-changed', on_search_changed)
 
       scrolled = Gtk.ScrolledWindow()
       scrolled.set_child(listbox)
       scrolled.set_min_content_height(200)
       scrolled.set_vexpand(True)
 
-      dialog.set_extra_child(scrolled)
+      # Dialog content
+      content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+      content_box.set_margin_top(6)
+      content_box.set_margin_bottom(12)
+      content_box.set_margin_start(12)
+      content_box.set_margin_end(12)
+      #content_box.append(Gtk.Label(label="Select a friend to add:"))
+      content_box.append(search_entry)
+      content_box.append(scrolled)
 
-      dialog.add_response("cancel", "Cancel")
-      dialog.add_response("add", "Add")
-      dialog.set_response_appearance("add", Adw.ResponseAppearance.SUGGESTED)
-      dialog.set_default_response("add")
+      toolbar_view = Adw.ToolbarView()
+      toolbar_view.add_top_bar(header)
+      toolbar_view.set_content(content_box)
+      dialog.set_child(toolbar_view)
 
-      def on_response(dialog, response):
-        if response == "add":
+      # Actions
+      def on_cancel(btn):
+          dialog.close()
+
+      def on_add(btn):
           selected_row = listbox.get_selected_row()
           if selected_row:
             selected_friend = friend_map[selected_row]
             self.handler.on_add_friend_expense(expense.id, selected_friend.id, expense)
-        dialog.destroy()
+          dialog.close()
 
-      dialog.connect("response", on_response)
+      cancel_button.connect("clicked", on_cancel)
+      add_button.connect("clicked", on_add)
 
-      dialog.present()      
+      # Enable/disable add button
+      def on_selection_changed(listbox):
+        has_selection = listbox.get_selected_row() is not None
+        add_button.set_sensitive(has_selection)
+
+      listbox.connect("selected-rows-changed", on_selection_changed)
+      add_button.set_sensitive(False)  # Initially disabled
+
+      # Make Enter key trigger add action when a row is selected
+      def on_row_activated(listbox, row):
+        if row:
+          on_add(None)
+
+      listbox.connect("row-activated", on_row_activated)
+
+      # Focus search entry when dialog opens
+      def on_dialog_mapped(widget):
+        search_entry.grab_focus()
+
+      dialog.connect("map", on_dialog_mapped)
+
+      # Keyboard shortcut for search (Ctrl+F)
+      shortcut_controller = Gtk.ShortcutController()
+      shortcut_controller.set_scope(Gtk.ShortcutScope.LOCAL)
+      
+      trigger = Gtk.ShortcutTrigger.parse_string("<Ctrl>F")
+      action = Gtk.CallbackAction.new(lambda *args: search_entry.grab_focus())
+      shortcut = Gtk.Shortcut.new(trigger, action)
+      shortcut_controller.add_shortcut(shortcut)
+      
+      dialog.add_controller(shortcut_controller)
+
+      dialog.present(window)
 
 
     def on_remove_expense_clicked(button, expense: Expense):
