@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Callable, Protocol, Any
 from datetime import datetime
 
+import locale
 import gi
 
 gi.require_version('Gtk', '4.0')
@@ -288,6 +289,17 @@ class View:
     # myappicon.png must be uploaded in ~/.local/share/icons or /usr/share/icons
 
     self._about.present(self.window)      
+  
+  def _format_date(self, date_str: str) -> str:
+    if not date_str:
+      return ""
+    try:
+      date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+      locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')
+      return date_obj.strftime("%a %d %b, %Y") 
+    except ValueError:
+      return date_str  # Return the original string if parsing fails
+    
   # ===== END Helper private methods ======  
   
   # ===== START building UI private methods =====
@@ -599,9 +611,9 @@ class View:
       formatted_date = date
     else:
       now = datetime.now()
-      formatted_date = f"{now.year}-{now.month:02d}-{now.day:02d}" 
+      formatted_date = f"{now.year}-{now.month:02d}-{now.day:02d}"
 
-    date_row.set_subtitle(formatted_date)
+    date_row.set_subtitle(self._format_date(formatted_date))
     self._form_entry_date = formatted_date
 
     calendar = Gtk.Calendar()
@@ -619,7 +631,7 @@ class View:
         month = date_obj.get_month()
         day = date_obj.get_day_of_month()
         formatted_date = f"{year}-{month:02d}-{day:02d}"
-        date_row.set_subtitle(formatted_date)
+        date_row.set_subtitle(self._format_date(formatted_date))
         self._form_entry_date = formatted_date
         date_popover.popdown()
 
@@ -630,7 +642,7 @@ class View:
         month = date_obj.get_month()
         day = date_obj.get_day_of_month()
         formatted_date = f"{year}-{month:02d}-{day:02d}"
-        date_row.set_subtitle(formatted_date)
+        date_row.set_subtitle(self._format_date(formatted_date))
         self._form_entry_date = formatted_date
         date_popover.popdown()
         return True
@@ -826,7 +838,8 @@ class View:
  
       # Date
       row = Adw.ActionRow(title="Date")
-      data.bind_property("date", row, "subtitle",
+      data.bind_property("date", row, "subtitle", 
+                         transform_to=lambda b, v: self._format_date(v),
                          flags=GObject.BindingFlags.SYNC_CREATE)
       row.set_activatable(True)
       row.set_selectable(False)
