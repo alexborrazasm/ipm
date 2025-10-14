@@ -212,6 +212,7 @@ class View:
 
   def set_sidebar_sensitive(self, boolean: bool) -> None:
     self._sidebar_page.set_sensitive(boolean)
+    self._content_page.set_can_pop(boolean)
   # ===== END public methods =====
 
   # ===== START Helper private methods =====
