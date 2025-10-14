@@ -81,7 +81,7 @@ class Expense(GObject.GObject):
 # ===== END Data models =====
 
 # ===== START View classes =====
-# Abstract view interface
+# Concrete implementation of the view using GTK and ADW
 class View:
   def __init__(self):
     self.handler = None
@@ -92,6 +92,27 @@ class View:
     self.entry_amount = None
     self.entry_friends = None
     self.entry_credit_balance = None
+
+    self.window = None          # type: Adw.ApplicationWindow
+    self._expenses_list = None  # type: Gtk.ListBox
+    self._about = None          # type: Adw.AboutDialog
+    self._sidebar_header = None # type: Adw.HeaderBar
+    self._split_view = None     # type: Adw.NavigationSplitView
+    self._content_page = None   # type: Adw.NavigationPage
+    self._sidebar_page = None   # type: Gtk.Widget
+    self._search_box = None     # type: Gtk.Box
+    self._search_entry = None   # type: Gtk.SearchEntry
+    self._search_button = None  # type: Gtk.ToggleButton
+
+    # Forms
+    self._form_entry_description = None # type: Adw.EntryRow
+    self._form_entry_amount = None      # type: Adw.EntryRow
+    self._form_entry_date = None        # type: Adw.EntryRow
+
+    # Stack of views
+    self._stack = None # type: Adw.Stack
+
+    
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
@@ -173,46 +194,6 @@ class View:
     dots.set_icon_name("open-menu-symbolic")
     dots.set_tooltip_text("Main Menu")
     return dots
-
-  # Abstract methods to be implemented by subclasses
-  def on_activate(self, app: Adw.Application) -> None: pass
-  def clear_expenses_list_selection(self) -> None: pass
-  def select_last_expenses_list_selection(self) -> None: pass
-  def set_sidebar_sensitive(self, boolean: bool): pass
-
-  def show_pick_an_expense(self) -> None: pass
-  def show_no_one_expense(self) -> None: pass
-  def show_add_expense(self) -> None: pass
-  def show_expense_info(self, data: Expense) -> None: pass
-  def show_edited_expense_info(self, expense: Expense) -> None: pass
-  def show_edit_expense_info(self, expense: Expense) -> None: pass
-  def show_add_friend_credit_expense_info(self, amount: float, expense: Expense) -> None: pass
-  def show_loading(self) -> None: pass
-  def show_no_internet(self) -> None: pass
-  def show_empty_expense(self) -> None: pass
-
-# Concrete implementation of the view using GTK and ADW
-class AdwView(View):
-  def __init__(self):
-    super().__init__()
-    self.window = None          # type: Adw.ApplicationWindow
-    self._expenses_list = None  # type: Gtk.ListBox
-    self._about = None          # type: Adw.AboutDialog
-    self._sidebar_header = None # type: Adw.HeaderBar
-    self._split_view = None     # type: Adw.NavigationSplitView
-    self._content_page = None   # type: Adw.NavigationPage
-    self._sidebar_page = None   # type: Gtk.Widget
-    self._search_box = None     # type: Gtk.Box
-    self._search_entry = None   # type: Gtk.SearchEntry
-    self._search_button = None  # type: Gtk.ToggleButton
-
-    # Forms
-    self._form_entry_description = None # type: Adw.EntryRow
-    self._form_entry_amount = None      # type: Adw.EntryRow
-    self._form_entry_date = None        # type: Adw.EntryRow
-
-    # Stack of views
-    self._stack = None # type: Adw.Stack
 
   # ===== START public methods =====
   def on_activate(self, app: Adw.Application) -> None:
