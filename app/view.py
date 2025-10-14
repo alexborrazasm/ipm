@@ -377,18 +377,17 @@ class AdwView(View):
       def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
         image = Gtk.Image.new_from_icon_name("view-list-symbolic")
         
-        label1 = Gtk.Label(label=item.description, halign=Gtk.Align.START)
+        label1 = Gtk.Label(halign=Gtk.Align.START)
         label1.set_ellipsize(Pango.EllipsizeMode.END)  # Add "..."
         label1.set_single_line_mode(True)  # Force single-line truncation
         label1.set_xalign(0.0)  # Left align text
         item.bind_property("description", label1, "label", 
                             flags=GObject.BindingFlags.SYNC_CREATE)
 
-        label2 = Gtk.Label(label=f"{item.credit_balance:.2f}", 
-                            halign=Gtk.Align.START)
+        label2 = Gtk.Label(halign=Gtk.Align.START)
         label2.add_css_class("caption")
         item.bind_property("credit_balance", label2, "label", 
-          transform_to=lambda binding, value: f"{float(value):.2f} €"
+          transform_to=lambda binding, value: f"Balance: {float(value):.2f} €"
           if value not in (None, "") else "0.00 €",
           flags=GObject.BindingFlags.SYNC_CREATE
         )
