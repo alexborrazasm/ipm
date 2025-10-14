@@ -5,7 +5,6 @@
 ## Diagrama de clases
 
 ```mermaid
-
 classDiagram
 
     class Presenter {
@@ -79,7 +78,6 @@ classDiagram
     }
 
     class View {
-        <<abstract>>
         - handler: ViewHandler
         - data_model_friends: Gio.ListStore
         - data_model_expenses: Gio.ListStore
@@ -88,31 +86,7 @@ classDiagram
         - entry_amount
         - entry_friends
         - entry_credit_balance
-        + View()
-        + set_handler(handler: ViewHandler) 
-        + update_friends(data: list) 
-        + update_expenses(data: list) 
-        + update_expense(data: list) 
-        + add_expense(item: Any) Expense
-        + delete_expense(id: int) 
-        - _build_menu() Gtk.Widget
-        + on_activate(app: Adw.Application)
-        + clear_expenses_list_selection() 
-        + select_last_expenses_list_selection() 
-        + set_sidebar_sensitive(boolean: bool)
-        + show_pick_an_expense() 
-        + show_no_one_expense
-        + show_add_expense() 
-        + show_expense_info(data: Expense) 
-        + show_edited_expense_info(expense: Expense) 
-        + show_edit_expense_info(expense: Expense) 
-        + show_add_friend_credit_expense_info(amount: float, expense: Expense)
-        + show_loading() 
-        + show_no_internet() 
-        + show_empty_expense() 
-    }
 
-    class AdwView {
         - window: Adw.ApplicationWindow
         - _expenses_list: Gtk.ListBox
         - _about: Adw.AboutDialog
@@ -127,9 +101,22 @@ classDiagram
         - _form_entry_amount
         - _form_entry_date
         - _stack: Adw.ViewStack
+
+        + set_handler(handler: ViewHandler) 
+        + update_friends(data: list) 
+        + update_expenses(data: list) 
+        + update_expense(data: list) 
+        + add_expense(item: Any) Expense
+        + delete_expense(id: int) 
+        - _build_menu() Gtk.Widget
+
+        + on_activate(app: Adw.Application)
+        + clear_expenses_list_selection() 
+        + select_last_expenses_list_selection() 
+        + set_sidebar_sensitive(boolean: bool)
+
         - _filter_expenses(search_text: Any)
         - _clear_filter_expense()
-        - _toggle_search()
         - _toggle_search()
         - _show_about(action: Gio.SimpleAction, param: Any) 
         - _build(app: Adw.Application)
@@ -142,6 +129,17 @@ classDiagram
         - _build_edit_expense(expense: Expense) Adw.ToolbarView
         - _build_add_expense() Adw.ToolbarView
         - _build_expense_info(data: Expense) Adw.ToolbarView
+        + show_pick_an_expense() 
+        + show_no_one_expense
+        + show_add_expense() 
+        + show_expense_info(data: Expense) 
+        + show_edited_expense_info(expense: Expense) 
+        + show_edit_expense_info(expense: Expense) 
+        + show_add_friend_credit_expense_info(amount: float, expense: Expense)
+        + show_loading() 
+        + show_no_internet() 
+        + delete_expenses(id: Any)
+        + show_empty_expense()
     }
 
     %% Relationships
@@ -149,7 +147,6 @@ classDiagram
     View "1" --> "0..*" Expense : data_model_expenses
     Expense "1" --> "0..*" Friend : friends
     View --> ViewHandler : uses
-    AdwView --|> View
     Friend --|> GObject.GObject
     Expense --|> GObject.GObject
     Presenter ..|> ViewHandler
