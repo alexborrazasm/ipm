@@ -77,7 +77,7 @@ class Expense(GObject.GObject):
   def set_friends(self, friends: list[dict]):
     self.friends.remove_all()
     for f in friends:
-        self.friends.append(Friend(f["id"], f["name"], f["credit_balance"], f["debit_balance"]))
+      self.friends.append(Friend(f["id"], f["name"], f["credit_balance"], f["debit_balance"]))
 # ===== END Data models =====
 
 # ===== START View classes =====
@@ -117,6 +117,7 @@ class View:
     self._desc_btn = None
     self._amount_btn = None
     self._date_btn = None
+    self._remove_expense_btn = None
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
@@ -211,8 +212,8 @@ class View:
   def select_last_expenses_list_selection(self) -> None:
     total = self.data_model_expenses.get_n_items()
     if total > 0:
-        last_row = self._expenses_list.get_row_at_index(total - 1)
-        self._expenses_list.select_row(last_row)
+      last_row = self._expenses_list.get_row_at_index(total - 1)
+      self._expenses_list.select_row(last_row)
 
   def set_sidebar_sensitive(self, boolean: bool) -> None:
     self._sidebar_page.set_sensitive(boolean)
@@ -520,12 +521,12 @@ class View:
   def _build_loading_page(self) -> Adw.ToolbarView:
     # Main content box
     content_box = Gtk.Box(
-        orientation=Gtk.Orientation.VERTICAL,
-        spacing=12,
-        halign=Gtk.Align.CENTER,
-        valign=Gtk.Align.CENTER,
-        vexpand=True,
-        hexpand=True
+      orientation=Gtk.Orientation.VERTICAL,
+      spacing=12,
+      halign=Gtk.Align.CENTER,
+      valign=Gtk.Align.CENTER,
+      vexpand=True,
+      hexpand=True
     )
 
     # Spinner (loading indicator)
@@ -553,12 +554,12 @@ class View:
   def _build_no_internet_page(self) -> Adw.ToolbarView:
     # Main content box
     content_box = Gtk.Box(
-        orientation=Gtk.Orientation.VERTICAL,
-        spacing=12,
-        halign=Gtk.Align.CENTER,
-        valign=Gtk.Align.CENTER,
-        vexpand=True,
-        hexpand=True
+      orientation=Gtk.Orientation.VERTICAL,
+      spacing=12,
+      halign=Gtk.Align.CENTER,
+      valign=Gtk.Align.CENTER,
+      vexpand=True,
+      hexpand=True
     )
 
     # Network error icon
@@ -640,7 +641,7 @@ class View:
 
     # When the button is clicked, show the popover
     def on_calendar_button_clicked(btn):
-        date_popover.popup()
+      date_popover.popup()
 
     calendar_button.connect("clicked", on_calendar_button_clicked)
 
@@ -678,9 +679,6 @@ class View:
     key_controller.connect("key-pressed", on_key_pressed)
     calendar.add_controller(key_controller)
 
-    # Keep a reference to prevent garbage collection
-    self._date_popover = date_popover
-
     return date_row
   
   def _build_add_expense(self) -> Adw.ToolbarView:
@@ -715,14 +713,14 @@ class View:
     form.append(date_row)
 
     outer_box = Gtk.Box(
-        orientation=Gtk.Orientation.VERTICAL,
-        hexpand=True,
-        vexpand=True,
-        spacing=16,
-        margin_top=16,
-        margin_bottom=16,
-        margin_start=16,
-        margin_end=16
+      orientation=Gtk.Orientation.VERTICAL,
+      hexpand=True,
+      vexpand=True,
+      spacing=16,
+      margin_top=16,
+      margin_bottom=16,
+      margin_start=16,
+      margin_end=16
     )
 
     outer_box.append(self._build_clamp_content(form))
@@ -835,6 +833,7 @@ class View:
       
       # Events
       def on_edit_clicked(btn):
+        self._remove_expense_btn.set_sensitive(False)
         self._amount_btn.set_sensitive(False)
         self._date_btn.set_sensitive(False)
         self._friends_expense_info.set_sensitive(False)
@@ -844,6 +843,7 @@ class View:
         edit_row.grab_focus()
       
       def on_cancel_clicked(btn):
+        self._remove_expense_btn.set_sensitive(True)
         self._amount_btn.set_sensitive(True)
         self._date_btn.set_sensitive(True)
         self._friends_expense_info.set_sensitive(True)
@@ -851,6 +851,7 @@ class View:
         stack.set_visible_child_name("display")
     
       def on_save_clicked(btn):
+        self._remove_expense_btn.set_sensitive(True)
         self._amount_btn.set_sensitive(True)
         self._date_btn.set_sensitive(True)
         self._friends_expense_info.set_sensitive(True)
@@ -928,6 +929,7 @@ class View:
       
       # Events
       def on_edit_clicked(btn):
+        self._remove_expense_btn.set_sensitive(False)
         self._desc_btn.set_sensitive(False)
         self._date_btn.set_sensitive(False)
         self._friends_expense_info.set_sensitive(False)
@@ -937,6 +939,7 @@ class View:
         edit_row.grab_focus()
       
       def on_cancel_clicked(btn):
+        self._remove_expense_btn.set_sensitive(True)
         self._desc_btn.set_sensitive(True)
         self._date_btn.set_sensitive(True)
         self._friends_expense_info.set_sensitive(True)
@@ -944,6 +947,7 @@ class View:
         stack.set_visible_child_name("display")
     
       def on_save_clicked(btn):
+        self._remove_expense_btn.set_sensitive(True)
         self._desc_btn.set_sensitive(True)
         self._date_btn.set_sensitive(True)
         self._friends_expense_info.set_sensitive(True)
@@ -1013,7 +1017,6 @@ class View:
       action_box.append(cancel_btn)
       action_box.append(save_btn)
       calendar_row.add_suffix(action_box)
-      calendar_row.set_can_focus(False)  # Prevents GTK warning
       
       edit_container.append(calendar_row)
       
@@ -1028,6 +1031,7 @@ class View:
       
       # Events
       def on_edit_clicked(btn):
+        self._remove_expense_btn.set_sensitive(False)
         self._desc_btn.set_sensitive(False)
         self._amount_btn.set_sensitive(False)
         self._friends_expense_info.set_sensitive(False)
@@ -1035,6 +1039,7 @@ class View:
         stack.set_visible_child_name("edit")
       
       def on_cancel_clicked(btn):
+        self._remove_expense_btn.set_sensitive(True)
         self._desc_btn.set_sensitive(True)
         self._amount_btn.set_sensitive(True)
         self._friends_expense_info.set_sensitive(True)
@@ -1042,6 +1047,7 @@ class View:
         stack.set_visible_child_name("display")
       
       def on_save_clicked(btn):
+        self._remove_expense_btn.set_sensitive(True)
         self._desc_btn.set_sensitive(True)
         self._amount_btn.set_sensitive(True)
         self._friends_expense_info.set_sensitive(True)
@@ -1125,12 +1131,12 @@ class View:
       
       # Create SpinButton
       adjustment = Gtk.Adjustment(
-          value=0.0,
-          lower=-1_000_000_000,
-          upper=1_000_000_000,
-          step_increment=1,
-          page_increment=10,
-          page_size=0
+        value=0.0,
+        lower=-1_000_000_000,
+        upper=1_000_000_000,
+        step_increment=1,
+        page_increment=10,
+        page_size=0
       )
       spin = Gtk.SpinButton(adjustment=adjustment, digits=2)
       spin.set_value(0.0)
@@ -1181,11 +1187,11 @@ class View:
           dialog.close()
       
       def on_add(btn):
-          value = spin.get_value()
-          self.handler.on_confirm_add_credit_friend_expense(
-              expense.id, friend.id, value, expense
-          )
-          dialog.close()
+        value = spin.get_value()
+        self.handler.on_confirm_add_credit_friend_expense(
+            expense.id, friend.id, value, expense
+        )
+        dialog.close()
       
       cancel_button.connect("clicked", on_cancel)
       add_button.connect("clicked", on_add)
@@ -1193,7 +1199,7 @@ class View:
       
       # Make Add button activate on Enter
       def on_spin_activate(widget):
-          on_add(None)
+        on_add(None)
       spin.connect("activate", on_spin_activate)
       
       dialog.present(window)
@@ -1226,10 +1232,10 @@ class View:
 
       # Function to update balance label
       def update_balance_label(_obj=None, _pspec=None):
-          credit = float(item.credit_balance)
-          debit = float(item.debit_balance)
-          balance_label.set_label(f"Credit: {credit:+.2f} €   |   "
-                                  f"Debit: {debit:+.2f} €")
+        credit = float(item.credit_balance)
+        debit = float(item.debit_balance)
+        balance_label.set_label(f"Credit: {credit:+.2f} €   |   "
+                                f"Debit: {debit:+.2f} €")
 
       # Initial update
       update_balance_label()
@@ -1243,10 +1249,10 @@ class View:
       vbox.append(name_label)
       vbox.append(balance_label)
       hbox = Gtk.Box(
-          orientation=Gtk.Orientation.HORIZONTAL,
-          hexpand=True, spacing=16,
-          margin_start=8, margin_end=8,
-          margin_bottom=8, margin_top=8
+        orientation=Gtk.Orientation.HORIZONTAL,
+        hexpand=True, spacing=16,
+        margin_start=8, margin_end=8,
+        margin_bottom=8, margin_top=8
       )
       hbox.append(image)
       hbox.append(vbox)
@@ -1267,7 +1273,7 @@ class View:
       
       expense_friend_ids = {f.id for f in expense.friends}
       available_friends = [
-          f for f in self.data_model_friends if f.id not in expense_friend_ids
+        f for f in self.data_model_friends if f.id not in expense_friend_ids
       ]
       
       if not available_friends:
@@ -1333,12 +1339,12 @@ class View:
           for row, friend in all_friend_rows:
             row.set_visible(True)
         else:
-            search_text_lower = search_text.lower()
-            for row, friend in all_friend_rows:
-              if search_text_lower in friend.name.lower():
-                row.set_visible(True)
-              else:
-                row.set_visible(False)
+          search_text_lower = search_text.lower()
+          for row, friend in all_friend_rows:
+            if search_text_lower in friend.name.lower():
+              row.set_visible(True)
+            else:
+              row.set_visible(False)
 
       # Connect search entry
       def on_search_changed(entry):
@@ -1370,14 +1376,14 @@ class View:
 
       # Actions
       def on_cancel(btn):
-          dialog.close()
+        dialog.close()
 
       def on_add(btn):
-          selected_row = listbox.get_selected_row()
-          if selected_row:
-            selected_friend = friend_map[selected_row]
-            self.handler.on_add_friend_expense(expense.id, selected_friend.id, expense)
-          dialog.close()
+        selected_row = listbox.get_selected_row()
+        if selected_row:
+          selected_friend = friend_map[selected_row]
+          self.handler.on_add_friend_expense(expense.id, selected_friend.id, expense)
+        dialog.close()
 
       cancel_button.connect("clicked", on_cancel)
       add_button.connect("clicked", on_add)
@@ -1453,14 +1459,14 @@ class View:
     scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
     outer_box = Gtk.Box(
-        orientation=Gtk.Orientation.VERTICAL,
-        hexpand=True,
-        vexpand=True,
-        spacing=16,
-        margin_top=16,
-        margin_bottom=16,
-        margin_start=16,
-        margin_end=16
+      orientation=Gtk.Orientation.VERTICAL,
+      hexpand=True,
+      vexpand=True,
+      spacing=16,
+      margin_top=16,
+      margin_bottom=16,
+      margin_start=16,
+      margin_end=16
     )
     
     # Expense details
@@ -1491,6 +1497,7 @@ class View:
     remove_button.add_css_class("destructive-action")
     remove_button.set_halign(Gtk.Align.CENTER)
     remove_button.connect("clicked", on_remove_expense_clicked, data)
+    self._remove_expense_btn = remove_button # save reference
 
     outer_box.append(remove_button)
 
