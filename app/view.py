@@ -111,13 +111,6 @@ class View:
 
     # Stack of views
     self._stack = None # type: Adw.Stack
-    
-    # Expense info references
-    self._friends_expense_info = None
-    self._desc_btn = None
-    self._amount_btn = None
-    self._date_btn = None
-    self._remove_expense_btn = None
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
@@ -638,6 +631,7 @@ class View:
     date_popover.set_has_arrow(True)
     date_popover.set_position(Gtk.PositionType.BOTTOM)
     date_popover.set_parent(calendar_button)
+    self._calendar_popover = date_popover
 
     # When the button is clicked, show the popover
     def on_calendar_button_clicked(btn):
@@ -754,324 +748,65 @@ class View:
 
   def _build_expense_info(self, data: Expense) -> Adw.ToolbarView:
     
-    def build_listbox_expense_info(data: Expense) -> Gtk.ListBox:
+    def build_info_stack(data: Expense) -> Gtk.Widget:
+      stack = Gtk.Stack()
+      stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+
       listbox = Gtk.ListBox(hexpand=True)
       listbox.add_css_class("boxed-list")
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
-      # Description - Con botón editar
-      desc_row = create_editable_text_row(
-        title="Description",
-        initial_value=data.description,
-        data=data,
-        field_name="description"
-      )
-      listbox.append(desc_row)
+      # Description
+      row = Adw.ActionRow(title="Description")
+      data.bind_property("description", row, "subtitle",
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+      row.set_activatable(True)
+      row.set_selectable(False)
+      listbox.append(row)
 
-      # Amount - Con botón editar
-      amount_row = create_editable_amount_row(
-        title="Amount",
-        initial_value=data.amount,
-        data=data
+      # Amount
+      row = Adw.ActionRow(title="Amount")
+      data.bind_property("amount", row, "subtitle",
+        transform_to=lambda binding, value: f"{float(value):.2f} €"
+        if value not in (None, "") else "0.00 €",
+        flags=GObject.BindingFlags.SYNC_CREATE
       )
-      listbox.append(amount_row)
+      row.set_activatable(True)
+      row.set_selectable(False)
+      listbox.append(row)
+ 
+      # Date
+      row = Adw.ActionRow(title="Date")
+      data.bind_property("date", row, "subtitle", 
+                         transform_to=lambda b, v: self._format_date(data.date),
+                         flags=GObject.BindingFlags.SYNC_CREATE)
+      row.set_activatable(True)
+      row.set_selectable(False)
+      listbox.append(row)
 
-      # Date - Con botón editar
-      date_row = create_editable_date_row(
-        title="Date",
-        initial_value=data.date,
-        data=data
-      )
-      listbox.append(date_row)
+      stack.add_named(listbox, "display")
+      
+      # Edit expense info
+      listbox = Gtk.ListBox(hexpand=True)
+      listbox.add_css_class("boxed-list")
+      listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+            
+      self._form_entry_description = Adw.EntryRow(title="Description")
+      self._form_entry_description.set_text(data.description)
+      listbox.append(self._form_entry_description)
+      
+      self._form_entry_amount = Adw.EntryRow(title="Amount")
+      self._form_entry_amount.set_text(f"{data.amount}")      
+      listbox.append(self._form_entry_amount)
 
-      return listbox
-    
-    def create_editable_text_row(title: str, initial_value: str, 
-                                  data: Expense, field_name: str) -> Gtk.Box:
-      container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+      row = self._build_calendar(data.date)
+      listbox.append(row)
       
-      # Row to show info
-      display_row = Adw.ActionRow(title=title)
-      display_row.set_subtitle(initial_value)
-      
-      # Edit button
-      edit_btn = Gtk.Button(icon_name="document-edit-symbolic")
-      edit_btn.add_css_class("flat")
-      edit_btn.set_valign(Gtk.Align.CENTER)
-      self._desc_btn = edit_btn # Save reference to disable it
-      display_row.add_suffix(edit_btn)
-      
-      # Entry row for edit
-      edit_row = Adw.EntryRow(title=title)
-      edit_row.set_text(initial_value)
-      
-      # Action buttons
-      action_box = Gtk.Box(spacing=6)
-      action_box.set_valign(Gtk.Align.CENTER)
-      
-      cancel_btn = Gtk.Button(icon_name="window-close-symbolic")
-      cancel_btn.add_css_class("flat")
-      cancel_btn.set_tooltip_text("Cancel")
-      
-      save_btn = Gtk.Button(icon_name="object-select-symbolic")
-      save_btn.add_css_class("flat")
-      save_btn.add_css_class("suggested-action")
-      save_btn.set_tooltip_text("Save")
-      
-      action_box.append(cancel_btn)
-      action_box.append(save_btn)
-      edit_row.add_suffix(action_box)
-      
-      # Stack to switch info | edit
-      stack = Gtk.Stack()
-      stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-      stack.add_named(display_row, "display")
-      stack.add_named(edit_row, "edit")
-      stack.set_visible_child_name("display")
-      
-      container.append(stack)
-      
-      # Events
-      def on_edit_clicked(btn):
-        self._remove_expense_btn.set_sensitive(False)
-        self._amount_btn.set_sensitive(False)
-        self._date_btn.set_sensitive(False)
-        self._friends_expense_info.set_sensitive(False)
-        self.set_sidebar_sensitive(False)
-        edit_row.set_text(display_row.get_subtitle())
-        stack.set_visible_child_name("edit")
-        edit_row.grab_focus()
-      
-      def on_cancel_clicked(btn):
-        self._remove_expense_btn.set_sensitive(True)
-        self._amount_btn.set_sensitive(True)
-        self._date_btn.set_sensitive(True)
-        self._friends_expense_info.set_sensitive(True)
-        self.set_sidebar_sensitive(True)
-        stack.set_visible_child_name("display")
-    
-      def on_save_clicked(btn):
-        self._remove_expense_btn.set_sensitive(True)
-        self._amount_btn.set_sensitive(True)
-        self._date_btn.set_sensitive(True)
-        self._friends_expense_info.set_sensitive(True)
-        self.set_sidebar_sensitive(True)
-        new_value = edit_row.get_text()
-        
-        # Update API
-        payload = {
-          "id": data.id,
-          "description": new_value if field_name == "description" else data.description,
-          "date": data.date,
-          "amount": data.amount
-        }
-        self.handler.on_confirm_edit_expense_clicked(payload, data)
-        
-        # Update te view
-        display_row.set_subtitle(new_value)
-        stack.set_visible_child_name("display")
-    
-      def on_entry_activate(entry):
-        on_save_clicked(None)
-      
-      edit_btn.connect("clicked", on_edit_clicked)
-      cancel_btn.connect("clicked", on_cancel_clicked)
-      save_btn.connect("clicked", on_save_clicked)
-      edit_row.connect("activate", on_entry_activate)
-      
-      return container
-    
-    def create_editable_amount_row(title: str, initial_value: float, 
-                                    data: Expense) -> Gtk.Box:
-      container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-      
-      # Row to show info
-      display_row = Adw.ActionRow(title=title)
-      display_row.set_subtitle(f"{float(initial_value):.2f} €")
-      
-      # Edit button
-      edit_btn = Gtk.Button(icon_name="document-edit-symbolic")
-      edit_btn.add_css_class("flat")
-      edit_btn.set_valign(Gtk.Align.CENTER)
-      self._amount_btn = edit_btn # Save reference to disable it
-      display_row.add_suffix(edit_btn)
-      
-      # Entry row for edit
-      edit_row = Adw.EntryRow(title=title)
-      edit_row.set_text(str(initial_value))
-      edit_row.set_input_purpose(Gtk.InputPurpose.NUMBER)
-      
-      # Action buttons
-      action_box = Gtk.Box(spacing=6)
-      action_box.set_valign(Gtk.Align.CENTER)
-      
-      cancel_btn = Gtk.Button(icon_name="window-close-symbolic")
-      cancel_btn.add_css_class("flat")
-      cancel_btn.set_tooltip_text("Cancel")
-      
-      save_btn = Gtk.Button(icon_name="object-select-symbolic")
-      save_btn.add_css_class("flat")
-      save_btn.add_css_class("suggested-action")
-      save_btn.set_tooltip_text("Save")
-      
-      action_box.append(cancel_btn)
-      action_box.append(save_btn)
-      edit_row.add_suffix(action_box)
-      
-      # Stack
-      stack = Gtk.Stack()
-      stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-      stack.add_named(display_row, "display")
-      stack.add_named(edit_row, "edit")
-      stack.set_visible_child_name("display")
-      
-      container.append(stack)
-      
-      # Events
-      def on_edit_clicked(btn):
-        self._remove_expense_btn.set_sensitive(False)
-        self._desc_btn.set_sensitive(False)
-        self._date_btn.set_sensitive(False)
-        self._friends_expense_info.set_sensitive(False)
-        self.set_sidebar_sensitive(False)
-        edit_row.set_text(str(initial_value))
-        stack.set_visible_child_name("edit")
-        edit_row.grab_focus()
-      
-      def on_cancel_clicked(btn):
-        self._remove_expense_btn.set_sensitive(True)
-        self._desc_btn.set_sensitive(True)
-        self._date_btn.set_sensitive(True)
-        self._friends_expense_info.set_sensitive(True)
-        self.set_sidebar_sensitive(True)
-        stack.set_visible_child_name("display")
-    
-      def on_save_clicked(btn):
-        self._remove_expense_btn.set_sensitive(True)
-        self._desc_btn.set_sensitive(True)
-        self._date_btn.set_sensitive(True)
-        self._friends_expense_info.set_sensitive(True)
-        self.set_sidebar_sensitive(True)
-        new_value = float(edit_row.get_text())
-        
-        # Update API
-        payload = {
-          "id": data.id,
-          "description": data.description,
-          "date": data.date,
-          "amount": new_value
-        }
-        self.handler.on_confirm_edit_expense_clicked(payload, data)
-        
-        # Update view
-        display_row.set_subtitle(f"{new_value:.2f} €")
-        stack.set_visible_child_name("display")
-      
-      def on_entry_activate(entry):
-        on_save_clicked(None)
-      
-      def on_text_changed(entry):
-        entry.remove_css_class("error")
-      
-      edit_btn.connect("clicked", on_edit_clicked)
-      cancel_btn.connect("clicked", on_cancel_clicked)
-      save_btn.connect("clicked", on_save_clicked)
-      edit_row.connect("activate", on_entry_activate)
-      edit_row.connect("changed", on_text_changed)
-      
-      return container
-    
-    def create_editable_date_row(title: str, initial_value: str, 
-                                  data: Expense) -> Gtk.Widget:
-      container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-      
-      # Row to show info
-      display_row = Adw.ActionRow(title=title)
-      display_row.set_subtitle(self._format_date(data.date))
-      
-      # Edit button
-      edit_btn = Gtk.Button(icon_name="document-edit-symbolic")
-      edit_btn.add_css_class("flat")
-      edit_btn.set_valign(Gtk.Align.CENTER)
-      self._date_btn = edit_btn # Save reference to disable it
-      display_row.add_suffix(edit_btn)
-      
-      # Container for edit
-      edit_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-      
-      # Action buttons and calendar
-      calendar_row = self._build_calendar(data.date)
-      
-      action_box = Gtk.Box(spacing=6)
-      action_box.set_valign(Gtk.Align.CENTER)
-      
-      cancel_btn = Gtk.Button(icon_name="window-close-symbolic")
-      cancel_btn.add_css_class("flat")
-      cancel_btn.set_tooltip_text("Cancel")
-      
-      save_btn = Gtk.Button(icon_name="object-select-symbolic")
-      save_btn.add_css_class("flat")
-      save_btn.add_css_class("suggested-action")
-      save_btn.set_tooltip_text("Save")
-      
-      action_box.append(cancel_btn)
-      action_box.append(save_btn)
-      calendar_row.add_suffix(action_box)
-      
-      edit_container.append(calendar_row)
-      
-      # Stack
-      stack = Gtk.Stack()
-      stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-      stack.add_named(display_row, "display")
-      stack.add_named(edit_container, "edit")
-      stack.set_visible_child_name("display")
-      
-      container.append(stack)
-      
-      # Events
-      def on_edit_clicked(btn):
-        self._remove_expense_btn.set_sensitive(False)
-        self._desc_btn.set_sensitive(False)
-        self._amount_btn.set_sensitive(False)
-        self._friends_expense_info.set_sensitive(False)
-        self.set_sidebar_sensitive(False)
-        stack.set_visible_child_name("edit")
-      
-      def on_cancel_clicked(btn):
-        self._remove_expense_btn.set_sensitive(True)
-        self._desc_btn.set_sensitive(True)
-        self._amount_btn.set_sensitive(True)
-        self._friends_expense_info.set_sensitive(True)
-        self.set_sidebar_sensitive(True)
-        stack.set_visible_child_name("display")
-      
-      def on_save_clicked(btn):
-        self._remove_expense_btn.set_sensitive(True)
-        self._desc_btn.set_sensitive(True)
-        self._amount_btn.set_sensitive(True)
-        self._friends_expense_info.set_sensitive(True)
-        self.set_sidebar_sensitive(True)
-        new_date = self._form_entry_date
-        
-        # Update API
-        payload = {
-          "id": data.id,
-          "description": data.description,
-          "date": new_date,
-          "amount": data.amount
-        }
-        self.handler.on_confirm_edit_expense_clicked(payload, data)
-        
-        # Update the view
-        display_row.set_subtitle(new_date)
-        stack.set_visible_child_name("display")
-      
-      edit_btn.connect("clicked", on_edit_clicked)
-      cancel_btn.connect("clicked", on_cancel_clicked)
-      save_btn.connect("clicked", on_save_clicked)
-      
-      return container    
+      stack.add_named(listbox, "edit")
+
+      stack.set_visible_child_name("display") 
+
+      return stack
 
     def build_listbox_balance(data: Expense) -> Gtk.ListBox:
       
@@ -1451,7 +1186,7 @@ class View:
 
       # Show the dialog
       dialog.present()
-
+    
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
     scrolled.set_vexpand(True)
@@ -1471,8 +1206,8 @@ class View:
     
     # Expense details
     group_expenses = Adw.PreferencesGroup(title="Details")
-    listbox_info = build_listbox_expense_info(data)
-    group_expenses.add(listbox_info)
+    stack_info = build_info_stack(data)
+    group_expenses.add(stack_info)
     clamp_info = self._build_clamp_content(group_expenses)
     outer_box.append(clamp_info)
     listbox_balance = build_listbox_balance(data)
@@ -1481,7 +1216,6 @@ class View:
 
     # Friends involved in the expense
     group_friends = Adw.PreferencesGroup(title="Friends")
-    self._friends_expense_info = group_friends # save reference
     listbox_friends = Gtk.ListBox(hexpand=True)
     listbox_friends.add_css_class("boxed-list") 
     listbox_friends.set_selection_mode(Gtk.SelectionMode.NONE)
@@ -1497,7 +1231,6 @@ class View:
     remove_button.add_css_class("destructive-action")
     remove_button.set_halign(Gtk.Align.CENTER)
     remove_button.connect("clicked", on_remove_expense_clicked, data)
-    self._remove_expense_btn = remove_button # save reference
 
     outer_box.append(remove_button)
 
@@ -1517,6 +1250,68 @@ class View:
     # Bind reactive title to expense description
     data.bind_property("description", title, "label", 
                        flags=GObject.BindingFlags.SYNC_CREATE)
+    # Button edit
+    edit_button = Gtk.Button(icon_name="document-edit-symbolic")
+    edit_button.connect(
+      'clicked', lambda _wg: on_edit_expense_clicked(data))
+    edit_button.set_tooltip_text("Edit Expense")
+    self._edit_btn = edit_button # save reference
+    
+    # Button Cancel
+    cancel_button = Gtk.Button(label="Cancel")
+    cancel_button.set_visible(False)
+    cancel_button.connect(
+        'clicked', lambda _wg: on_edit_cancel_clicked()
+    )
+
+    # Button Done
+    add_button = Gtk.Button(label="Done")
+    add_button.add_css_class("suggested-action")
+    add_button.set_visible(False)
+    add_button.connect(
+        'clicked', lambda _wg: on_edit_done_clicked(self, data.id, data)
+    )
+
+    def on_edit_expense_clicked(data: Expense) -> None:
+      add_button.set_visible(True)
+      cancel_button.set_visible(True)
+      header.set_show_end_title_buttons(False)
+      remove_button.set_sensitive(False)
+      group_friends.set_sensitive(False)
+      self.set_sidebar_sensitive(False)
+      stack_info.set_visible_child_name("edit")
+      edit_button.set_visible(False)
+
+    def on_edit_done_clicked(self, expense_id, data: Expense) -> None:
+      payload = {
+        "id": expense_id,
+        "description": self._form_entry_description.get_text(),
+        "date": self._form_entry_date,
+        "amount": float(self._form_entry_amount.get_text())
+      }
+      self.handler.on_confirm_edit_expense_clicked(payload, data)
+      add_button.set_visible(False)
+      cancel_button.set_visible(False)
+      header.set_show_end_title_buttons(True)
+      remove_button.set_sensitive(True)
+      group_friends.set_sensitive(True)
+      self.set_sidebar_sensitive(True)
+      stack_info.set_visible_child_name("display")
+      edit_button.set_visible(True)
+
+    def on_edit_cancel_clicked() -> None:
+      add_button.set_visible(False)
+      cancel_button.set_visible(False)
+      header.set_show_end_title_buttons(True)
+      remove_button.set_sensitive(True)
+      group_friends.set_sensitive(True)
+      self.set_sidebar_sensitive(True)
+      stack_info.set_visible_child_name("display")
+      edit_button.set_visible(True)
+
+    header.pack_start(cancel_button)
+    header.pack_end(add_button)
+    header.pack_end(edit_button)
 
     toolbar_view.add_top_bar(header)
 
