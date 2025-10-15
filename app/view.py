@@ -111,8 +111,12 @@ class View:
 
     # Stack of views
     self._stack = None # type: Adw.Stack
-
     
+    # Expense info references
+    self._friends_expense_info = None
+    self._desc_btn = None
+    self._amount_btn = None
+    self._date_btn = None
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
@@ -796,6 +800,7 @@ class View:
       edit_btn = Gtk.Button(icon_name="document-edit-symbolic")
       edit_btn.add_css_class("flat")
       edit_btn.set_valign(Gtk.Align.CENTER)
+      self._desc_btn = edit_btn # Save reference to disable it
       display_row.add_suffix(edit_btn)
       
       # Entry row for edit
@@ -830,16 +835,25 @@ class View:
       
       # Events
       def on_edit_clicked(btn):
+        self._amount_btn.set_sensitive(False)
+        self._date_btn.set_sensitive(False)
+        self._friends_expense_info.set_sensitive(False)
         self.set_sidebar_sensitive(False)
         edit_row.set_text(display_row.get_subtitle())
         stack.set_visible_child_name("edit")
         edit_row.grab_focus()
       
       def on_cancel_clicked(btn):
+        self._amount_btn.set_sensitive(True)
+        self._date_btn.set_sensitive(True)
+        self._friends_expense_info.set_sensitive(True)
         self.set_sidebar_sensitive(True)
         stack.set_visible_child_name("display")
     
       def on_save_clicked(btn):
+        self._amount_btn.set_sensitive(True)
+        self._date_btn.set_sensitive(True)
+        self._friends_expense_info.set_sensitive(True)
         self.set_sidebar_sensitive(True)
         new_value = edit_row.get_text()
         
@@ -878,6 +892,7 @@ class View:
       edit_btn = Gtk.Button(icon_name="document-edit-symbolic")
       edit_btn.add_css_class("flat")
       edit_btn.set_valign(Gtk.Align.CENTER)
+      self._amount_btn = edit_btn # Save reference to disable it
       display_row.add_suffix(edit_btn)
       
       # Entry row for edit
@@ -913,16 +928,25 @@ class View:
       
       # Events
       def on_edit_clicked(btn):
+        self._desc_btn.set_sensitive(False)
+        self._date_btn.set_sensitive(False)
+        self._friends_expense_info.set_sensitive(False)
         self.set_sidebar_sensitive(False)
         edit_row.set_text(str(initial_value))
         stack.set_visible_child_name("edit")
         edit_row.grab_focus()
       
       def on_cancel_clicked(btn):
+        self._desc_btn.set_sensitive(True)
+        self._date_btn.set_sensitive(True)
+        self._friends_expense_info.set_sensitive(True)
         self.set_sidebar_sensitive(True)
         stack.set_visible_child_name("display")
     
       def on_save_clicked(btn):
+        self._desc_btn.set_sensitive(True)
+        self._date_btn.set_sensitive(True)
+        self._friends_expense_info.set_sensitive(True)
         self.set_sidebar_sensitive(True)
         new_value = float(edit_row.get_text())
         
@@ -965,6 +989,7 @@ class View:
       edit_btn = Gtk.Button(icon_name="document-edit-symbolic")
       edit_btn.add_css_class("flat")
       edit_btn.set_valign(Gtk.Align.CENTER)
+      self._date_btn = edit_btn # Save reference to disable it
       display_row.add_suffix(edit_btn)
       
       # Container for edit
@@ -1003,14 +1028,23 @@ class View:
       
       # Events
       def on_edit_clicked(btn):
+        self._desc_btn.set_sensitive(False)
+        self._amount_btn.set_sensitive(False)
+        self._friends_expense_info.set_sensitive(False)
         self.set_sidebar_sensitive(False)
         stack.set_visible_child_name("edit")
       
       def on_cancel_clicked(btn):
+        self._desc_btn.set_sensitive(True)
+        self._amount_btn.set_sensitive(True)
+        self._friends_expense_info.set_sensitive(True)
         self.set_sidebar_sensitive(True)
         stack.set_visible_child_name("display")
       
       def on_save_clicked(btn):
+        self._desc_btn.set_sensitive(True)
+        self._amount_btn.set_sensitive(True)
+        self._friends_expense_info.set_sensitive(True)
         self.set_sidebar_sensitive(True)
         new_date = self._form_entry_date
         
@@ -1441,6 +1475,7 @@ class View:
 
     # Friends involved in the expense
     group_friends = Adw.PreferencesGroup(title="Friends")
+    self._friends_expense_info = group_friends # save reference
     listbox_friends = Gtk.ListBox(hexpand=True)
     listbox_friends.add_css_class("boxed-list") 
     listbox_friends.set_selection_mode(Gtk.SelectionMode.NONE)
