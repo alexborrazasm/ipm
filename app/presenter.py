@@ -8,15 +8,22 @@ class Presenter(ViewHandler):
     self.view = view
         
   def run(self, application_id: str) -> None:
-    expenses = self.model.get_expenses()
-    friends = self.model.get_friends()
-
-    self.view.set_handler(self)
-    
-    self.view.update_expenses(expenses)
-    self.view.update_friends(friends)
-
-    run(application_id=application_id, on_activate=self.view.on_activate)
+      self.view.set_handler(self)
+      # Run application
+      run(application_id=application_id, on_activate=self.view.on_activate)
+  
+  def load_data(self, button=None) -> None:
+    try:
+      # Get model data
+      expenses = self.model.get_expenses()
+      friends = self.model.get_friends()
+      # Configure view
+      self.view.update_expenses(expenses)
+      self.view.update_friends(friends)
+      self.view.show_start()
+    except Exception as e:
+      print(e);
+      self.view.show_no_internet()
 
   def get_friends_by_expense(self, expense_id: int) -> list[dict]:
     return self.model.get_friends_by_expenses(expense_id)
@@ -33,7 +40,7 @@ class Presenter(ViewHandler):
     self.view.show_expense_info(self.view.add_expense(added_expense))
     self.view.select_last_expenses_list_selection()
     self.view.set_sidebar_sensitive(True)
-    # TODO API errors    
+    # TODO API errors
 
   def on_cancel_add_expense_clicked(self) -> None:
     self.view.show_empty_expense()

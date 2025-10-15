@@ -14,8 +14,7 @@ class Model:
       else:
         return []
     except Exception as e:
-      print(e)
-      return [] # TODO proper error handling
+      raise
   
   def get_expenses(self) -> list:
     try:
@@ -25,8 +24,7 @@ class Model:
       else:
         return []
     except Exception as e:
-      print(e)
-      return [] # TODO proper error handling
+      raise
     
   def put_expense(self, expense_id: int, description: str, date: str, 
                   amount: float) -> bool:

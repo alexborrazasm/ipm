@@ -21,6 +21,7 @@ def run(application_id: str, on_activate: Callable) -> None:
 # ===== Abstract presenter interface =====
 class ViewHandler(Protocol):
   def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
+  def load_data(self) -> None: pass
   
   def on_add_expense_clicked(self) -> None: pass
   def on_confirm_add_new_expense_clicked(self, data) -> None: pass
@@ -166,13 +167,6 @@ class View:
     
     return expense
     
-  def delete_expense(self, id: int) -> None:
-    for i in range(len(self.data_model_expenses)):
-      expense = self.data_model_expenses[i]
-      if expense.id == id:
-        self.data_model_expenses.remove(i)
-        break
-
   def _build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
     about_action.connect("activate", self._show_about)
@@ -335,6 +329,7 @@ class View:
     # Show the window
     win.set_content(self._split_view)
     win.present()
+    self.handler.load_data()
 
   def _build_side_bar(self) -> Gtk.Widget:
 
@@ -572,7 +567,7 @@ class View:
 
     retry_button = Gtk.Button(label="Retry")
     retry_button.set_margin_top(18)
-    #retry_button.connect("clicked", self.handler.on_retry_conection(app))
+    retry_button.connect("clicked", self.handler.load_data)
     content_box.append(retry_button)
 
     # ToolbarView
@@ -1401,7 +1396,12 @@ class View:
     print("Show loading")
 
   def show_no_internet(self) -> None:
-    print("Show no internet")
+    old = self._stack.get_child_by_name("no_internet")
+    if not old:
+      no_internet = self._build_no_internet_page()
+      self._stack.add_titled(no_internet, "no_internet", "No internet")
+    
+    self._stack.set_visible_child_name("no_internet")
 
   def delete_expense(self, id) -> None:
     self._stack.remove(self._stack.get_child_by_name(f"info{id}"))
@@ -1411,13 +1411,23 @@ class View:
     if old:
       self._stack.remove(self._stack.get_child_by_name(f"edit{id}"))
 
-    super().delete_expense(id)
+    for i in range(len(self.data_model_expenses)):
+      expense = self.data_model_expenses[i]
+      if expense.id == id:
+        self.data_model_expenses.remove(i)
+        break
   
   def show_empty_expense(self) -> None:
     if self.data_model_expenses.get_n_items() == 0:
       self.show_no_one_expense()
     else:
       self.show_pick_an_expense()
+  
+  def show_start(self) -> None:
+    if self.data_model_expenses.get_n_items() == 0:
+      self.show_no_one_expense()
+    else:
+      self.show_expense_info(self.data_model_expenses[0])
 # ===== END Public methods to show views =====
 
 # ===== END View classes =====
