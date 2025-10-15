@@ -46,9 +46,6 @@ class Presenter(ViewHandler):
   # ===== END Show Expense event handlers =====
 
   # ===== START Edit Expense event handlers =====
-  def on_edit_expense_clicked(self, data) -> None:
-    self.view.show_edit_expense_info(data)
-    self.view.set_sidebar_sensitive(False)
 
   def on_confirm_edit_expense_clicked(self, payload, data) -> None:
     edited = self.model.put_expense(payload["id"], payload["description"], 
