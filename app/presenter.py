@@ -48,6 +48,7 @@ class Presenter(ViewHandler):
     self.view.show_expense_info(self.view.add_expense(added_expense), [], True)
     self.view.select_last_expenses_list_selection()
     self.view.set_sidebar_sensitive(True)
+    self.view.show_info_toast("Expense added successfully")
     # TODO API errors
 
   def on_cancel_add_expense_clicked(self) -> None:

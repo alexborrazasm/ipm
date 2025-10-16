@@ -728,17 +728,19 @@ class View:
 
       if not description or not amount_text or not date:  # Date cant be null but good practise
         message = "None of the fields should be empty"
-        self.show_error_overlay_time_out(message)
+        print(message)
+        print(f"Description: '{description}'")
+        self.show_error_toast_time_out(message)
         return
 
       if not amount_text.isdigit():
         message = "The 'Amount' field must contain only numbers"
-        self.show_error_overlay_time_out(message)
+        self.show_error_toast_time_out(message)
         return
       
       if amount:=float(amount_text) <= 0:
         message = "Amount must be greater than 0" 
-        self.show_error_overlay_time_out(message)
+        self.show_error_toast_time_out(message)
         return
 
       data = {
@@ -1362,17 +1364,17 @@ class View:
 
       if not description or not amount_text or not date:  # Date cant be null but good practise
         message = "None of the fields should be empty"
-        self.show_error_overlay_time_out(message)
+        self.show_error_toast_time_out(message)
         return
       
       if not amount_text.isdigit():
         message = "The 'Amount' field must contain positive numbers"
-        self.show_error_overlay_time_out(message)
+        self.show_error_toast_time_out(message)
         return
       
       if amount:=float(amount_text) <= 0:
         message = "Amount must be greater than 0"
-        self.show_error_overlay_time_out(message)
+        self.show_error_toast_time_out(message)
         return
 
       payload = {
@@ -1524,11 +1526,8 @@ class View:
     else:
       self._expenses_list.select_row(row)
   
-  def _build_overlay(self, message: str, icon_name: str, timeout: int) -> None:
-    if not self._toast_overlay:
-      return
+  def _build_toast(self, message: str, icon: Gtk.Image, timeout: int) -> None:
     box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
-    icon = Gtk.Image.new_from_icon_name(icon_name)
     label = Gtk.Label(label=message)
     box.append(icon)
     box.append(label)
@@ -1537,14 +1536,20 @@ class View:
     toast.set_timeout(timeout)
     self._toast_overlay.add_toast(toast)
 
-  def show_info_overlay(self, message: str) -> None:
-    self._build_overlay(message, "help-about-symbolic", 5)
+  def show_info_toast(self, message: str) -> None:
+    icon = Gtk.Image.new_from_icon_name("help-about-symbolic")
+    icon.set_pixel_size(20)
+    self._build_toast(message, icon, 2)
 
-  def show_error_overlay(self, message: str) -> None:
-    self._build_overlay(message, "dialog-error-symbolic", 0)
+  def show_error_toast(self, message: str) -> None:
+    icon = Gtk.Image.new_from_icon_name("dialog-error-symbolic")
+    icon.set_pixel_size(20)
+    self._build_toast(message, icon, 2)
 
-  def show_error_overlay_time_out(self, message: str) -> None:
-    self._build_overlay(message, "dialog-error-symbolic", 2)
+  def show_error_toast_time_out(self, message: str) -> None:
+    icon = Gtk.Image.new_from_icon_name("dialog-error-symbolic")
+    icon.set_pixel_size(20)
+    self._build_toast(message, icon, 2)
 # ===== END Public methods to show views =====
 
 # ===== END View classes =====
