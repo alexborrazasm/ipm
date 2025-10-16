@@ -1,5 +1,6 @@
-from view import View, run, ViewHandler
+from view import View, run, ViewHandler, run_on_main_thr
 from model import Model
+from threading import Thread
 
 
 class Presenter(ViewHandler):
@@ -13,17 +14,27 @@ class Presenter(ViewHandler):
       run(application_id=application_id, on_activate=self.view.on_activate)
   
   def load_data(self, button=None) -> None:
-    try:
-      # Get model data
-      expenses = self.model.get_expenses()
-      friends = self.model.get_friends()
-      # Configure view
-      self.view.update_expenses(expenses)
-      self.view.update_friends(friends)
-      self.view.show_start()
-    except Exception as e:
-      print(e);
-      self.view.show_no_internet()
+    def do_request():
+      try:
+        # Get model data
+        expenses = self.model.get_expenses()
+        friends = self.model.get_friends()
+        # Configure view
+        run_on_main_thr(lambda: (
+          self.view.update_expenses(expenses),
+          self.view.update_friends(friends),
+          self.view.set_search_btn_sensitive(True),
+          self.view.set_add_btn_sensitive(True),
+          self.view.show_start()
+        ))
+      except Exception as e:
+        print(e);
+        run_on_main_thr(self.view.show_no_internet)
+
+    self.view.set_search_btn_sensitive(False)
+    self.view.set_add_btn_sensitive(False)
+    self.view.show_loading_page()
+    Thread(target=do_request).start()
 
   def get_friends_by_expense(self, expense_id: int) -> list[dict]:
     return self.model.get_friends_by_expenses(expense_id)

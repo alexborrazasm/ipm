@@ -10,6 +10,7 @@ gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Gio, GObject, Adw, GLib, Gdk, Pango
 
+run_on_main_thr = GLib.idle_add
 
 # Start Adwaita Application
 def run(application_id: str, on_activate: Callable) -> None:
@@ -104,6 +105,7 @@ class View:
     self._search_box = None     # type: Gtk.Box
     self._search_entry = None   # type: Gtk.SearchEntry
     self._search_button = None  # type: Gtk.ToggleButton
+    self._add_button = None
 
     # Forms
     self._form_entry_description = None # type: Adw.EntryRow
@@ -205,6 +207,12 @@ class View:
   def set_sidebar_sensitive(self, boolean: bool) -> None:
     self._sidebar_page.set_sensitive(boolean)
     self._content_page.set_can_pop(boolean)
+
+  def set_search_btn_sensitive(self, boolean: bool) -> None:
+    self._search_button.set_sensitive(boolean)
+
+  def set_add_btn_sensitive(self, boolean: bool) -> None:
+    self._add_button.set_sensitive(boolean)
   # ===== END public methods =====
 
   # ===== START Helper private methods =====
@@ -343,6 +351,7 @@ class View:
       add_button.set_tooltip_text("Add An Expense")
       add_button.connect('clicked', 
                          lambda _wg: self.handler.on_add_expense_clicked())
+      self._add_button = add_button # save reference
 
       self._search_button = Gtk.ToggleButton(icon_name="system-search-symbolic")
       self._search_button.set_tooltip_text("Search")     
@@ -1392,8 +1401,13 @@ class View:
     # Show the view
     self._stack.set_visible_child_name(f"info{expense.id}")
 
-  def show_loading(self) -> None:
-    print("Show loading")
+  def show_loading_page(self) -> None:
+    old = self._stack.get_child_by_name("loading")
+    if not old:
+      no_internet = self._build_loading_page()
+      self._stack.add_titled(no_internet, "loading", "Loading")
+    
+    self._stack.set_visible_child_name("loading")
 
   def show_no_internet(self) -> None:
     old = self._stack.get_child_by_name("no_internet")
@@ -1427,6 +1441,7 @@ class View:
     if self.data_model_expenses.get_n_items() == 0:
       self.show_no_one_expense()
     else:
+      pass
       self.show_expense_info(self.data_model_expenses[0])
 # ===== END Public methods to show views =====
 
