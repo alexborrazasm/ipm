@@ -36,9 +36,6 @@ class Presenter(ViewHandler):
     self.view.show_loading_page()
     Thread(target=do_request).start()
 
-  def get_friends_by_expense(self, expense_id: int) -> list[dict]:
-    return self.model.get_friends_by_expenses(expense_id)
-
   # ===== START Add Expense event handlers =====
   def on_add_expense_clicked(self) -> None:
     self.view.clear_expenses_list_selection()
@@ -48,7 +45,7 @@ class Presenter(ViewHandler):
   def on_confirm_add_new_expense_clicked(self, data) -> None:
     added_expense = self.model.add_expense(data["description"], data["date"],
                                            data["amount"])
-    self.view.show_expense_info(self.view.add_expense(added_expense))
+    self.view.show_expense_info(self.view.add_expense(added_expense), [], True)
     self.view.select_last_expenses_list_selection()
     self.view.set_sidebar_sensitive(True)
     # TODO API errors
@@ -59,8 +56,28 @@ class Presenter(ViewHandler):
   # ===== END Add Expense event handlers =====
 
   # ===== START Show Expense event handlers =====
-  def on_show_expense_info_clicked(self, data) -> None:
-    self.view.show_expense_info(data)
+  def on_show_expense_info_clicked(self, data, id:int, request: bool) -> None:
+    def do_request():
+      try:
+        list = self.model.get_friends_by_expenses(id)
+        def update_view():
+          if self.view.get_visible_expense() == id:
+            self.view.show_expense_info(data, list, True)
+          else:
+            self.view.prepare_show_expense_info(data, list, True)
+          self.view.set_spinner(False)
+
+        run_on_main_thr(update_view)
+      except Exception as e:
+        print(e);
+        run_on_main_thr(self.view.show_no_internet)
+
+    if request:
+      self.view.set_spinner(True)
+      self.view.show_expense_info(data, [], True)
+      Thread(target=do_request).start()
+    else:
+      self.view.show_expense_info(data, None, False)
   # ===== END Show Expense event handlers =====
 
   # ===== START Edit Expense event handlers =====
@@ -70,7 +87,8 @@ class Presenter(ViewHandler):
                                     payload["date"], payload["amount"])
     if edited:
       self.view.update_expense(payload)
-      self.view.show_edited_expense_info(data)
+      list = self.model.get_friends_by_expenses(payload["id"])
+      self.view.show_expense_info(data, list, True)
     else:
       print("Error al editar api") # TODO
     
@@ -93,18 +111,21 @@ class Presenter(ViewHandler):
   def on_add_friend_expense(self, expense_id, friend_id, data) -> None:
     # TODO manage API errors
     self.model.add_friend_expense(expense_id, friend_id)
-    self.view.show_edited_expense_info(data)
+    list = self.model.get_friends_by_expenses(expense_id)
+    self.view.show_edited_expense_info(data, list)
 
   def on_delete_friend_expense(self, expense_id: int, friend_id: int, 
                                data) -> None:
     # TODO manage API errors
     self.model.delete_friend_expense(expense_id, friend_id)
-    self.view.show_edited_expense_info(data)
+    list = self.model.get_friends_by_expenses(expense_id)
+    self.view.show_edited_expense_info(data, list)
     
   def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int, 
                                            amount: float, expense) -> None:
     self.model.add_friend_expense_credit(expense_id, friend_id, amount)
-    self.view.show_add_friend_credit_expense_info(amount, expense)
+    list = self.model.get_friends_by_expenses(expense_id)
+    self.view.show_add_friend_credit_expense_info(amount, expense, list)
   # ===== END Friend Expense event handlers =====  
 
   

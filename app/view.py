@@ -21,14 +21,14 @@ def run(application_id: str, on_activate: Callable) -> None:
 
 # ===== Abstract presenter interface =====
 class ViewHandler(Protocol):
-  def get_friends_by_expense(self, expense_id: int) -> list[dict]: pass
   def load_data(self) -> None: pass
   
   def on_add_expense_clicked(self) -> None: pass
   def on_confirm_add_new_expense_clicked(self, data) -> None: pass
   def on_cancel_add_expense_clicked(self) -> None: pass
  
-  def on_show_expense_info_clicked(self, data: Expense) -> None: pass
+  def on_show_expense_info_clicked(self, data: Expense, id:int, 
+                                   request: bool) -> None: pass
   
   def on_confirm_edit_expense_clicked(self, payload, data) -> None: pass
   def on_cancel_edit_expense_clicked(self, data) -> None: pass
@@ -114,10 +114,12 @@ class View:
 
     # Stack of views
     self._stack = None # type: Adw.Stack
+    self._visible_expense = 0
     self._toast_overlay = None # type: Adw.ToastOverlay
     
     # Spinner
     self._spinner = None
+    self._spinner_count = 0 
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
@@ -219,7 +221,16 @@ class View:
     self._add_button.set_sensitive(boolean)
     
   def set_spinner(self, boolean: bool) -> None:
-    self._spinner.set_visible(boolean)
+    if (boolean):
+      self._spinner_count += 1
+      self._spinner.set_visible(True)
+    else:
+      self._spinner_count -= 1
+      if self._spinner_count == 0:
+        self._spinner.set_visible(False)
+
+  def get_visible_expense(self) -> int:
+    return self._visible_expense
 
   # ===== END public methods =====
 
@@ -422,7 +433,17 @@ class View:
         if row is not None:
           idx = row.get_index()
           self._clear_filter_expense()
-          self.handler.on_show_expense_info_clicked(self.data_model_expenses[idx])
+          expense = self.data_model_expenses[idx]
+          # Check if the view has been created
+          old = self._stack.get_child_by_name(f"info{expense.id}")
+          if not old: 
+            do_request = True
+          else:
+            do_request = False
+          self.handler.on_show_expense_info_clicked(
+            self.data_model_expenses[idx], 
+            expense.id,
+            do_request)
           self._split_view.set_show_content(True)
               
       listbox = Gtk.ListBox(hexpand=True)
@@ -1411,7 +1432,7 @@ class View:
   def show_add_expense(self) -> Gtk.Box:
     old = self._stack.get_child_by_name("add_expense")
     if old:
-      self._stack.remove(self._stack.get_child_by_name("add_expense"))
+      self._stack.remove(old)
 
     # Build the view
     add_view = self._build_add_expense()
@@ -1420,53 +1441,42 @@ class View:
     self._split_view.set_show_content(True) # Show content on small windows
     self._stack.set_visible_child_name("add_expense")
 
-  def show_expense_info(self, expense: Expense) -> None:
-    # Lazy load the view only once
-    old = self._stack.get_child_by_name(f"info{expense.id}")
-    if not old:
-      friends_expense = self.handler.get_friends_by_expense(expense.id)
+  def prepare_show_expense_info(self, expense: Expense, list: list[dict], 
+                                create: bool) -> None:
+    self._visible_expense = expense.id
+    if create:
+      old = self._stack.get_child_by_name(f"info{expense.id}")
+      if old:
+        self._stack.remove(old)
       # Add friend data to expense
-      expense.set_friends(friends_expense)
+      expense.set_friends(list)
       # Build the view
       info = self._build_expense_info(expense)
       # Add to the stack
       self._stack.add_titled(info, f"info{expense.id}", expense.description)
+    # Don`t show the view
 
-    # Show the view
-    self._stack.set_visible_child_name(f"info{expense.id}")
-
-  def show_edited_expense_info(self, expense: Expense) -> None:
-    # Remove old view
-    self._stack.remove(self._stack.get_child_by_name(f"info{expense.id}"))
-    # Update friend in expense
-    friends_expense = self.handler.get_friends_by_expense(expense.id)
-    # Add friend data to expense
-    expense.set_friends(friends_expense)
-    # Build the view
-    info = self._build_expense_info(expense)
-    # Add to the stack
-    self._stack.add_titled(info, f"info{expense.id}", expense.description)
-
-    # Show the view
-    self._stack.set_visible_child_name(f"info{expense.id}")
-
-  def show_add_friend_credit_expense_info(self, amount: float, 
-                                          expense: Expense) -> None:
-    # Remove old view
-    self._stack.remove(self._stack.get_child_by_name(f"info{expense.id}"))
+  def show_expense_info(self, expense: Expense, list: list[dict], 
+                        create: bool) -> None:
+    self._visible_expense = expense.id
+    if create:
+      old = self._stack.get_child_by_name(f"info{expense.id}")
+      if old:
+        self._stack.remove(old)
+      # Add friend data to expense
+      expense.set_friends(list)
+      # Build the view
+      info = self._build_expense_info(expense)
+      # Add to the stack
+      self._stack.add_titled(info, f"info{expense.id}", expense.description)
     
-    expense.credit_balance += amount
-    # Update friend in expense
-    friends_expense = self.handler.get_friends_by_expense(expense.id)
-    # Add friend data to expense
-    expense.set_friends(friends_expense)
-    # Build the view
-    info = self._build_expense_info(expense)
-    # Add to the stack
-    self._stack.add_titled(info, f"info{expense.id}", expense.description)
-
     # Show the view
     self._stack.set_visible_child_name(f"info{expense.id}")
+
+  def show_add_friend_credit_expense_info(self, amount: float, data: Expense,
+                                          list: list[dict]) -> None:
+    data.credit_balance += amount
+    self.show_expense_info(data, list, True)
 
   def show_loading_page(self) -> None:
     old = self._stack.get_child_by_name("loading")
@@ -1490,7 +1500,7 @@ class View:
     old = self._stack.get_child_by_name(f"edit{id}")
     # Remove previous edit view for this expense if exists 
     if old:
-      self._stack.remove(self._stack.get_child_by_name(f"edit{id}"))
+      self._stack.remove(old)
 
     for i in range(len(self.data_model_expenses)):
       expense = self.data_model_expenses[i]
@@ -1505,36 +1515,11 @@ class View:
       self.show_pick_an_expense()
   
   def show_start(self) -> None:
-    if self.data_model_expenses.get_n_items() == 0:
+    row = self._expenses_list.get_row_at_index(0)
+    if not row:
       self.show_no_one_expense()
     else:
-      pass
-      self.show_expense_info(self.data_model_expenses[0])
-
-  def _build_overlay(self, message: str, icon_name: str, timeout: int) -> None:
-      if not self._toast_overlay:
-        return
-      
-      box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
-      icon = Gtk.Image.new_from_icon_name(icon_name)
-      label = Gtk.Label(label=message)
-      box.append(icon)
-      box.append(label)
-
-      toast = Adw.Toast()
-      toast.set_custom_title(box)
-      toast.set_timeout(timeout)
-
-      self._toast_overlay.add_toast(toast)
-
-  def show_info_overlay(self, message: str) -> None:
-    self._build_overlay(message, "help-about-symbolic", 5)
-
-  def show_error_overlay(self, message: str) -> None:
-    self._build_overlay(message, "dialog-error-symbolic", 0)
-    
-  def show_error_overlay_time_out(self, message: str) -> None:
-    self._build_overlay(message, "dialog-error-symbolic", 2)
+      self._expenses_list.select_row(row)
 # ===== END Public methods to show views =====
 
 # ===== END View classes =====
