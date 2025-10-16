@@ -910,6 +910,7 @@ class View:
       spin = Gtk.SpinButton(adjustment=adjustment, digits=2)
       spin.set_value(0.0)
       spin.set_hexpand(True)
+      spin.set_numeric(True)      
       
       # Create dialog content
       header = Adw.HeaderBar()
@@ -1036,6 +1037,8 @@ class View:
       row.set_activatable(True)
       row.connect("activated", on_add_friend_clicked, expense)
       return row
+    
+
 
     def on_add_friend_clicked(row, expense: Expense) -> None:
       window = row.get_root()

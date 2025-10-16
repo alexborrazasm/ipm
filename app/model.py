@@ -1,4 +1,5 @@
 import requests
+from time import sleep
 
 SERVER_URL="http://localhost:8000/"
 
