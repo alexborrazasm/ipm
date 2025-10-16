@@ -294,7 +294,7 @@ class View:
       return ""
     try:
       date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-      locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')
+      #locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')  TODO ITERACIÓN 3
       return date_obj.strftime("%a %d %b, %Y") 
     except ValueError:
       return date_str  # Return the original string if parsing fails
