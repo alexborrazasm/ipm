@@ -335,7 +335,10 @@ class View:
     self._stack = Adw.ViewStack()
     self.show_empty_expense()
     
-    self._content_page = Adw.NavigationPage(child=self._stack)
+    self._toast_overlay = Adw.ToastOverlay()
+    self._toast_overlay.set_child(self._stack)
+    
+    self._content_page = Adw.NavigationPage(child=self._toast_overlay)
     self._content_page.set_title("Splitwithme")
 
     # Split view
