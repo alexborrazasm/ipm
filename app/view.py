@@ -370,7 +370,7 @@ class View:
     
     def build_listbox(self) -> Gtk.ListBox:
       def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
-        image = Gtk.Image.new_from_icon_name("dialog-information-symbolic")
+        image = Gtk.Image.new_from_icon_name("help-about-symbolic")
         
         label1 = Gtk.Label(halign=Gtk.Align.START)
         label1.set_ellipsize(Pango.EllipsizeMode.END)  # Add "..."
