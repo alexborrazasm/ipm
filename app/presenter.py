@@ -65,7 +65,7 @@ class Presenter(ViewHandler):
           if self.view.get_visible_expense() == id:
             self.view.show_expense_info(data, list, True)
           else:
-            self.view.prepare_show_expense_info(data, list, True)
+            self.view.prepare_show_expense_info(data, list)
           self.view.set_spinner(False)
 
         run_on_main_thr(update_view)

@@ -721,24 +721,27 @@ class View:
   def _build_add_expense(self) -> Adw.ToolbarView:
 
     def on_add_done_clicked(btn):
-      #VALIDATE INPUTS
+      # Validate inputs
       description = self._form_entry_description.get_text().strip()
       date = self._form_entry_date
       amount_text= self._form_entry_amount.get_text().strip()
 
-      if not description or not amount_text or not date:  # Date cant be null but good practise
+      if not description or not amount_text or not date:  # Date cant be null but good practice
         message = "None of the fields should be empty"
-        self.show_error_toast_time_out(message)
+        self.show_error_toast(message, 2)
         return
 
       if not amount_text.isdigit():
         message = "The 'Amount' field must contain only numbers"
-        self.show_error_toast_time_out(message)
+        self.show_error_toast(message, 2)
         return
+
+      amount = float(amount_text)
       
-      if amount:=float(amount_text) <= 0:
-        message = "Amount must be greater than 0" 
-        self.show_error_toast_time_out(message)
+      if amount <= 0:
+        message = "Amount must be greater than 0"
+        self.show_error_toast(message, 2)
+        self.show_info_toast("Hola")
         return
 
       data = {
@@ -798,7 +801,7 @@ class View:
     add_button = Gtk.Button(label="Add")
     add_button.add_css_class("suggested-action")
     add_button.connect(
-      'clicked', lambda _wg: on_add_done_clicked(self))
+      'clicked', on_add_done_clicked)
 
     header.set_show_end_title_buttons(False)  # hide window controls
     header.pack_start(cancel_button)
@@ -1065,8 +1068,6 @@ class View:
       row.set_activatable(True)
       row.connect("activated", on_add_friend_clicked, expense)
       return row
-    
-
 
     def on_add_friend_clicked(row, expense: Expense) -> None:
       window = row.get_root()
@@ -1362,17 +1363,19 @@ class View:
 
       if not description or not amount_text or not date:  # Date cant be null but good practise
         message = "None of the fields should be empty"
-        self.show_error_toast_time_out(message)
+        self.show_error_toast(message, 2)
         return
       
       if not amount_text.isdigit():
         message = "The 'Amount' field must contain positive numbers"
-        self.show_error_toast_time_out(message)
+        self.show_error_toast(message, 2)
         return
       
-      if amount:=float(amount_text) <= 0:
+      amount = float(amount_text)
+
+      if amount <= 0:
         message = "Amount must be greater than 0"
-        self.show_error_toast_time_out(message)
+        self.show_error_toast(message, 2)
         return
 
       payload = {
@@ -1407,10 +1410,7 @@ class View:
 
     toolbar_view.add_top_bar(header)
 
-    self._toast_overlay = Adw.ToastOverlay()
-    self._toast_overlay.set_child(toolbar_view)
-
-    return self._toast_overlay
+    return toolbar_view
   # ===== END building UI private methods =====
 
   # ===== START Public methods to show views =====
@@ -1444,19 +1444,16 @@ class View:
     self._split_view.set_show_content(True) # Show content on small windows
     self._stack.set_visible_child_name("add_expense")
 
-  def prepare_show_expense_info(self, expense: Expense, list: list[dict], 
-                                create: bool) -> None:
-    self._visible_expense = expense.id
-    if create:
-      old = self._stack.get_child_by_name(f"info{expense.id}")
-      if old:
-        self._stack.remove(old)
-      # Add friend data to expense
-      expense.set_friends(list)
-      # Build the view
-      info = self._build_expense_info(expense)
-      # Add to the stack
-      self._stack.add_titled(info, f"info{expense.id}", expense.description)
+  def prepare_show_expense_info(self, expense: Expense, list: list[dict]) -> None:
+    old = self._stack.get_child_by_name(f"info{expense.id}")
+    if old:
+      self._stack.remove(old)
+    # Add friend data to expense
+    expense.set_friends(list)
+    # Build the view
+    info = self._build_expense_info(expense)
+    # Add to the stack
+    self._stack.add_titled(info, f"info{expense.id}", expense.description)
     # Don`t show the view
 
   def show_expense_info(self, expense: Expense, list: list[dict], 
@@ -1527,6 +1524,8 @@ class View:
   def _build_toast(self, message: str, icon: Gtk.Image, timeout: int) -> None:
     box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
     label = Gtk.Label(label=message)
+    label.set_wrap(True)
+    label.set_xalign(0)
     box.append(icon)
     box.append(label)
     toast = Adw.Toast()
@@ -1539,15 +1538,11 @@ class View:
     icon.set_pixel_size(20)
     self._build_toast(message, icon, 2)
 
-  def show_error_toast(self, message: str) -> None:
+  def show_error_toast(self, message: str, timeout: int = 0) -> None:
     icon = Gtk.Image.new_from_icon_name("dialog-error-symbolic")
     icon.set_pixel_size(20)
-    self._build_toast(message, icon, 2)
+    self._build_toast(message, icon, timeout)
 
-  def show_error_toast_time_out(self, message: str) -> None:
-    icon = Gtk.Image.new_from_icon_name("dialog-error-symbolic")
-    icon.set_pixel_size(20)
-    self._build_toast(message, icon, 2)
 # ===== END Public methods to show views =====
 
 # ===== END View classes =====
