@@ -354,8 +354,8 @@ class View:
       self._add_button = add_button # save reference
 
       self._search_button = Gtk.ToggleButton(icon_name="system-search-symbolic")
-      self._search_button.set_tooltip_text("Search")     
-
+      self._search_button.set_tooltip_text("Search") 
+      
       def on_search_clicked(_wg):
         self._toggle_search()
 
@@ -370,7 +370,7 @@ class View:
     
     def build_listbox(self) -> Gtk.ListBox:
       def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
-        image = Gtk.Image.new_from_icon_name("view-list-symbolic")
+        image = Gtk.Image.new_from_icon_name("dialog-information-symbolic")
         
         label1 = Gtk.Label(halign=Gtk.Align.START)
         label1.set_ellipsize(Pango.EllipsizeMode.END)  # Add "..."
@@ -1002,7 +1002,7 @@ class View:
     
     def build_add_friend_row(expense: Expense) -> Gtk.Widget:
       row = Adw.ActionRow(title="Add Friend")
-      row.add_prefix(Gtk.Image.new_from_icon_name("list-add-symbolic"))
+      row.add_prefix(Gtk.Image.new_from_icon_name("contact-new-symbolic"))
       row.set_activatable(True)
       row.connect("activated", on_add_friend_clicked, expense)
       return row
