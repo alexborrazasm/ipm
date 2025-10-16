@@ -114,6 +114,9 @@ class View:
 
     # Stack of views
     self._stack = None # type: Adw.Stack
+    
+    # Spinner
+    self._spinner = None
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
@@ -213,6 +216,10 @@ class View:
 
   def set_add_btn_sensitive(self, boolean: bool) -> None:
     self._add_button.set_sensitive(boolean)
+    
+  def set_spinner(self, boolean: bool) -> None:
+    self._spinner.set_visible(boolean)
+
   # ===== END public methods =====
 
   # ===== START Helper private methods =====
@@ -365,7 +372,14 @@ class View:
       main_header.pack_start(self._search_button)
       main_header.pack_start(add_button)
       main_header.pack_end(menu)
-
+      
+      # To indicate async work
+      self._spinner = Adw.Spinner()
+      self._spinner.set_visible(False) # starts invisible
+      self._spinner.set_size_request(20, 20)
+      
+      main_header.pack_end(self._spinner)
+      
       return main_header
     
     def build_listbox(self) -> Gtk.ListBox:
