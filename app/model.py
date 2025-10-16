@@ -2,6 +2,10 @@ import requests
 
 SERVER_URL="http://localhost:8000/"
 
+class ModelError(Exception):
+  def __init__(self, message: str):
+    super().__init__(message)
+
 class Model:
   def __init__(self):
     pass
@@ -12,19 +16,19 @@ class Model:
       if r.ok:
         return r.json()
       else:
-        return []
+        raise ModelError(f"Failed to get expense: {r.status_code} {r.text}")
     except Exception as e:
-      raise
-  
+      raise ModelError(f"Network error on get expense: {e}")
+
   def get_expenses(self) -> list:
     try:
       r = requests.get(f"{SERVER_URL}/expenses")
       if r.ok:
         return r.json()
       else:
-        return []
+        raise ModelError(f"Failed to get expenses: {r.status_code} {r.text}")
     except Exception as e:
-      raise
+      raise ModelError(f"Network error on get expenses: {e}")
     
   def put_expense(self, expense_id: int, description: str, date: str, 
                   amount: float) -> bool:
@@ -39,11 +43,9 @@ class Model:
       if r.ok:
         return True
       else:
-        print(f"Failed to update expense {expense_id}: {r.status_code} {r.text}")
-        return False
+        raise(f"Failed to update expense: {r.text}")
     except Exception as e:
-      print(e)
-      return False  # TODO: proper error handling
+      raise ModelError(f"Network error on update expense: {e}")
   
   def delete_expense(self, expense_id: int) -> bool:
     try:
@@ -51,12 +53,10 @@ class Model:
       if r.ok:
         return True
       else:
-        print(f"Failed to delete expense {expense_id}: {r.status_code} {r.text}")
-        return False
+        raise ModelError(f"Failed to delete expense: {r.status_code} {r.text}")
     except Exception as e:
-      print(e)
-      return False  # TODO: proper error handling
-    
+      raise ModelError(f"Network error on delete expense: {e}")
+
   def add_expense(self, description: str, date: str, amount: float) -> dict:
     payload = {
       # could be expense_id
@@ -70,11 +70,9 @@ class Model:
       if r.ok:
         return r.json()
       else:
-        print(f"Failed to add expense: {r.status_code} {r.text}")
-        return {}
+        raise ModelError(f"Failed to add expense: {r.status_code} {r.text}")
     except Exception as e:
-      print(e)
-      return {}  # TODO: proper error handling
+      raise ModelError(f"Network error on add expense: {e}")
 
   def get_friends(self) -> list:
     try:
@@ -82,33 +80,30 @@ class Model:
       if r.ok:
         return r.json()
       else:
-        return []
+        raise ModelError(f"Failed to get friends: {r.status_code} {r.text}")
     except Exception as e:
-      print(e)
-      return [] # TODO proper error handling
-    
+      raise ModelError(f"Network error on get friends: {e}")
+
   def get_friend_by_id(self, friend_id: int) -> dict:
     try:
       r = requests.get(f"{SERVER_URL}/friends/{friend_id}")
       if r.ok:
         return r.json()
       else:
-        return {}
+        raise ModelError(f"Failed to get friend {friend_id}: {r.text}")
     except Exception as e:
-      print(e)
-      return {} # TODO proper error handling
-    
+      raise ModelError(f"Network error on get friend by id: {e}")
+
   def get_friends_by_expenses(self, expense_id: int) -> list:
     try:
       r = requests.get(f"{SERVER_URL}/expenses/{expense_id}/friends")
       if r.ok:
         return r.json()
       else:
-        return []
+        raise ModelError(f"Failed to get friends by expenses: {r.status_code} {r.text}")
     except Exception as e:
-      print(e)
-      return [] # TODO proper error handling
-    
+      raise ModelError(f"Network error on get friends by expenses: {e}")
+
   def add_friend(self, name: str, credit_balance: float, 
                  debit_balance: float) -> dict:
     payload = {   
@@ -123,11 +118,9 @@ class Model:
       if r.ok and r.content:
         return r.json() 
       else:
-        print(f"Failed to add friend: {r.status_code} {r.text}")
-        return {}
+        raise ModelError(f"Failed to add friend: {r.status_code} {r.text}")
     except Exception as e:
-      print(e)
-      return {}  # TODO: proper error handling
+      raise ModelError(f"Network error on add friend: {e}")
 
   def delete_friend(self, friend_id: int) -> bool:
     try:
@@ -135,11 +128,10 @@ class Model:
       if r.ok:
         return True
       else:
-        print(f"Failed to delete friend {friend_id}: {r.status_code} {r.text}")
+        raise ModelError(f"Failed to delete friend: {r.status_code} {r.text}")
         return False
     except Exception as e:
-      print(e)
-      return False  # TODO: proper error handling
+      raise ModelError(f"Network error on delete friend: {e}")
 
   def delete_friend_expense(self, expense_id: int, friend_id: int) -> bool:
     try:
@@ -147,12 +139,10 @@ class Model:
       if r.ok:
         return True
       else:
-        print(f"Error delete: {r.text}")
-        return False
+        raise ModelError(f"Failed to delete friend expense: {r.status_code} {r.text}")
     except Exception as e:
-      print(e)
-      return False  # TODO: proper error handling
-    
+      raise ModelError(f"Network error on delete friend expense: {e}")
+
   def add_friend_expense(self, expense_id: int, friend_id: int) -> bool:
     try:
       r = requests.post(
@@ -162,12 +152,10 @@ class Model:
       if r.ok:
         return True
       else:
-        print("Failed to add friend to expense")
-        return False
+        raise ModelError(f"Failed to add friend to expense: {r.status_code} {r.text}")
     except Exception as e:
-        print(e)
-        return False  # TODO: proper error handling
-    
+        raise ModelError(f"Network error on add friend to expense: {e}")
+
   def add_friend_expense_credit(self, expense_id: int, friend_id: int, 
                                 amount: float) -> bool:
     url = f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}"
@@ -177,12 +165,7 @@ class Model:
       if r.ok:
         return True
       else:
-        print(f"Failed to update friend credit{friend_id}: {r.status_code} {r.text}")
-        return False
+        raise ModelError(f"Failed to update friend credit: {r.status_code} {r.text}")
     except Exception as e:
-      print(e)
-      return False  # TODO: proper error handling  
-
-
-
+      raise ModelError(f"Network error on update friend credit: {e}")
 
