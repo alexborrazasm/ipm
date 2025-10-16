@@ -28,7 +28,7 @@ class Presenter(ViewHandler):
           self.view.show_start()
         ))
       except Exception as e:
-        print(e);
+        print(e)
         run_on_main_thr(self.view.show_no_internet)
 
     self.view.set_search_btn_sensitive(False)

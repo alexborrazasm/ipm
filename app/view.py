@@ -696,11 +696,27 @@ class View:
   def _build_add_expense(self) -> Adw.ToolbarView:
 
     def on_add_done_clicked(self):
-        
+      #VALIDATE INPUTS
+      description = self._form_entry_description.get_text().strip()
+      date = self._form_entry_date
+      amount_text= self._form_entry_amount.get_text().strip()
+
+      if not description or not amount_text or not date:  # Date cant be null but good practise
+        print("Ningún campo debería estar vacío") #TODO ERROR
+        return
+
+      if not amount_text.isdigit():
+        print("El campo 'Amount' debe contener solo números positivos") #TODO ERROR
+        return
+      
+      if amount:=float(amount_text) <= 0:
+        print("Amount debe ser mayor que 0")  #TODO ERROR
+        return
+
       data = {
-        "description": self._form_entry_description.get_text(),
-        "date": self._form_entry_date,
-        "amount": float(self._form_entry_amount.get_text())
+        "description": description,
+        "date": date,
+        "amount": amount
       }
       self.handler.on_confirm_add_new_expense_clicked(data)
 
@@ -750,7 +766,7 @@ class View:
     cancel_button = Gtk.Button(label="Cancel")
     cancel_button.connect(
       'clicked', lambda _wg: self.handler.on_cancel_add_expense_clicked())    
-      
+  
     add_button = Gtk.Button(label="Add")
     add_button.add_css_class("suggested-action")
     add_button.connect(
@@ -1291,6 +1307,7 @@ class View:
     )
 
     def on_edit_expense_clicked(data: Expense) -> None:
+      
       def load_edit_data():
         self._form_entry_description.set_text(data.description)
         self._form_entry_amount.set_text(f"{data.amount}") 
@@ -1307,11 +1324,28 @@ class View:
       edit_button.set_visible(False)
 
     def on_edit_done_clicked(self, expense_id, data: Expense) -> None:
+
+      description = self._form_entry_description.get_text().strip()
+      date = self._form_entry_date
+      amount_text = self._form_entry_amount.get_text().strip()
+
+      if not description or not amount_text or not date:  # Date cant be null but good practise
+        print("Ningún campo debería estar vacío") #TODO ERROR
+        return
+      
+      if not amount_text.isdigit():
+        print("El campo 'Amount' debe contener solo números positivos") #TODO ERROR
+        return
+      
+      if amount:=float(amount_text) <= 0:
+        print("Amount debe ser mayor que 0")  #TODO ERROR
+        return
+
       payload = {
         "id": expense_id,
-        "description": self._form_entry_description.get_text(),
-        "date": self._form_entry_date,
-        "amount": float(self._form_entry_amount.get_text())
+        "description": description,
+        "date": date,
+        "amount": amount
       }
       self.handler.on_confirm_edit_expense_clicked(payload, data)
       add_button.set_visible(False)
