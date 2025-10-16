@@ -720,7 +720,7 @@ class View:
   
   def _build_add_expense(self) -> Adw.ToolbarView:
 
-    def on_add_done_clicked(self):
+    def on_add_done_clicked(btn):
       #VALIDATE INPUTS
       description = self._form_entry_description.get_text().strip()
       date = self._form_entry_date
@@ -728,8 +728,6 @@ class View:
 
       if not description or not amount_text or not date:  # Date cant be null but good practise
         message = "None of the fields should be empty"
-        print(message)
-        print(f"Description: '{description}'")
         self.show_error_toast_time_out(message)
         return
 
