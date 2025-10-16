@@ -703,15 +703,18 @@ class View:
       amount_text= self._form_entry_amount.get_text().strip()
 
       if not description or not amount_text or not date:  # Date cant be null but good practise
-        print("Ningún campo debería estar vacío") #TODO ERROR
+        message = "None of the fields should be empty"
+        self.show_error_overlay_time_out(message)
         return
 
       if not amount_text.isdigit():
-        print("El campo 'Amount' debe contener solo números positivos") #TODO ERROR
+        message = "The 'Amount' field must contain only numbers"
+        self.show_error_overlay_time_out(message)
         return
       
       if amount:=float(amount_text) <= 0:
-        print("Amount debe ser mayor que 0")  #TODO ERROR
+        message = "Amount must be greater than 0" 
+        self.show_error_overlay_time_out(message)
         return
 
       data = {
@@ -1334,15 +1337,18 @@ class View:
       amount_text = self._form_entry_amount.get_text().strip()
 
       if not description or not amount_text or not date:  # Date cant be null but good practise
-        print("Ningún campo debería estar vacío") #TODO ERROR
+        message = "None of the fields should be empty"
+        self.show_error_overlay_time_out(message)
         return
       
       if not amount_text.isdigit():
-        print("El campo 'Amount' debe contener solo números positivos") #TODO ERROR
+        message = "The 'Amount' field must contain positive numbers"
+        self.show_error_overlay_time_out(message)
         return
       
       if amount:=float(amount_text) <= 0:
-        print("Amount debe ser mayor que 0")  #TODO ERROR
+        message = "Amount must be greater than 0"
+        self.show_error_overlay_time_out(message)
         return
 
       payload = {
@@ -1526,6 +1532,9 @@ class View:
 
   def show_error_overlay(self, message: str) -> None:
     self._build_overlay(message, "dialog-error-symbolic", 0)
+    
+  def show_error_overlay_time_out(self, message: str) -> None:
+    self._build_overlay(message, "dialog-error-symbolic", 2)
 # ===== END Public methods to show views =====
 
 # ===== END View classes =====
