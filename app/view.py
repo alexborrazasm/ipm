@@ -110,7 +110,7 @@ class View:
     # Forms
     self._form_entry_description = None # type: Adw.EntryRow
     self._form_entry_amount = None      # type: Adw.EntryRow
-    self._form_entry_date = None        # type: Adw.EntryRow
+    self._form_entry_date = None
 
     # Stack of views
     self._stack = None # type: Adw.Stack
@@ -1277,6 +1277,12 @@ class View:
     )
 
     def on_edit_expense_clicked(data: Expense) -> None:
+      def load_edit_data():
+        self._form_entry_description.set_text(data.description)
+        self._form_entry_amount.set_text(f"{data.amount}") 
+        self._form_entry_date = data.date
+
+      load_edit_data()
       add_button.set_visible(True)
       cancel_button.set_visible(True)
       header.set_show_end_title_buttons(False)
