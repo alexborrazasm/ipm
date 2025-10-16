@@ -1520,6 +1520,28 @@ class View:
       self.show_no_one_expense()
     else:
       self._expenses_list.select_row(row)
+  
+  def _build_overlay(self, message: str, icon_name: str, timeout: int) -> None:
+    if not self._toast_overlay:
+      return
+    box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
+    icon = Gtk.Image.new_from_icon_name(icon_name)
+    label = Gtk.Label(label=message)
+    box.append(icon)
+    box.append(label)
+    toast = Adw.Toast()
+    toast.set_custom_title(box)
+    toast.set_timeout(timeout)
+    self._toast_overlay.add_toast(toast)
+
+  def show_info_overlay(self, message: str) -> None:
+    self._build_overlay(message, "help-about-symbolic", 5)
+
+  def show_error_overlay(self, message: str) -> None:
+    self._build_overlay(message, "dialog-error-symbolic", 0)
+
+  def show_error_overlay_time_out(self, message: str) -> None:
+    self._build_overlay(message, "dialog-error-symbolic", 2)
 # ===== END Public methods to show views =====
 
 # ===== END View classes =====
