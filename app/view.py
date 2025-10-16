@@ -333,7 +333,8 @@ class View:
 
     # Right panel (content)
     self._stack = Adw.ViewStack()
-    self.show_empty_expense()
+    # Call handler to get backed data
+    self.handler.load_data()
     
     self._toast_overlay = Adw.ToastOverlay()
     self._toast_overlay.set_child(self._stack)
@@ -359,7 +360,6 @@ class View:
     # Show the window
     win.set_content(self._split_view)
     win.present()
-    self.handler.load_data()
 
   def _build_side_bar(self) -> Gtk.Widget:
 
