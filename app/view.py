@@ -723,25 +723,25 @@ class View:
     def on_add_done_clicked(btn):
       # Validate inputs
       description = self._form_entry_description.get_text().strip()
-      date = self._form_entry_date
       amount_text= self._form_entry_amount.get_text().strip()
+      date = self._form_entry_date
 
-      if not description or not amount_text or not date:  # Date cant be null but good practice
+      # Data cannot be null but it is a good practice
+      if not description or not amount_text or not date:
         message = "None of the fields should be empty"
         self.show_error_toast(message, 2)
         return
 
-      if not amount_text.isdigit():
-        message = "The 'Amount' field must contain only numbers"
+      try:
+        amount = float(amount_text)
+      except ValueError:
+        message = "The 'Amount' field must contain positive numbers"
         self.show_error_toast(message, 2)
         return
 
-      amount = float(amount_text)
-      
       if amount <= 0:
         message = "Amount must be greater than 0"
         self.show_error_toast(message, 2)
-        self.show_info_toast("Hola")
         return
 
       data = {
@@ -1335,7 +1335,7 @@ class View:
     add_button.add_css_class("suggested-action")
     add_button.set_visible(False)
     add_button.connect(
-        'clicked', lambda _wg: on_edit_done_clicked(self, data.id, data)
+        'clicked', lambda _wg: on_edit_done_clicked(data.id, data)
     )
 
     def on_edit_expense_clicked(data: Expense) -> None:
@@ -1355,23 +1355,24 @@ class View:
       stack_info.set_visible_child_name("edit")
       edit_button.set_visible(False)
 
-    def on_edit_done_clicked(self, expense_id, data: Expense) -> None:
+    def on_edit_done_clicked(expense_id, data: Expense) -> None:
 
       description = self._form_entry_description.get_text().strip()
-      date = self._form_entry_date
       amount_text = self._form_entry_amount.get_text().strip()
+      date = self._form_entry_date
 
-      if not description or not amount_text or not date:  # Date cant be null but good practise
+      # Data cannot be null but it is a good practice
+      if not description or not amount_text or not date:
         message = "None of the fields should be empty"
         self.show_error_toast(message, 2)
         return
-      
-      if not amount_text.isdigit():
+
+      try:
+        amount = float(amount_text)
+      except ValueError:
         message = "The 'Amount' field must contain positive numbers"
         self.show_error_toast(message, 2)
         return
-      
-      amount = float(amount_text)
 
       if amount <= 0:
         message = "Amount must be greater than 0"
