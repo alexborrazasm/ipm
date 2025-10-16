@@ -114,6 +114,7 @@ class View:
 
     # Stack of views
     self._stack = None # type: Adw.Stack
+    self._toast_overlay = None # type: Adw.ToastOverlay
     
     # Spinner
     self._spinner = None
@@ -294,7 +295,7 @@ class View:
     #self.about.set_application_icon("icon.png")
     # myappicon.png must be uploaded in ~/.local/share/icons or /usr/share/icons
 
-    self._about.present(self.window)      
+    self._about.present(self.window)  
   
   def _format_date(self, date_str: str) -> str:
     if not date_str:
@@ -1376,7 +1377,10 @@ class View:
 
     toolbar_view.add_top_bar(header)
 
-    return toolbar_view
+    self._toast_overlay = Adw.ToastOverlay()
+    self._toast_overlay.set_child(toolbar_view)
+
+    return self._toast_overlay
   # ===== END building UI private methods =====
 
   # ===== START Public methods to show views =====
@@ -1500,6 +1504,28 @@ class View:
     else:
       pass
       self.show_expense_info(self.data_model_expenses[0])
+
+  def _build_overlay(self, message: str, icon_name: str, timeout: int) -> None:
+      if not self._toast_overlay:
+        return
+      
+      box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
+      icon = Gtk.Image.new_from_icon_name(icon_name)
+      label = Gtk.Label(label=message)
+      box.append(icon)
+      box.append(label)
+
+      toast = Adw.Toast()
+      toast.set_custom_title(box)
+      toast.set_timeout(timeout)
+
+      self._toast_overlay.add_toast(toast)
+
+  def show_info_overlay(self, message: str) -> None:
+    self._build_overlay(message, "help-about-symbolic", 5)
+
+  def show_error_overlay(self, message: str) -> None:
+    self._build_overlay(message, "dialog-error-symbolic", 0)
 # ===== END Public methods to show views =====
 
 # ===== END View classes =====
