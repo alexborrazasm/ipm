@@ -1,8 +1,8 @@
+"""View module implementing the user interface using GTK and libadwaita"""
 from __future__ import annotations
 from typing import Callable, Protocol, Any
 from datetime import datetime
 
-import locale
 import gi
 
 gi.require_version('Gtk', '4.0')
@@ -27,13 +27,13 @@ class ViewHandler(Protocol):
   def on_confirm_add_new_expense_clicked(self, data) -> None: pass
   def on_cancel_add_expense_clicked(self) -> None: pass
  
-  def on_show_expense_info_clicked(self, data: Expense, id:int, 
+  def on_show_expense_info_clicked(self, data: Expense, exp_id: int, 
                                    request: bool) -> None: pass
   
   def on_confirm_edit_expense_clicked(self, payload, data) -> None: pass
   def on_cancel_edit_expense_clicked(self, data) -> None: pass
   
-  def on_delete_expense(self, id: int) -> None: pass
+  def on_delete_expense(self, exp_id: int) -> None: pass
   
   def on_add_friend_expense(self, expense_id, friend_id, data) -> None: pass
   def on_delete_friend_expense(self, expense_id: int, friend_id: int, 
@@ -619,7 +619,8 @@ class View:
 
     retry_button = Gtk.Button(label="Retry")
     retry_button.set_margin_top(18)
-    retry_button.connect("clicked", self.handler.load_data)
+    retry_button.connect("clicked", lambda _wg: self.handler.load_data())
+ 
     content_box.append(retry_button)
 
     # ToolbarView
@@ -1330,7 +1331,7 @@ class View:
       'clicked', lambda _wg: on_edit_expense_clicked(data))
     edit_button.set_tooltip_text("Edit Expense")
     self._edit_btn = edit_button # save reference
-    
+
     # Button Cancel
     cancel_button = Gtk.Button(label="Cancel")
     cancel_button.set_visible(False)
@@ -1347,7 +1348,7 @@ class View:
     )
 
     def on_edit_expense_clicked(data: Expense) -> None:
-      
+
       def load_edit_data():
         self._form_edit_desc.set_text(data.description)
         self._form_edit_amount.set_text(f"{data.amount}") 
@@ -1429,7 +1430,7 @@ class View:
       pick_an_expense = self._build_empty_expense_msg("Pick an Expense",
                                             "dialog-information-symbolic")
       self._stack.add_titled(pick_an_expense, "pick_an_expense", "Pick an expense")
-    
+
     self._stack.set_visible_child_name("pick_an_expense")
 
   def show_no_one_expense(self) -> None:
@@ -1439,7 +1440,7 @@ class View:
       no_one_expense = self._build_empty_expense_msg("Add an Expense", 
                                                      "list-add-symbolic")
       self._stack.add_titled(no_one_expense, "no_one_expense", "No One Expense")
-    
+
     self._stack.set_visible_child_name("no_one_expense")
 
   def show_add_expense(self) -> Gtk.Box:
@@ -1480,7 +1481,7 @@ class View:
       info = self._build_expense_info(expense)
       # Add to the stack
       self._stack.add_titled(info, f"info{expense.id}", expense.description)
-    
+
     # Show the view
     self._stack.set_visible_child_name(f"info{expense.id}")
 
@@ -1495,7 +1496,7 @@ class View:
     if not old:
       no_internet = self._build_loading_page()
       self._stack.add_titled(no_internet, "loading", "Loading")
-    
+
     self._stack.set_visible_child_name("loading")
 
   def show_no_internet(self) -> None:
@@ -1504,7 +1505,7 @@ class View:
     if not old:
       no_internet = self._build_no_internet_page()
       self._stack.add_titled(no_internet, "no_internet", "No internet")
-    
+ 
     self._stack.set_visible_child_name("no_internet")
 
   def delete_expense(self, id) -> None:
@@ -1520,21 +1521,21 @@ class View:
       if expense.id == id:
         self.data_model_expenses.remove(i)
         break
-  
+
   def show_empty_expense(self) -> None:
     self._visible_expense = -1 # Can skip to expense
     if self.data_model_expenses.get_n_items() == 0:
       self.show_no_one_expense()
     else:
       self.show_pick_an_expense()
-  
+
   def show_start(self) -> None:
     row = self._expenses_list.get_row_at_index(0)
     if not row:
       self.show_no_one_expense()
     else:
       self._expenses_list.select_row(row)
-  
+
   def _build_toast(self, message: str, icon: Gtk.Image, timeout: int) -> None:
     box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
     label = Gtk.Label(label=message)

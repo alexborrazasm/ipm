@@ -1,5 +1,5 @@
+"""Model module responsible for communicating with the external API"""
 import requests
-from time import sleep
 
 SERVER_URL="http://localhost:8000/"
 
@@ -48,7 +48,7 @@ class Model:
     try:
       r = requests.put(f"{SERVER_URL}/expenses/{expense_id}", json=payload)
       if r.ok:
-        return True
+        return
       
       # Generic error
       raise ModelError(f"Unknown error")

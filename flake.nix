@@ -9,6 +9,7 @@
       pyPkgs = ps: with ps; [
         requests
         pygobject3
+        pylint
       ];
     in
     {
