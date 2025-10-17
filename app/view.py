@@ -768,6 +768,7 @@ class View:
 
     self._form_add_description = Adw.EntryRow(title="Description")
     self._form_add_amount = Adw.EntryRow(title="Amount")
+    self._form_add_amount.set_input_purpose(Gtk.InputPurpose.DIGITS)
 
     # Calendar widget
     date_row = self._build_calendar(self._form_add_date)
@@ -867,6 +868,7 @@ class View:
       
       self._form_edit_amount = Adw.EntryRow(title="Amount")
       self._form_edit_amount.set_text(f"{data.amount}")      
+      self._form_edit_amount.set_input_purpose(Gtk.InputPurpose.DIGITS)
       listbox.append(self._form_edit_amount)
 
       row = self._build_calendar(data.date)
