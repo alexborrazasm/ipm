@@ -70,10 +70,17 @@ class Model:
       r = requests.post(f"{SERVER_URL}/expenses", json=payload)
       if r.ok:
         return r.json()
-      else:
-        raise ModelError(f"Failed to add expense: {r.status_code} {r.text}")
-    except Exception as e:
-      raise ModelError(f"Network error on add expense: {e}")
+
+      # Handle specific HTTP status codes
+      if r.status_code == 409:
+          raise ModelError("Expense already exists")
+
+      # Generic error
+      raise ModelError(f"Unknown error")
+
+    except requests.RequestException:
+        # Network-level errors (connection refused, timeout, DNS)
+        raise ModelError("Cannot connect to server, please check your network")
 
   def get_friends(self) -> list:
     try:

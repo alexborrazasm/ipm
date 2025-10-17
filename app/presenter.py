@@ -43,12 +43,34 @@ class Presenter(ViewHandler):
     self.view.show_add_expense()
 
   def on_confirm_add_new_expense_clicked(self, data) -> None:
-    added_expense = self.model.add_expense(data["description"], data["date"],
-                                           data["amount"])
-    self.view.show_expense_info(self.view.add_expense(added_expense), [], True)
-    self.view.select_last_expenses_list_selection()
+    def do_request():
+      try:
+        new_expense = self.model.add_expense(
+          data["description"], 
+          data["date"],
+          data["amount"])
+        def update_view():
+          if self.view.get_visible_expense() == -1:
+            self.view.show_expense_info(self.view.add_expense(new_expense), 
+                                        [], True)
+          else:
+            self.view.prepare_show_expense_info(
+              self.view.add_expense(new_expense), [])
+          self.view.set_add_btn_sensitive(True)
+          self.view.show_info_toast("Expense added successfully")
+          self.view.set_spinner(False)
+
+        run_on_main_thr(update_view)
+      except Exception as e:
+        self.view.set_add_btn_sensitive(True)
+        self.view.set_spinner(False)
+        self.view.show_error_toast(str(e))
+
     self.view.set_sidebar_sensitive(True)
-    self.view.show_info_toast("Expense added successfully")
+    self.view.set_add_btn_sensitive(False)
+    self.view.set_spinner(True)
+    self.view.show_empty_expense()
+    Thread(target=do_request).start()
     # TODO API errors
 
   def on_cancel_add_expense_clicked(self) -> None:
@@ -82,7 +104,6 @@ class Presenter(ViewHandler):
   # ===== END Show Expense event handlers =====
 
   # ===== START Edit Expense event handlers =====
-
   def on_confirm_edit_expense_clicked(self, payload, data) -> None:
     edited = self.model.put_expense(payload["id"], payload["description"], 
                                     payload["date"], payload["amount"])
@@ -93,10 +114,6 @@ class Presenter(ViewHandler):
     else:
       print("Error al editar api") # TODO
     
-    self.view.set_sidebar_sensitive(True)
-  
-  def on_cancel_edit_expense_clicked(self, data) -> None:
-    self.on_show_expense_info_clicked(data)
     self.view.set_sidebar_sensitive(True)
   # ===== END Edit Expense event handlers =====
 

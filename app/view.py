@@ -89,11 +89,6 @@ class View:
     self.handler = None
     self.data_model_friends = Gio.ListStore(item_type=Friend)
     self.data_model_expenses = Gio.ListStore(item_type=Expense)
-    self.entry_description = None
-    self.entry_date = None
-    self.entry_amount = None
-    self.entry_friends = None
-    self.entry_credit_balance = None
 
     self.window = None          # type: Adw.ApplicationWindow
     self._expenses_list = None  # type: Gtk.ListBox
@@ -107,13 +102,20 @@ class View:
     self._search_button = None  # type: Gtk.ToggleButton
     self._add_button = None
 
-    # Forms
-    self._form_entry_description = None # type: Adw.EntryRow
-    self._form_entry_amount = None      # type: Adw.EntryRow
-    self._form_entry_date = None
+    # Forms add
+    self._form_add_description = None # type: Adw.EntryRow
+    self._form_add_amount = None      # type: Adw.EntryRow
+    self._form_add_date = None
+    # Forms edit
+    self._form_edit_desc = None
+    self._form_edit_amount = None
+    self._form_edit_date = None
+
+    self._date_row = None
 
     # Stack of views
     self._stack = None # type: Adw.Stack
+    # ID of expense info, -1 for can skip to expense -2 cannot
     self._visible_expense = 0
     self._toast_overlay = None # type: Adw.ToastOverlay
     
@@ -547,6 +549,8 @@ class View:
     # Toolbar view
     toolbar_view = Adw.ToolbarView()
     toolbar_view.set_content(content_box)
+    toolbar_view.set_vexpand(True)
+    toolbar_view.set_hexpand(True)
 
     # Header bar (unique per page)
     header = Adw.HeaderBar()
@@ -644,7 +648,7 @@ class View:
     date_row.set_selectable(False)
 
     # Create the calendar button
-    calendar_button = Gtk.Button()
+    calendar_button = Gtk.MenuButton()
     calendar_button.set_icon_name("x-office-calendar-symbolic")
     calendar_button.add_css_class("flat")
     calendar_button.set_valign(Gtk.Align.CENTER)
@@ -661,26 +665,21 @@ class View:
       calendar.set_month(month - 1)
       calendar.set_day(day)
       formatted_date = date
+      self._form_edit_date = formatted_date
     else:
       now = datetime.now()
       formatted_date = f"{now.year}-{now.month:02d}-{now.day:02d}"
+      self._form_add_date = formatted_date
 
     date_row.set_subtitle(self._format_date(formatted_date))
-    self._form_entry_date = formatted_date
-    
+    self._date_row = date_row # save reference
+
     # Create the popover attached to the button
     date_popover = Gtk.Popover()
     date_popover.set_child(calendar)
     date_popover.set_has_arrow(True)
     date_popover.set_position(Gtk.PositionType.BOTTOM)
-    date_popover.set_parent(calendar_button)
-    self._calendar_popover = date_popover
-
-    # When the button is clicked, show the popover
-    def on_calendar_button_clicked(btn):
-      date_popover.popup()
-
-    calendar_button.connect("clicked", on_calendar_button_clicked)
+    calendar_button.set_popover(date_popover)
 
     # Handle date selection by mouse click
     def on_date_selected(gesture, n_press, x, y):
@@ -690,8 +689,11 @@ class View:
         month = date_obj.get_month()
         day = date_obj.get_day_of_month()
         formatted_date = f"{year}-{month:02d}-{day:02d}"
-        date_row.set_subtitle(self._format_date(formatted_date))
-        self._form_entry_date = formatted_date
+        self._date_row.set_subtitle(self._format_date(formatted_date))
+        if date:
+          self._form_edit_date = formatted_date
+        else:
+          self._form_add_date = formatted_date
         date_popover.popdown()
 
     gesture = Gtk.GestureClick.new()
@@ -706,8 +708,11 @@ class View:
         month = date_obj.get_month()
         day = date_obj.get_day_of_month()
         formatted_date = f"{year}-{month:02d}-{day:02d}"
-        date_row.set_subtitle(self._format_date(formatted_date))
-        self._form_entry_date = formatted_date
+        self._date_row.set_subtitle(self._format_date(formatted_date))
+        if date:
+          self._form_edit_date = formatted_date
+        else:
+          self._form_add_date = formatted_date
         date_popover.popdown()
         return True
       return False
@@ -722,9 +727,9 @@ class View:
 
     def on_add_done_clicked(btn):
       # Validate inputs
-      description = self._form_entry_description.get_text().strip()
-      amount_text= self._form_entry_amount.get_text().strip()
-      date = self._form_entry_date
+      description = self._form_add_description.get_text().strip()
+      amount_text= self._form_add_amount.get_text().strip()
+      date = self._form_add_date
 
       # Data cannot be null but it is a good practice
       if not description or not amount_text or not date:
@@ -761,14 +766,14 @@ class View:
     form.set_selection_mode(Gtk.SelectionMode.NONE)
     form.add_css_class("boxed-list-separate")
 
-    self._form_entry_description = Adw.EntryRow(title="Description")
-    self._form_entry_amount = Adw.EntryRow(title="Amount")
+    self._form_add_description = Adw.EntryRow(title="Description")
+    self._form_add_amount = Adw.EntryRow(title="Amount")
 
     # Calendar widget
-    date_row = self._build_calendar()
+    date_row = self._build_calendar(self._form_add_date)
 
-    form.append(self._form_entry_description)
-    form.append(self._form_entry_amount)
+    form.append(self._form_add_description)
+    form.append(self._form_add_amount)
     form.append(date_row)
 
     outer_box = Gtk.Box(
@@ -816,7 +821,7 @@ class View:
     def build_info_stack(data: Expense) -> Gtk.Widget:
       stack = Gtk.Stack()
       stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-
+     
       listbox = Gtk.ListBox(hexpand=True)
       listbox.add_css_class("boxed-list")
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
@@ -855,16 +860,17 @@ class View:
       listbox = Gtk.ListBox(hexpand=True)
       listbox.add_css_class("boxed-list")
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
-            
-      self._form_entry_description = Adw.EntryRow(title="Description")
-      self._form_entry_description.set_text(data.description)
-      listbox.append(self._form_entry_description)
+
+      self._form_edit_desc = Adw.EntryRow(title="Description")
+      self._form_edit_desc.set_text(data.description)
+      listbox.append(self._form_edit_desc)
       
-      self._form_entry_amount = Adw.EntryRow(title="Amount")
-      self._form_entry_amount.set_text(f"{data.amount}")      
-      listbox.append(self._form_entry_amount)
+      self._form_edit_amount = Adw.EntryRow(title="Amount")
+      self._form_edit_amount.set_text(f"{data.amount}")      
+      listbox.append(self._form_edit_amount)
 
       row = self._build_calendar(data.date)
+      
       listbox.append(row)
       
       stack.add_named(listbox, "edit")
@@ -1335,17 +1341,18 @@ class View:
     add_button.add_css_class("suggested-action")
     add_button.set_visible(False)
     add_button.connect(
-        'clicked', lambda _wg: on_edit_done_clicked(data.id, data)
+        'clicked', lambda _wg: on_edit_done_clicked(data.id, data) 
     )
 
     def on_edit_expense_clicked(data: Expense) -> None:
       
       def load_edit_data():
-        self._form_entry_description.set_text(data.description)
-        self._form_entry_amount.set_text(f"{data.amount}") 
-        self._form_entry_date = data.date
+        self._form_edit_desc.set_text(data.description)
+        self._form_edit_amount.set_text(f"{data.amount}") 
+        self._date_row.set_subtitle(self._format_date(data.date))
 
       load_edit_data()
+      self._visible_expense = -2 # Cannot skip to expense
       add_button.set_visible(True)
       cancel_button.set_visible(True)
       header.set_show_end_title_buttons(False)
@@ -1356,10 +1363,9 @@ class View:
       edit_button.set_visible(False)
 
     def on_edit_done_clicked(expense_id, data: Expense) -> None:
-
-      description = self._form_entry_description.get_text().strip()
-      amount_text = self._form_entry_amount.get_text().strip()
-      date = self._form_entry_date
+      description = self._form_edit_desc.get_text().strip()
+      amount_text = self._form_edit_amount.get_text().strip()
+      date = self._form_edit_date
 
       # Data cannot be null but it is a good practice
       if not description or not amount_text or not date:
@@ -1425,6 +1431,7 @@ class View:
     self._stack.set_visible_child_name("pick_an_expense")
 
   def show_no_one_expense(self) -> None:
+    self._visible_expense = -1 # Can skip to expense
     old = self._stack.get_child_by_name("no_one_expense")
     if not old:
       no_one_expense = self._build_empty_expense_msg("Add an Expense", 
@@ -1434,6 +1441,7 @@ class View:
     self._stack.set_visible_child_name("no_one_expense")
 
   def show_add_expense(self) -> Gtk.Box:
+    self._visible_expense = -2 # Cannot skip to expense
     old = self._stack.get_child_by_name("add_expense")
     if old:
       self._stack.remove(old)
@@ -1480,6 +1488,7 @@ class View:
     self.show_expense_info(data, list, True)
 
   def show_loading_page(self) -> None:
+    self._visible_expense = -1 # Can skip to expense
     old = self._stack.get_child_by_name("loading")
     if not old:
       no_internet = self._build_loading_page()
@@ -1488,6 +1497,7 @@ class View:
     self._stack.set_visible_child_name("loading")
 
   def show_no_internet(self) -> None:
+    self._visible_expense = -1 # Can skip to expense
     old = self._stack.get_child_by_name("no_internet")
     if not old:
       no_internet = self._build_no_internet_page()
@@ -1510,6 +1520,7 @@ class View:
         break
   
   def show_empty_expense(self) -> None:
+    self._visible_expense = -1 # Can skip to expense
     if self.data_model_expenses.get_n_items() == 0:
       self.show_no_one_expense()
     else:
@@ -1543,7 +1554,6 @@ class View:
     icon = Gtk.Image.new_from_icon_name("dialog-error-symbolic")
     icon.set_pixel_size(20)
     self._build_toast(message, icon, timeout)
-
 # ===== END Public methods to show views =====
 
 # ===== END View classes =====
