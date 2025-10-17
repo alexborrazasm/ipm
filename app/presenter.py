@@ -123,7 +123,7 @@ class Presenter(ViewHandler):
   def on_confirm_edit_expense_clicked(self, payload, data) -> None:
     def do_request():
       try:
-        self.model.put_expense(payload["id"], payload["description"], 
+        self.model.put_expense(payload["id"], payload["description"],
                                payload["date"], payload["amount"])
         l = self.model.get_friends_by_expenses(payload["id"])
         def update_view():
@@ -151,33 +151,107 @@ class Presenter(ViewHandler):
     self.view.set_spinner(True)
     self.view.set_sidebar_sensitive(True)
     Thread(target=do_request).start()
-    
   # ===== END Edit Expense event handlers =====
 
   # ===== START Delete Expense event handlers =====
   def on_delete_expense(self, exp_id: int) -> None:
-    # TODO manage API errors
-    self.model.delete_expense(exp_id)
-    self.view.delete_expense(exp_id)
+    def do_request():
+      try:
+        self.model.delete_expense(exp_id)
+        def update_view():
+          self.view.delete_expense(exp_id)
+          self.view.set_spinner(False)
+          self.view.show_info_toast("Expense successfully deleted")
+
+        run_on_main_thr(update_view)
+
+      except Exception as e:
+        msg = str(e)
+        print(f"EXCEPTION in on_delete_expense_clicked: {msg}")
+        def update_view_error():
+          self.view.set_spinner(False)
+          self.view.show_error_toast(msg)
+          run_on_main_thr(self.view.show_no_internet)
+
+        run_on_main_thr(update_view_error)
+
+    self.view.set_spinner(True)
     self.view.show_empty_expense()
+    self.view.clear_expenses_list_selection()
+    Thread(target=do_request).start()
   # ===== END Delete Expense event handlers =====
 
-  # ===== START Friend Expense event handlers =====  
+  # ===== START Friend Expense event handlers =====
   def on_add_friend_expense(self, expense_id, friend_id, data) -> None:
-    # TODO manage API errors
+   # def do_request():
+   #   try:
+   #     def update_view():
+
+   #     run_on_main_thr(update_view)
+
+   #   except Exception as e:
+   #     msg = str(e)
+   #     print(f"EXCEPTION in on_confirm_edit_expense_clicked: {msg}")
+   #     def update_view_error():
+   #       self.view.set_spinner(False)
+   #       self.view.show_error_toast(msg)
+   #       run_on_main_thr(self.view.show_no_internet)
+
+   #     run_on_main_thr(update_view_error)
+
+   #self.view.set_spinner(True)
+   #Thread(target=do_request).start()
+
     self.model.add_friend_expense(expense_id, friend_id)
     l = self.model.get_friends_by_expenses(expense_id)
     self.view.show_expense_info(data, l, True)
 
   def on_delete_friend_expense(self, expense_id: int, friend_id: int,
                                data) -> None:
-    # TODO manage API errors
+   # def do_request():
+   #   try:
+   #     def update_view():
+
+   #     run_on_main_thr(update_view)
+
+   #   except Exception as e:
+   #     msg = str(e)
+   #     print(f"EXCEPTION in on_confirm_edit_expense_clicked: {msg}")
+   #     def update_view_error():
+   #       self.view.set_spinner(False)
+   #       self.view.show_error_toast(msg)
+   #       run_on_main_thr(self.view.show_no_internet)
+
+   #     run_on_main_thr(update_view_error)
+
+   #self.view.set_spinner(True)
+   #Thread(target=do_request).start()
+
     self.model.delete_friend_expense(expense_id, friend_id)
     l = self.model.get_friends_by_expenses(expense_id)
     self.view.show_expense_info(data, l, True)
 
   def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int,
                                            amount: float, expense) -> None:
+   # def do_request():
+   #   try:
+   #     def update_view():
+
+   #     run_on_main_thr(update_view)
+
+   #   except Exception as e:
+   #     msg = str(e)
+   #     print(f"EXCEPTION in on_confirm_edit_expense_clicked: {msg}")
+   #     def update_view_error():
+   #       self.view.set_spinner(False)
+   #       self.view.show_error_toast(msg)
+   #       run_on_main_thr(self.view.show_no_internet)
+
+   #     run_on_main_thr(update_view_error)
+
+   #self.view.set_spinner(True)
+   #Thread(target=do_request).start()
+
     self.model.add_friend_expense_credit(expense_id, friend_id, amount)
     l = self.model.get_friends_by_expenses(expense_id)
     self.view.show_add_friend_credit_expense_info(amount, expense, l)
