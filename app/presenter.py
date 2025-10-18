@@ -146,6 +146,8 @@ class Presenter(ViewHandler):
     if request:
       self.view.set_spinner(True)
       self.view.show_expense_info(data, [], True)
+      # When requesting frinds disable buttons to avoid race conditions
+      self.view.set_buttons_sensitive_for(exp_id, False)
       Thread(target=do_request, daemon=True).start()
     else:
       self.view.show_expense_info(data, None, False)
