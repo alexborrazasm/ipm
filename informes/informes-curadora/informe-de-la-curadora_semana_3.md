@@ -1,8 +1,8 @@
 # 📋 **INFORME CURADORA-TRADUCTORA**
 ## SEMANA 3
 
-> A continuación se ofrece el informe de la curadora-traductora de la semana 3 de trabajo 13/10/2025 - 19/10/2025,
-> cuyo papel desempeña: Nerea Pérez Pértega
+> A continuación se ofrece el informe de la curadora-traductora de la semana 
+>3 de trabajo 13/10/2025 - 19/10/2025, cuyo papel desempeña: Nerea Pérez Pértega
 
 --- 
 
@@ -31,13 +31,16 @@ Consulta estos enlaces para conocer los diagramas UML de aplicaciones multithrea
 - [Multithreading Example](https://sdedit.sourceforge.net/multithreading/example/index.html)
 
 **🏆 Cómo ayuda:**  
-Proporciona una guía y referencia sobre cómo incluir multithreading en los diagramas de secuencia.
+Proporciona una guía y referencia sobre cómo incluir multithreading en los 
+diagramas de secuencia.
 
 ---
 
 ### 1. Concurrencia
 **🧾 Cómo usarlo:**   
-Aunque esté escrito pensando en código C/GNOME, este artículo contextualiza cómo en el ecosistema GNOME / GTK se piensa la concurrencia, los pools de trabajo, cómo interaccionar con GMainContext, etc.
+Aunque esté escrito pensando en código C/GNOME, este artículo contextualiza cómo
+en el ecosistema GNOME / GTK se piensa la concurrencia, los pools de trabajo, 
+cómo interaccionar con GMainContext, etc.
 
 **🔗 Enlaces:**
 - [Concurrency, Parallelism, IO Scheduling...](https://blogs.gnome.org/chergert/2022/11/24/concurrency-parallelism-i-o-scheduling-thread-pooling-and-work-stealing)  
@@ -54,7 +57,6 @@ Lee para conocer el manejo de errores en Python.
 
 **🔗 Enlaces:**
 - [Error handling by Miguel Grinberg](https://blog.miguelgrinberg.com/post/the-ultimate-guide-to-error-handling-in-python)
-
 - [Handling exceptions in Python](https://guicommits.com/handling-exceptions-in-python-like-a-pro)
 
 **🏆 Cómo ayuda:**  
@@ -64,7 +66,8 @@ Obtención de una base para el control de errores y evitar problemas de concurre
 
 ### 3. Documentación GTK4/Adwaita
 **🧾 Cómo usarlo:**  
-Consulta esta documentación para conocer los iconos de adwaita y métodos concretos disponibles en GTK4/Adwaita que utilizaremos en nuestra aplicación.
+Consulta esta documentación para conocer los iconos de adwaita y métodos concretos
+disponibles en GTK4/Adwaita que utilizaremos en nuestra aplicación.
 
 **🔗 Enlaces:**  
 - [Adw - Icons](https://github.com/StorageB/icons/blob/main/GNOME46Adwaita/icons.md)   
@@ -72,7 +75,23 @@ Consulta esta documentación para conocer los iconos de adwaita y métodos concr
 - [Gtk - InputPurpose](https://docs.gtk.org/gtk4/enum.InputPurpose.html)
 
 **🏆 Cómo ayuda:**   
-Proporciona referencia y ejemplos sobre cómo implementar elementos visuales de la aplicación.  
+Proporciona referencia y ejemplos sobre cómo implementar elementos visuales de 
+la aplicación.  
 
 ---
 
+### 4. Pylint
+**🧾 Cómo usarlo:**  
+Lee esta documentación sobre la herramienta de análisis estático de código para
+Python que analiza el código fuente para encontrar errores, imponer un estándar
+de codificación... 
+
+**🔗 Enlaces:**  
+- [Pylint User Manual](https://docs.pylint.org/)
+- [Pylint Doc](https://pylint.readthedocs.io/en/latest/index.html#how-to-use-pylint)
+
+**🏆 Cómo ayuda:**   
+Buscar posibles mejoras en la calidad del código y aplicación de buenas prácticas
+en Python.
+
+---
