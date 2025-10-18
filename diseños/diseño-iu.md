@@ -20,6 +20,7 @@
 ![](images/edit_remove_exp_and_add_friend.jpeg)
 ![](images/add_credit_and_remove_friend_errors.jpeg)
 ![](images/about_and_scale.jpeg)
+![](images/error_handling.jpeg)
 
 ---
 

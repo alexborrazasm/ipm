@@ -16,14 +16,12 @@ classDiagram
         + Pesenter(model: Model, view: View)
         + run(application_id: str)
         + load_data()
-        + on_add_expense_clicked() 
         + on_confirm_add_new_expense_clicked(data: Any) 
-        + on_cancel_add_expense_clicked() 
-        + on_show_expense_info_clicked(data: Expense)
+        + on_show_expense_info_clicked(data: Expense, exp_id: int, request: bool)
         + on_confirm_edit_expense_clicked(payload: Any, data: Any)
-        + on_delete_expense(id: int)
-        + on_add_friend_expense(expense_id: int, friend_id: int, data: Expense)
-        + on_delete_friend_expense(expense_id: int, friend_id: int, data: Expense)
+        + on_delete_expense(exp_id: int)
+        + on_add_friend_expense(expense_id: Any, friend_id: Any, data: Any)
+        + on_delete_friend_expense(expense_id: int, friend_id: int, data: Any)
         + on_confirm_add_credit_friend_expense(expense_id: int, friend_id: int, amount: float, expense: Any)
     }
 
@@ -31,14 +29,14 @@ classDiagram
         + Model()
         + get_expense(expense_id: int) list
         + get_expenses() list 
-        + put_expense(expense_id: int, description: str, date: str, amount:float) bool
-        + delete_expense(expense_id: int) bool
+        + put_expense(expense_id: int, description: str, date: str, amount:float)
+        + delete_expense(expense_id: int)
         + add_expense(description: str, date: str, amount:float) dict
         + get_friends() list
         + get_friends_by_expenses(expense_id: int) list
-        + delete_friend_expense(expense_id: int, friend_id: int) bool
-        + add_friend_expense(expense_id: int, friend_id: int) bool
-        + add_friend_expense_credit(expense_id: int, friend_id: int, amount: float) bool
+        + delete_friend_expense(expense_id: int, friend_id: int)
+        + add_friend_expense(expense_id: int, friend_id: int)
+        + add_friend_expense_credit(expense_id: int, friend_id: int, amount: float) 
     }
 
     class ModelError {
@@ -53,15 +51,14 @@ classDiagram
         <<interface>>
         + load_data()
         + on_add_expense_clicked() 
-        + on_confirm_add_new_expense_clicked(data: Expense) 
-        + on_cancel_add_expense_clicked()
-        + on_show_expense_info_clicked(data: Expense)
-        + on_confirm_edit_expense_clicked(payload, data: Expense) 
-        + on_cancel_edit_expense_clicked(data: Expense) 
-        + on_delete_expense(id: int) 
-        + on_add_friend_expense(expense_id, friend_id, data: Any)
-        + on_delete_friend_expense(expense_id: int, friend_id: int, data: Expense) 
-        + on_confirm_add_credit_friend_expense(expense_id: int, friend_id: int, amount: float, expense: Any)
+        + on_confirm_add_new_expense_clicked(data) 
+        + on_show_expense_info_clicked(data: Expense, exp_id: int, request: bool)
+        + on_confirm_edit_expense_clicked(payload, data) 
+        + on_cancel_edit_expense_clicked(data) 
+        + on_delete_expense(exp_id: int) 
+        + on_add_friend_expense(expense_id, friend_id, data)
+        + on_delete_friend_expense(expense_id: int, friend_id: int, data) 
+        + on_confirm_add_credit_friend_expense(expense_id: int, friend_id: int, amount: float, expense)
     }
 
     class Friend {
@@ -80,7 +77,7 @@ classDiagram
         - num_friends: int
         - credit_balance:float
         - friends: Gio.ListStore
-        + Expense(id: int, description: str, date: str, amount: float, num_friends: int, credit_balance: float)
+        + Expense(exp_id: int, description: str, date: str, amount: float, num_friends: int, credit_balance: float)
         + set_friends(friends: list[dict])
     }
 
@@ -95,7 +92,7 @@ classDiagram
         + update_friends(data: list) 
         + update_expenses(data: list) 
         + update_expense(data: list) 
-        + add_expense(item: Any) Expense
+        + add_expense(item) Expense
         - _build_menu() Gtk.Widget
 
         + on_activate(app: Adw.Application)
@@ -103,22 +100,25 @@ classDiagram
         - _show_about(action: Gio.SimpleAction, param: Any) 
         - _build(app: Adw.Application)
         - _build_side_bar() Gtk.Widget
-        - _build_empty_expense_msg() Adw.ToolbarView
-        - _build_loading_page() Adw.ToolbarView
-        - _build_no_internet_page() Adw.ToolbarView
-        - _build_add_expense() Adw.ToolbarView
-        - _build_expense_info(data: Expense) Adw.ToolbarView
+        - _build_empty_expense_msg(msg: str, icon: str) Adw.ToolbarView
         + show_pick_an_expense() 
         + show_no_one_expense
         + show_add_expense() 
         + show_expense_info(data: Expense) 
-        + show_add_friend_credit_expense_info(amount: float, expense: Expense)
+        + show_add_friend_credit_expense_info(amount: float, data: Expense)
         + show_loading_page() 
         + show_no_internet() 
         + delete_expenses(id: Any)
         + show_empty_expense()
         + show_start()
     }
+
+    %% Exceptions relationships
+    Model ..> ModelError : raises
+    Model ..> NetworkError : raises
+
+    Presenter ..> ModelError : handles (catch)
+    Presenter ..> NetworkError : handles (catch)
 
     %% Relationships
     View "1" --> "0..*" Friend : data_model_friends
@@ -130,7 +130,6 @@ classDiagram
     Presenter ..|> ViewHandler
     Presenter --> Model : model
     Presenter --> View : view
-    
 ```
 ---
 
