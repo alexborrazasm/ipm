@@ -1456,19 +1456,19 @@ class View:
     self._split_view.set_show_content(True) # Show content on small windows
     self._stack.set_visible_child_name("add_expense")
 
-  def prepare_show_expense_info(self, expense: Expense, list: list[dict]) -> None:
+  def prepare_show_expense_info(self, expense: Expense, l: list[dict]) -> None:
     old = self._stack.get_child_by_name(f"info{expense.id}")
     if old:
       self._stack.remove(old)
     # Add friend data to expense
-    expense.set_friends(list)
+    expense.set_friends(l)
     # Build the view
     info = self._build_expense_info(expense)
     # Add to the stack
     self._stack.add_titled(info, f"info{expense.id}", expense.description)
     # Don`t show the view
 
-  def show_expense_info(self, expense: Expense, list: list[dict], 
+  def show_expense_info(self, expense: Expense, l: list[dict], 
                         create: bool) -> None:
     self._visible_expense = expense.id
     if create:
@@ -1476,7 +1476,7 @@ class View:
       if old:
         self._stack.remove(old)
       # Add friend data to expense
-      expense.set_friends(list)
+      expense.set_friends(l)
       # Build the view
       info = self._build_expense_info(expense)
       # Add to the stack
@@ -1486,9 +1486,14 @@ class View:
     self._stack.set_visible_child_name(f"info{expense.id}")
 
   def show_add_friend_credit_expense_info(self, amount: float, data: Expense,
-                                          list: list[dict]) -> None:
+                                          l: list[dict]) -> None:
     data.credit_balance += amount
-    self.show_expense_info(data, list, True)
+    self.show_expense_info(data, l, True)
+  
+  def prepare_add_friend_credit_expense_info(self, amount: float, data: Expense,
+                                             l: list[dict]) -> None:
+    data.credit_balance += amount
+    self.prepare_show_expense_info(data, l)
 
   def show_loading_page(self) -> None:
     self._visible_expense = -1 # Can skip to expense
