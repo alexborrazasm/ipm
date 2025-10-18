@@ -308,7 +308,7 @@ max-locals=15
 max-parents=7
 
 # Maximum number of positional arguments for function / method.
-max-positional-arguments=5
+max-positional-arguments=7
 
 # Maximum number of public methods for a class (see R0904).
 max-public-methods=20
@@ -441,7 +441,32 @@ disable=raw-checker-failed,
         use-implicit-booleaness-not-comparison-to-zero,
         broad-exception-caught,
         missing-function-docstring,
-        missing-class-docstring
+        arguments-differ, # Pylint fails at this with the Gtk do_* methods, so no thanks.
+        arguments-renamed, # We renamed a handful of positional arguments.
+        #global-statement,
+        #global-variable-not-assigned,
+        #import-outside-toplevel,
+        #no-else-return, # Looks better in some cases.
+        #no-member,
+        #no-self-use, # We love self.
+        #not-an-iterable,
+        #possibly-unused-variable,
+        similarities, # It's expensive and not very useful.
+        too-few-public-methods,
+        too-many-ancestors,
+        too-many-arguments,
+        too-many-boolean-expressions,
+        too-many-branches,
+        too-many-instance-attributes,
+        too-many-lines,
+        too-many-locals,
+        too-many-nested-blocks,
+        too-many-public-methods,
+        too-many-return-statements,
+        too-many-statements,
+        ungrouped-imports, # We have a different tool for imports.
+        unsubscriptable-object,
+        unused-private-member, # In theory it's useful, but in practice I'm not so sure.
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
