@@ -5,14 +5,17 @@ SERVER_URL="http://localhost:8000/"
 TIMEOUT=10
 
 class ModelError(Exception):
+  """Custom exception for model-related errors"""
   def __init__(self, message: str):
     super().__init__(message)
 
 class NetworkError(Exception):
+  """Custom exception for network-related errors"""
   def __init__(self, message: str):
     super().__init__(message)
 
 class Model:
+  """Model class to interact with the external API"""
   def __init__(self):
     pass
 

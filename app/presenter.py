@@ -5,6 +5,7 @@ from model import Model, ModelError, NetworkError
 
 
 class Presenter(ViewHandler):
+  """Presenter class that mediates between the Model and the View"""
   def __init__(self, model: Model, view: View):
     self.model = model
     self.view = view
