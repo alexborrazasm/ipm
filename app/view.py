@@ -1206,7 +1206,9 @@ class View:
         selected_row = listbox.get_selected_row()
         if selected_row:
           selected_friend = friend_map[selected_row]
-          self.handler.on_add_friend_expense(expense.id, selected_friend.id, expense)
+          self.handler.on_add_friend_expense(expense.id, selected_friend.id, 
+                                             expense)
+          self.set_buttons_sensitive_for(data.id, False)
         dialog.close()
 
       cancel_button.connect("clicked", on_cancel)

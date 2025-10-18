@@ -256,6 +256,7 @@ class Presenter(ViewHandler):
         print(f"NETWORK ERROR in on_add_friend_expense_clicked: {msg}")
         def update_view_error():
           self.view.set_spinner(False)
+          self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.show_error_toast(msg)
           self.view.show_no_internet()
 
@@ -268,6 +269,7 @@ class Presenter(ViewHandler):
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_spinner(False)
+          self.view.set_buttons_sensitive_for(expense_id, True)
 
         run_on_main_thr(update_view_error)
 
