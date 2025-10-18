@@ -2,6 +2,7 @@
 import requests
 
 SERVER_URL="http://localhost:8000/"
+TIMEOUT=10
 
 class ModelError(Exception):
   def __init__(self, message: str):
@@ -17,7 +18,7 @@ class Model:
 
   def get_expense(self, expense_id: int) -> list:
     try:
-      r = requests.get(f"{SERVER_URL}/expenses/{expense_id}", timeout=20)
+      r = requests.get(f"{SERVER_URL}/expenses/{expense_id}", timeout=TIMEOUT)
       if r.ok:
         return r.json()
 
@@ -30,7 +31,7 @@ class Model:
 
   def get_expenses(self) -> list:
     try:
-      r = requests.get(f"{SERVER_URL}/expenses", timeout=20)
+      r = requests.get(f"{SERVER_URL}/expenses", timeout=TIMEOUT)
       if r.ok:
         return r.json()
 
@@ -50,7 +51,7 @@ class Model:
     }
 
     try:
-      r = requests.put(f"{SERVER_URL}/expenses/{expense_id}", json=payload, timeout=20)
+      r = requests.put(f"{SERVER_URL}/expenses/{expense_id}", json=payload, timeout=TIMEOUT)
       if r.ok:
         return
 
@@ -63,7 +64,7 @@ class Model:
 
   def delete_expense(self, expense_id: int) -> bool:
     try:
-      r = requests.delete(f"{SERVER_URL}/expenses/{expense_id}", timeout=20)
+      r = requests.delete(f"{SERVER_URL}/expenses/{expense_id}", timeout=TIMEOUT)
       if r.ok:
         return True
 
@@ -83,7 +84,7 @@ class Model:
     }
 
     try:
-      r = requests.post(f"{SERVER_URL}/expenses", json=payload, timeout=20)
+      r = requests.post(f"{SERVER_URL}/expenses", json=payload, timeout=TIMEOUT)
       if r.ok:
         return r.json()
 
@@ -100,7 +101,7 @@ class Model:
 
   def get_friends(self) -> list:
     try:
-      r = requests.get(f"{SERVER_URL}/friends", timeout=20)
+      r = requests.get(f"{SERVER_URL}/friends", timeout=TIMEOUT)
       if r.ok:
         return r.json()
 
@@ -113,7 +114,7 @@ class Model:
 
   def get_friends_by_expenses(self, expense_id: int) -> list:
     try:
-      r = requests.get(f"{SERVER_URL}/expenses/{expense_id}/friends", timeout=20)
+      r = requests.get(f"{SERVER_URL}/expenses/{expense_id}/friends", timeout=TIMEOUT)
       if r.ok:
         return r.json()
 
@@ -126,7 +127,8 @@ class Model:
 
   def delete_friend_expense(self, expense_id: int, friend_id: int) -> bool:
     try:
-      r = requests.delete(f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}", timeout=20)
+      r = requests.delete(f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}",
+                          timeout=TIMEOUT)
       if r.ok:
         return True
 
@@ -145,7 +147,7 @@ class Model:
     try:
       r = requests.post(f"{SERVER_URL}/expenses/{expense_id}/friends",
         params={"friend_id": friend_id},
-        timeout=20
+        timeout=TIMEOUT
       )
       if r.ok:
         return True
@@ -166,7 +168,7 @@ class Model:
     url = f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}"
     params = {"amount": amount}
     try:
-      r = requests.put(url, params=params, timeout=20)
+      r = requests.put(url, params=params, timeout=TIMEOUT)
       if r.ok:
         return True
 
