@@ -183,28 +183,32 @@ class Presenter(ViewHandler):
 
   # ===== START Friend Expense event handlers =====
   def on_add_friend_expense(self, expense_id, friend_id, data) -> None:
-   # def do_request():
-   #   try:
-   #     def update_view():
+    def do_request():
+      try:
+        self.model.add_friend_expense(expense_id, friend_id)
+        l = self.model.get_friends_by_expenses(expense_id)
+        def update_view():
+          self.view.show_info_toast("Friend successfully added to expense")
+          self.view.set_spinner(False)
+          if self.view.get_visible_expense() == -1:
+            self.view.show_expense_info(data, l, True)
+          else:
+            self.view.prepare_show_expense_info(data, l)
 
-   #     run_on_main_thr(update_view)
+        run_on_main_thr(update_view)
 
-   #   except Exception as e:
-   #     msg = str(e)
-   #     print(f"EXCEPTION in on_confirm_edit_expense_clicked: {msg}")
-   #     def update_view_error():
-   #       self.view.set_spinner(False)
-   #       self.view.show_error_toast(msg)
-   #       run_on_main_thr(self.view.show_no_internet)
+      except Exception as e:
+        msg = str(e)
+        print(f"EXCEPTION in on_confirm_edit_expense_clicked: {msg}")
+        def update_view_error():
+          self.view.set_spinner(False)
+          self.view.show_error_toast(msg)
+          run_on_main_thr(self.view.show_no_internet)
 
-   #     run_on_main_thr(update_view_error)
+        run_on_main_thr(update_view_error)
 
-   #self.view.set_spinner(True)
-   #Thread(target=do_request).start()
-
-    self.model.add_friend_expense(expense_id, friend_id)
-    l = self.model.get_friends_by_expenses(expense_id)
-    self.view.show_expense_info(data, l, True)
+    self.view.set_spinner(True)
+    Thread(target=do_request).start()
 
   def on_delete_friend_expense(self, expense_id: int, friend_id: int,
                                data) -> None:
