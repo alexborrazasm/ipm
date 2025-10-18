@@ -515,7 +515,7 @@ class View:
       margin_end=16
     )
     
-    self._expenses_list = build_listbox(self)
+    self._expenses_list = build_listbox()
     scrolledWindow = Gtk.ScrolledWindow()
     scrolledWindow.set_vexpand(True)  
     scrolledWindow.set_child(self._expenses_list)
@@ -1006,6 +1006,7 @@ class View:
         self.handler.on_confirm_add_credit_friend_expense(
             expense.id, friend.id, value, expense
         )
+        self.set_buttons_sensitive_for(expense.id, False)
         dialog.close()
       
       cancel_button.connect("clicked", on_cancel)
@@ -1039,7 +1040,10 @@ class View:
       
       # Save buttons reference
       self._register_expense_button(data.id, add_credit_button)
-      self._register_expense_button(data.id, delete_button)
+      if (item.credit_balance == 0):
+        self._register_expense_button(data.id, delete_button)
+      else:
+        delete_button.set_sensitive(False)
       
       # Main labels
       name_label = Gtk.Label(halign=Gtk.Align.START)
@@ -1605,7 +1609,7 @@ class View:
     if expense_id not in self._expense_buttons:
       self._expense_buttons[expense_id] = []
     self._expense_buttons[expense_id].append(button)
-  
+
   def _unregister_expense_buttons_for(self, expense_id: int) -> None:
     """Remove all buttons registered for a given expense ID."""
     if expense_id in self._expense_buttons:

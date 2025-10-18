@@ -327,6 +327,7 @@ class Presenter(ViewHandler):
         def update_view():
           self.view.show_info_toast("Credit successfully added to friend")
           self.view.set_spinner(False)
+          self.view.set_buttons_sensitive_for(expense_id, True)
           if self.view.get_visible_expense() == -1:
             self.view.show_add_friend_credit_expense_info(amount, expense, l)
           else:
@@ -339,6 +340,7 @@ class Presenter(ViewHandler):
         print(f"NETWORK ERROR in on_confirm_add_credit_friend_expense: {msg}")
         def update_view_error():
           self.view.set_spinner(False)
+          self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.show_error_toast(msg)
           self.view.show_no_internet()
 
@@ -351,6 +353,7 @@ class Presenter(ViewHandler):
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_spinner(False)
+          self.view.set_buttons_sensitive_for(expense_id, True)
 
         run_on_main_thr(update_view_error)
     self.view.set_spinner(True)
