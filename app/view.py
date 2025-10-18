@@ -237,7 +237,8 @@ class View:
   def set_spinner(self, boolean: bool) -> None:
     if boolean:
       self._spinner_count += 1
-      self._spinner.set_visible(True)
+      if self._spinner_count == 1:
+        self._spinner.set_visible(True)
     else:
       self._spinner_count -= 1
       if self._spinner_count == 0:

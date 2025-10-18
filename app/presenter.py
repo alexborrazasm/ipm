@@ -78,7 +78,7 @@ class Presenter(ViewHandler):
         print(f"NETWORK ERROR in on_confirm_add_new_expense_clicked: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
-          run_on_main_thr(self.view.show_no_internet)
+          self.view.show_no_internet()
           self.view.set_add_btn_sensitive(True)
           self.view.set_spinner(False)
 
@@ -90,6 +90,7 @@ class Presenter(ViewHandler):
 
         def update_view_error():
           self.view.show_error_toast(msg)
+          self.view.set_add_btn_sensitive(True)
           self.view.set_spinner(False)
 
         run_on_main_thr(update_view_error)
@@ -119,9 +120,10 @@ class Presenter(ViewHandler):
         msg = str(e)
         print(f"NETWORK ERROR in on_show_expense_info_clicked: {msg}")
         def update_view_error():
-          self.view.show_error_toast(str(e))
+          self.view.show_error_toast(msg)
           self.view.set_spinner(False)
-          run_on_main_thr(self.view.show_no_internet)
+          self.view.clear_expenses_list_selection()
+          self.view.show_no_internet()
 
         run_on_main_thr(update_view_error)
 
@@ -138,7 +140,7 @@ class Presenter(ViewHandler):
     if request:
       self.view.set_spinner(True)
       self.view.show_expense_info(data, [], True)
-      # When requesting frinds disable buttons to avoid race conditions
+      # When requesting friends disable buttons to avoid race conditions
       self.view.set_buttons_sensitive_for(exp_id, False)
       Thread(target=do_request, daemon=True).start()
     else:
@@ -158,7 +160,6 @@ class Presenter(ViewHandler):
             self.view.show_expense_info(data, l, True)
           else:
             self.view.prepare_show_expense_info(data, l)
-          self.view.set_add_btn_sensitive(True)
           self.view.show_info_toast("Expense edited successfully")
           self.view.set_spinner(False)
 
@@ -170,6 +171,8 @@ class Presenter(ViewHandler):
         def update_view_error():
           self.view.set_spinner(False)
           self.view.show_error_toast(msg)
+          self.view.clear_expenses_list_selection()
+          self.view.set_buttons_sensitive_for(payload["id"], True)
           self.view.show_no_internet()
 
         run_on_main_thr(update_view_error)
@@ -180,6 +183,7 @@ class Presenter(ViewHandler):
 
         def update_view_error():
           self.view.show_error_toast(msg)
+          self.view.set_buttons_sensitive_for(payload["id"], True)
           self.view.set_spinner(False)
 
         run_on_main_thr(update_view_error)
@@ -207,6 +211,7 @@ class Presenter(ViewHandler):
         def update_view_error():
           self.view.set_spinner(False)
           self.view.show_error_toast(msg)
+          self.view.clear_expenses_list_selection()
           self.view.show_no_internet()
 
         run_on_main_thr(update_view_error)
@@ -250,6 +255,7 @@ class Presenter(ViewHandler):
           self.view.set_spinner(False)
           self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.show_error_toast(msg)
+          self.view.clear_expenses_list_selection()
           self.view.show_no_internet()
 
         run_on_main_thr(update_view_error)
@@ -292,6 +298,7 @@ class Presenter(ViewHandler):
           self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.set_spinner(False)
           self.view.show_error_toast(msg)
+          self.view.clear_expenses_list_selection()
           self.view.show_no_internet()
 
         run_on_main_thr(update_view_error)
@@ -338,6 +345,7 @@ class Presenter(ViewHandler):
           self.view.set_spinner(False)
           self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.show_error_toast(msg)
+          self.view.clear_expenses_list_selection()
           self.view.show_no_internet()
 
         run_on_main_thr(update_view_error)
