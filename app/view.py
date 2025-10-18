@@ -1,6 +1,6 @@
 """View module implementing the user interface using GTK and libadwaita"""
 from __future__ import annotations
-from typing import Callable, Protocol, Any
+from typing import Callable, Protocol
 from datetime import datetime
 
 import gi
@@ -8,7 +8,9 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
+# pylint: disable=wrong-import-position,no-name-in-module
 from gi.repository import Gtk, Gio, GObject, Adw, GLib, Gdk, Pango
+# pylint: enable=wrong-import-position,no-name-in-module,no-name-in-module
 
 run_on_main_thr = GLib.idle_add
 
@@ -21,43 +23,48 @@ def run(application_id: str, on_activate: Callable) -> None:
 
 # ===== Abstract presenter interface =====
 class ViewHandler(Protocol):
-  def load_data(self) -> None: pass
-  
-  def on_add_expense_clicked(self) -> None: pass
-  def on_confirm_add_new_expense_clicked(self, data) -> None: pass
-  def on_cancel_add_expense_clicked(self) -> None: pass
- 
-  def on_show_expense_info_clicked(self, data: Expense, exp_id: int, 
-                                   request: bool) -> None: pass
-  
-  def on_confirm_edit_expense_clicked(self, payload, data) -> None: pass
-  def on_cancel_edit_expense_clicked(self, data) -> None: pass
-  
-  def on_delete_expense(self, exp_id: int) -> None: pass
-  
-  def on_add_friend_expense(self, expense_id, friend_id, data) -> None: pass
-  def on_delete_friend_expense(self, expense_id: int, friend_id: int, 
-                               data) -> None: pass
-  def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int, 
-                                           amount: float, expense) -> None: pass
+  """Protocol defining the interface for the view handler (presenter)"""
+  def load_data(self) -> None:
+    pass
+  def on_add_expense_clicked(self) -> None:
+    pass
+  def on_confirm_add_new_expense_clicked(self, data) -> None:
+    pass
+  def on_show_expense_info_clicked(self, data: Expense, exp_id: int,
+                                   request: bool) -> None:
+    pass
+  def on_confirm_edit_expense_clicked(self, payload, data) -> None:
+    pass
+  def on_cancel_edit_expense_clicked(self, data) -> None:
+    pass
+  def on_delete_expense(self, exp_id: int) -> None:
+    pass
+  def on_add_friend_expense(self, expense_id, friend_id, data) -> None:
+    pass
+  def on_delete_friend_expense(self, expense_id: int, friend_id: int,
+                               data) -> None:
+    pass
+  def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int,
+                                           amount: float, expense) -> None:
+    pass
 
 # ===== START Data models =====
-# Data model representing a Friend 
 class Friend(GObject.GObject):
+  """Data model representing a Friend"""
   id = GObject.Property(type=int)
   name = GObject.Property(type=str)
   credit_balance = GObject.Property(type=float)
   debit_balance = GObject.Property(type=float)
 
-  def __init__(self, id, name, credit_balance, debit_balance):
+  def __init__(self, fri_id, name, credit_balance, debit_balance):
     super().__init__()
-    self.id = id
+    self.id = fri_id
     self.name = name
     self.credit_balance = credit_balance
     self.debit_balance = debit_balance
 
-# Data model representing an Expense 
 class Expense(GObject.GObject):
+  """Data model representing an Expense"""
   id = GObject.Property(type=int)
   description = GObject.Property(type=str)
   date = GObject.Property(type=str)
@@ -66,9 +73,9 @@ class Expense(GObject.GObject):
   credit_balance = GObject.Property(type=float)
   friends = GObject.Property(type=Gio.ListStore)
 
-  def __init__(self, id, description, date, amount, num_friends, credit_balance):
+  def __init__(self, exp_id, description, date, amount, num_friends, credit_balance):
     super().__init__()
-    self.id = id
+    self.id = exp_id
     self.description = description
     self.date = date
     self.amount = amount
@@ -83,8 +90,8 @@ class Expense(GObject.GObject):
 # ===== END Data models =====
 
 # ===== START View classes =====
-# Concrete implementation of the view using GTK and ADW
 class View:
+  """Concrete implementation of the view using GTK and libadwaita"""
   def __init__(self):
     self.handler = None
     self.data_model_friends = Gio.ListStore(item_type=Friend)
@@ -121,11 +128,11 @@ class View:
     # positive integer means the expense id
     self._visible_expense = 0
     self._toast_overlay = None # type: Adw.ToastOverlay
-    
+
     # Spinner
     self._spinner = None
-    self._spinner_count = 0 
-    
+    self._spinner_count = 0
+
     # Expense info buttons
     self._expense_buttons: dict[int, list[Gtk.Button]] = {}
 
@@ -134,7 +141,7 @@ class View:
 
   def update_friends(self, data: list) -> None:
     self.data_model_friends.remove_all()
-    
+
     for item in data:
       friend = Friend(
         item["id"],
@@ -143,7 +150,7 @@ class View:
         item["debit_balance"]
       )
 
-      self.data_model_friends.append(friend) 
+      self.data_model_friends.append(friend)
 
   def update_expenses(self, data: list) -> None:
     self.data_model_expenses.remove_all()
@@ -161,15 +168,14 @@ class View:
       self.data_model_expenses.append(expense)
 
   def update_expense(self, data: list) -> None:
-    id = data['id']
-    for i in range(len(self.data_model_expenses)):
-      expense = self.data_model_expenses[i]
-      if expense.id == id:
+    exp_id = data['id']
+    for i,expense in enumerate(self.data_model_expenses):
+      if expense.id == exp_id:
         self.data_model_expenses[i].description = data['description']
         self.data_model_expenses[i].date = data['date']
         self.data_model_expenses[i].amount = data['amount']
         break
-      
+
   def add_expense(self, item) -> Expense:
     expense = Expense(
       item['id'],
@@ -180,9 +186,9 @@ class View:
       item['credit_balance']
     )
     self.data_model_expenses.append(expense)
-    
+
     return expense
-    
+
   def _build_menu(self) -> Gtk.Widget:
     about_action = Gio.SimpleAction.new("about", None)
     about_action.connect("activate", self._show_about)
@@ -210,7 +216,7 @@ class View:
     self._build(app)
 
   def clear_expenses_list_selection(self) -> None:
-    self._expenses_list.unselect_all()  
+    self._expenses_list.unselect_all()
 
   def select_last_expenses_list_selection(self) -> None:
     total = self.data_model_expenses.get_n_items()
@@ -227,9 +233,9 @@ class View:
 
   def set_add_btn_sensitive(self, boolean: bool) -> None:
     self._add_button.set_sensitive(boolean)
-    
+
   def set_spinner(self, boolean: bool) -> None:
-    if (boolean):
+    if boolean:
       self._spinner_count += 1
       self._spinner.set_visible(True)
     else:
@@ -251,15 +257,14 @@ class View:
           row.set_visible(True)
     else:
       search_text_lower = search_text.lower()
-      for i in range(len(self.data_model_expenses)):
-        expense = self.data_model_expenses[i]
+      for i,expense in enumerate(self.data_model_expenses):
         row = self._expenses_list.get_row_at_index(i)
         if row:
           if search_text_lower in expense.description.lower():
             row.set_visible(True)
           else:
-            row.set_visible(False)            
-  
+            row.set_visible(False)
+
   def _clear_filter_expense(self) -> None:
     self._search_entry.set_text("")
     self._search_box.set_visible(False)
@@ -279,7 +284,7 @@ class View:
       self._filter_expenses(None)
       self._search_button.set_active(False)
 
-  def _show_about(self, action: Gio.SimpleAction, param: Any) -> None:
+  def _show_about(self, unused_action, unused_param) -> None:
     self._about = Adw.AboutDialog()
     self._about.set_title("About")
     # Makes the dialog always appear in from of the parent window
@@ -309,25 +314,24 @@ class View:
       "© 2025 Nerea Pérez Pértega"
       ", Daniel García Figueroa"
       " and Alexandre Borrazás Mancebo"
-    ) 
+    )
 
     #self.about.set_application_icon("icon.png")
     # myappicon.png must be uploaded in ~/.local/share/icons or /usr/share/icons
 
-    self._about.present(self.window)  
-  
+    self._about.present(self.window)
+
   def _format_date(self, date_str: str) -> str:
     if not date_str:
       return ""
     try:
       date_obj = datetime.strptime(date_str, "%Y-%m-%d")
       #locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')  TODO ITERACIÓN 3
-      return date_obj.strftime("%a %d %b, %Y") 
+      return date_obj.strftime("%a %d %b, %Y")
     except ValueError:
       return date_str  # Return the original string if parsing fails
-    
-  # ===== END Helper private methods ======  
-  
+  # ===== END Helper private methods ======
+
   # ===== START building UI private methods =====
   def _build(self, app: Adw.Application) -> None:
     self.window = win = Adw.ApplicationWindow()
@@ -343,10 +347,10 @@ class View:
     self._stack = Adw.ViewStack()
     # Call handler to get backed data
     self.handler.load_data()
-    
+
     self._toast_overlay = Adw.ToastOverlay()
     self._toast_overlay.set_child(self._stack)
-    
+
     self._content_page = Adw.NavigationPage(child=self._toast_overlay)
     self._content_page.set_title("Splitwithme")
 
@@ -356,15 +360,15 @@ class View:
     self._split_view.set_content(self._content_page)
     self._split_view.set_max_sidebar_width(500)
     self._split_view.set_min_sidebar_width(250)
-    
+
     # Breakpoint to collapse sidebar on small windows
-    breakpoint = Adw.Breakpoint.new(Adw.BreakpointCondition.parse(
+    adw_breakpoint = Adw.Breakpoint.new(Adw.BreakpointCondition.parse(
       "max-width: 700px"))
-    breakpoint.add_setter(self._split_view, "collapsed", True)
+    adw_breakpoint.add_setter(self._split_view, "collapsed", True)
     # Show window controls when sidebar is collapsed
-    breakpoint.add_setter(self._sidebar_header, "show_end_title_buttons", True)
-    win.add_breakpoint(breakpoint)
-    
+    adw_breakpoint.add_setter(self._sidebar_header, "show_end_title_buttons", True)
+    win.add_breakpoint(adw_breakpoint)
+
     # Show the window
     win.set_content(self._split_view)
     win.present()
@@ -376,16 +380,21 @@ class View:
       title_label = Gtk.Label(label="Expenses")
       main_header.set_title_widget(title_label)
       main_header.set_show_end_title_buttons(False)
-      
+
       add_button = Gtk.Button(icon_name="list-add-symbolic")
       add_button.set_tooltip_text("Add An Expense")
-      add_button.connect('clicked', 
-                         lambda _wg: self.handler.on_add_expense_clicked())
+      add_button.connect('clicked',
+                         lambda _wg: on_add_expense_clicked())
       self._add_button = add_button # save reference
 
+      def on_add_expense_clicked() -> None:
+        self.clear_expenses_list_selection()
+        self.set_sidebar_sensitive(False)
+        self.show_add_expense()
+
       self._search_button = Gtk.ToggleButton(icon_name="system-search-symbolic")
-      self._search_button.set_tooltip_text("Search") 
-      
+      self._search_button.set_tooltip_text("Search")
+
       def on_search_clicked(_wg):
         self._toggle_search()
 
@@ -395,36 +404,36 @@ class View:
       main_header.pack_start(self._search_button)
       main_header.pack_start(add_button)
       main_header.pack_end(menu)
-      
+
       # To indicate async work
       self._spinner = Adw.Spinner()
       self._spinner.set_visible(False) # starts invisible
       self._spinner.set_size_request(20, 20)
-      
+
       main_header.pack_end(self._spinner)
-      
+
       return main_header
-    
+
     def build_listbox() -> Gtk.ListBox:
-      def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
+      def on_build_row(item: Expense, unused_user_data) -> Gtk.Widget:
         image = Gtk.Image.new_from_icon_name("help-about-symbolic")
-        
+
         label1 = Gtk.Label(halign=Gtk.Align.START)
         label1.set_ellipsize(Pango.EllipsizeMode.END)  # Add "..."
         label1.set_single_line_mode(True)  # Force single-line truncation
         label1.set_xalign(0.0)  # Left align text
-        item.bind_property("description", label1, "label", 
+        item.bind_property("description", label1, "label",
                             flags=GObject.BindingFlags.SYNC_CREATE)
 
         label2 = Gtk.Label(halign=Gtk.Align.START)
         label2.add_css_class("caption")
-        item.bind_property("credit_balance", label2, "label", 
+        item.bind_property("credit_balance", label2, "label",
           transform_to=lambda binding, value: f"Balance: {float(value):.2f} €"
           if value not in (None, "") else "0.00 €",
           flags=GObject.BindingFlags.SYNC_CREATE
         )
 
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, 
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True,
                         spacing=2)
         vbox.append(label1)
         vbox.append(label2)
@@ -438,7 +447,7 @@ class View:
         hbox.append(vbox)
 
         return hbox
-      
+
       def on_listbox_row_activated(widget: Gtk.ListBox) -> None:
         row = widget.get_selected_row()
         if row is not None:
@@ -447,16 +456,13 @@ class View:
           expense = self.data_model_expenses[idx]
           # Check if the view has been created
           old = self._stack.get_child_by_name(f"info{expense.id}")
-          if not old: 
-            do_request = True
-          else:
-            do_request = False
+          do_request = not old
           self.handler.on_show_expense_info_clicked(
-            self.data_model_expenses[idx], 
+            self.data_model_expenses[idx],
             expense.id,
             do_request)
           self._split_view.set_show_content(True)
-              
+
       listbox = Gtk.ListBox(hexpand=True)
       listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
       listbox.connect("selected-rows-changed", on_listbox_row_activated)
@@ -464,14 +470,14 @@ class View:
       listbox.bind_model(self.data_model_expenses, on_build_row, None)
 
       return listbox
-    
+
     def build_search() -> Gtk.Widget:
       search_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
                            margin_start=16,
                            margin_end=16)
       search_box.set_hexpand(True)
       search_box.set_visible(False)
-    
+
       self._search_entry = Gtk.SearchEntry()
       self._search_entry.set_hexpand(True)
 
@@ -480,47 +486,47 @@ class View:
       def on_search_changed(entry):
         search_text = entry.get_text()
         self._filter_expenses(search_text)
-      def on_search_stop(entry):
+      def on_search_stop(unused_entry):
         self._search_box.set_visible(False)
         self._search_entry.set_text("")
         self._filter_expenses(None)
-        
+
       self._search_entry.connect('search-changed', on_search_changed)
       self._search_entry.connect('stop-search', on_search_stop)
 
       shortcut_controller = Gtk.ShortcutController()
       shortcut_controller.set_scope(Gtk.ShortcutScope.GLOBAL)
-      
+
       trigger = Gtk.ShortcutTrigger.parse_string("<Ctrl>F")
       action = Gtk.CallbackAction.new(lambda *args: self._toggle_search())
       shortcut = Gtk.Shortcut.new(trigger, action)
       shortcut_controller.add_shortcut(shortcut)
-      
+
       self.window.add_controller(shortcut_controller)
 
       return search_box
 
     header_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-    
+
     self._sidebar_header = build_header_bar()
     self._search_box = build_search()
     header_box.append(self._sidebar_header)
     header_box.append(self._search_box)
 
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
-      spacing=16, 
+      spacing=16,
       margin_top=8,
       margin_bottom=16,
       margin_start=16,
       margin_end=16
     )
-    
+
     self._expenses_list = build_listbox()
-    scrolledWindow = Gtk.ScrolledWindow()
-    scrolledWindow.set_vexpand(True)  
-    scrolledWindow.set_child(self._expenses_list)
-    box.append(scrolledWindow)
-    
+    scrolled_window = Gtk.ScrolledWindow()
+    scrolled_window.set_vexpand(True)
+    scrolled_window.set_child(self._expenses_list)
+    box.append(scrolled_window)
+
     toolbar = Adw.ToolbarView()
     toolbar.add_top_bar(header_box)
     toolbar.set_content(box)
@@ -596,7 +602,7 @@ class View:
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
-  
+
   def _build_no_internet_page(self) -> Adw.ToolbarView:
     # Main content box
     content_box = Gtk.Box(
@@ -626,7 +632,7 @@ class View:
     retry_button = Gtk.Button(label="Retry")
     retry_button.set_margin_top(18)
     retry_button.connect("clicked", lambda _wg: self.handler.load_data())
- 
+
     content_box.append(retry_button)
 
     # ToolbarView
@@ -639,7 +645,7 @@ class View:
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
-  
+
   def _build_clamp_content(self, child: Gtk.Widget) -> Adw.Clamp:
     # Clamp to limit max width
     clamp = Adw.Clamp()
@@ -659,7 +665,7 @@ class View:
     calendar_button.set_icon_name("x-office-calendar-symbolic")
     calendar_button.add_css_class("flat")
     calendar_button.set_valign(Gtk.Align.CENTER)
-    calendar_button.set_tooltip_text("Pick a Date")  
+    calendar_button.set_tooltip_text("Pick a Date")
     date_row.add_suffix(calendar_button)
 
     # Create the calendar widget
@@ -689,8 +695,8 @@ class View:
     calendar_button.set_popover(date_popover)
 
     # Handle date selection by mouse click
-    def on_date_selected(gesture, n_press, x, y):
-      if n_press == 1 or n_press == 2:
+    def on_date_selected(unused_gesture, n_press, unused_x, unused_y):
+      if n_press in (1, 2):
         date_obj = calendar.get_date()
         year = date_obj.get_year()
         month = date_obj.get_month()
@@ -708,8 +714,8 @@ class View:
     calendar.add_controller(gesture)
 
     # Handle Enter key inside the calendar
-    def on_key_pressed(controller, keyval, keycode, state):
-      if keyval == Gdk.KEY_Return or keyval == Gdk.KEY_KP_Enter:
+    def on_key_pressed(unused_ctr, keyval, unused_keycode, unused_state):
+      if keyval in (Gdk.KEY_Return, Gdk.KEY_KP_Enter):
         date_obj = calendar.get_date()
         year = date_obj.get_year()
         month = date_obj.get_month()
@@ -729,10 +735,10 @@ class View:
     calendar.add_controller(key_controller)
 
     return date_row
-  
+
   def _build_add_expense(self) -> Adw.ToolbarView:
 
-    def on_add_done_clicked(btn):
+    def on_add_done_clicked(unused_btn):
       # Validate inputs
       description = self._form_add_description.get_text().strip()
       amount_text= self._form_add_amount.get_text().strip()
@@ -806,11 +812,15 @@ class View:
     # Header bar (unique for this page)
     header = Adw.HeaderBar()
     header.set_title_widget(Gtk.Label(label="New Expense"))
-    
+
     cancel_button = Gtk.Button(label="Cancel")
     cancel_button.connect(
-      'clicked', lambda _wg: self.handler.on_cancel_add_expense_clicked())    
-  
+      'clicked', lambda _wg: on_cancel_add_expense_clicked())    
+
+    def on_cancel_add_expense_clicked() -> None:
+      self.set_sidebar_sensitive(True)
+      self.show_empty_expense()
+
     add_button = Gtk.Button(label="Add")
     add_button.add_css_class("suggested-action")
     add_button.connect(
@@ -825,11 +835,11 @@ class View:
     return toolbar_view
 
   def _build_expense_info(self, data: Expense) -> Adw.ToolbarView:
-    
+
     def build_info_stack(data: Expense) -> Gtk.Widget:
       stack = Gtk.Stack()
       stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-     
+
       listbox = Gtk.ListBox(hexpand=True)
       listbox.add_css_class("boxed-list")
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
@@ -852,10 +862,10 @@ class View:
       row.set_activatable(True)
       row.set_selectable(False)
       listbox.append(row)
- 
+
       # Date
       row = Adw.ActionRow(title="Date")
-      data.bind_property("date", row, "subtitle", 
+      data.bind_property("date", row, "subtitle",
                          transform_to=lambda b, v: self._format_date(data.date),
                          flags=GObject.BindingFlags.SYNC_CREATE)
       row.set_activatable(True)
@@ -863,7 +873,7 @@ class View:
       listbox.append(row)
 
       stack.add_named(listbox, "display")
-      
+
       # Edit expense info
       listbox = Gtk.ListBox(hexpand=True)
       listbox.add_css_class("boxed-list")
@@ -872,31 +882,31 @@ class View:
       self._form_edit_desc = Adw.EntryRow(title="Description")
       self._form_edit_desc.set_text(data.description)
       listbox.append(self._form_edit_desc)
-      
+
       self._form_edit_amount = Adw.EntryRow(title="Amount")
-      self._form_edit_amount.set_text(f"{data.amount}")      
+      self._form_edit_amount.set_text(f"{data.amount}")
       self._form_edit_amount.set_input_purpose(Gtk.InputPurpose.DIGITS)
       listbox.append(self._form_edit_amount)
 
       row = self._build_calendar(data.date)
-      
+
       listbox.append(row)
-      
+
       stack.add_named(listbox, "edit")
 
-      stack.set_visible_child_name("display") 
+      stack.set_visible_child_name("display")
 
       return stack
 
     def build_listbox_balance(data: Expense) -> Gtk.ListBox:
-      
+
       listbox = Gtk.ListBox(hexpand=True)
       listbox.add_css_class("boxed-list")
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
       # Credit Balance
       balance_row = Adw.ActionRow(title="Balance")
-      data.bind_property("credit_balance", balance_row, "subtitle", 
+      data.bind_property("credit_balance", balance_row, "subtitle",
         transform_to=lambda binding, value: f"{float(value):.2f} €"
         if value not in (None, "") else "0.00 €",
         flags=GObject.BindingFlags.SYNC_CREATE
@@ -905,10 +915,10 @@ class View:
       balance_row.set_selectable(False)
 
       listbox.append(balance_row)
-      
+
       return listbox
-    
-    def on_remove_friend_expense_clicked(button, expense: Expense, 
+
+    def on_remove_friend_expense_clicked(button, expense: Expense,
                                          friend: Friend) -> None:
       # Get the parent window from the button
       window = button.get_root()
@@ -942,7 +952,7 @@ class View:
 
     def on_add_credit_clicked(button, expense: Expense, friend: Friend):
       window = button.get_root()
-      
+
       # Create SpinButton
       adjustment = Gtk.Adjustment(
         value=0.0,
@@ -955,8 +965,8 @@ class View:
       spin = Gtk.SpinButton(adjustment=adjustment, digits=2)
       spin.set_value(0.0)
       spin.set_hexpand(True)
-      spin.set_numeric(True)      
-      
+      spin.set_numeric(True)
+
       # Create dialog content
       header = Adw.HeaderBar()
       title_label = Gtk.Label(label="Add Credit")
@@ -965,89 +975,89 @@ class View:
       header.set_title_widget(title_label)
       header.set_show_end_title_buttons(False)
       header.set_show_start_title_buttons(False)
-      
+
       cancel_button = Gtk.Button(label="Cancel")
       header.pack_start(cancel_button)
-      
+
       add_button = Gtk.Button(label="Add")
       add_button.add_css_class("suggested-action")
       header.pack_end(add_button)
-      
+
       content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
       content_box.set_margin_top(12)
       content_box.set_margin_bottom(12)
       content_box.set_margin_start(12)
       content_box.set_margin_end(12)
       content_box.set_valign(Gtk.Align.CENTER)
-    
+
       content_box.append(spin)
-      
+
       content_box.append(Gtk.Label(label=f"to {friend.name}"))
-      
+
       toolbar_view = Adw.ToolbarView()
       toolbar_view.add_top_bar(header)
       toolbar_view.set_content(content_box)
-      
+
       dialog = Adw.Dialog()
       dialog.set_child(toolbar_view)
       dialog.set_content_width(300)
       dialog.set_content_height(150)
-      
-      def on_dialog_mapped(widget):
+
+      def on_dialog_mapped(unused_widget):
         spin.grab_focus()
 
       dialog.connect("map", on_dialog_mapped)
-      
-      def on_cancel(btn):
-          dialog.close()
-      
-      def on_add(btn):
+
+      def on_cancel(unused_btn):
+        dialog.close()
+
+      def on_add(unused_btn):
         value = spin.get_value()
         self.handler.on_confirm_add_credit_friend_expense(
             expense.id, friend.id, value, expense
         )
         self.set_buttons_sensitive_for(expense.id, False)
         dialog.close()
-      
+
       cancel_button.connect("clicked", on_cancel)
       add_button.connect("clicked", on_add)
       spin.set_activates_default(True)
-      
+
       # Make Add button activate on Enter
-      def on_spin_activate(widget):
+      def on_spin_activate(unused_widget):
         on_add(None)
       spin.connect("activate", on_spin_activate)
-      
+
       dialog.present(window)
 
     def on_build_row_friends(item: Friend, expense: Expense) -> Gtk.Widget:
       # Icon
       image = Gtk.Image.new_from_icon_name("avatar-default-symbolic")
-      
+
       # Add credit button
       add_credit_button = Gtk.Button.new_from_icon_name("list-add-symbolic")
       add_credit_button.add_css_class("flat")
       add_credit_button.set_tooltip_text("Add Credit")
       add_credit_button.connect("clicked", on_add_credit_clicked, expense, item)
-      
+
       # Remove button
       delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic")
       delete_button.add_css_class("flat")
       delete_button.add_css_class("destructive-action")
       delete_button.set_tooltip_text("Remove Friend")
-      delete_button.connect("clicked", on_remove_friend_expense_clicked, 
+      delete_button.connect("clicked", on_remove_friend_expense_clicked,
                             expense, item)
-      
+
       # Save buttons reference
       self._register_expense_button(data.id, add_credit_button)
-      if (item.credit_balance == 0):
+      if item.credit_balance == 0:
         self._register_expense_button(data.id, delete_button)
       else:
         delete_button.set_sensitive(False)
-      
+
       # Main labels
       name_label = Gtk.Label(halign=Gtk.Align.START)
-      item.bind_property("name", name_label, "label", 
+      item.bind_property("name", name_label, "label",
                          flags=GObject.BindingFlags.SYNC_CREATE)
 
       balance_label = Gtk.Label(halign=Gtk.Align.START)
@@ -1083,7 +1093,7 @@ class View:
       hbox.append(delete_button)
 
       return hbox
-    
+
     def build_add_friend_row(expense: Expense) -> Gtk.Widget:
       row = Adw.ActionRow(title="Add Friend")
       row.add_prefix(Gtk.Image.new_from_icon_name("contact-new-symbolic"))
@@ -1094,12 +1104,12 @@ class View:
 
     def on_add_friend_clicked(row, expense: Expense) -> None:
       window = row.get_root()
-      
+
       expense_friend_ids = {f.id for f in expense.friends}
       available_friends = [
         f for f in self.data_model_friends if f.id not in expense_friend_ids
       ]
-      
+
       if not available_friends:
         dialog = Adw.MessageDialog(
           transient_for=window,
@@ -1144,7 +1154,7 @@ class View:
       listbox.add_css_class("boxed-list")
 
       friend_map = {}
-      all_friend_rows = [] 
+      all_friend_rows = []
 
       def create_friend_row(friend):
         row = Adw.ActionRow(title=friend.name)
@@ -1179,11 +1189,11 @@ class View:
 
       scrolled = Gtk.ScrolledWindow()
       scrolled.set_child(listbox)
-      scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC) 
+      scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
       scrolled.set_min_content_height(200)
       scrolled.set_vexpand(True)
       scrolled.set_hexpand(True)
-      
+
       # Dialog content
       content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
       content_box.set_margin_top(6)
@@ -1199,14 +1209,14 @@ class View:
       dialog.set_child(toolbar_view)
 
       # Actions
-      def on_cancel(btn):
+      def on_cancel(unused_btn):
         dialog.close()
 
-      def on_add(btn):
+      def on_add(unused_btn):
         selected_row = listbox.get_selected_row()
         if selected_row:
           selected_friend = friend_map[selected_row]
-          self.handler.on_add_friend_expense(expense.id, selected_friend.id, 
+          self.handler.on_add_friend_expense(expense.id, selected_friend.id,
                                              expense)
           self.set_buttons_sensitive_for(data.id, False)
         dialog.close()
@@ -1222,14 +1232,14 @@ class View:
       listbox.connect("selected-rows-changed", on_selection_changed)
       add_button.set_sensitive(False)
 
-      def on_row_activated(listbox, row):
+      def on_row_activated(unused_listbox, row):
         if row:
           on_add(None)
 
       listbox.connect("row-activated", on_row_activated)
 
       # Focus search entry when dialog opens
-      def on_dialog_mapped(widget):
+      def on_dialog_mapped(unused_widget):
         search_entry.grab_focus()
 
       dialog.connect("map", on_dialog_mapped)
@@ -1237,12 +1247,12 @@ class View:
       # Keyboard shortcut for search (Ctrl+F)
       shortcut_controller = Gtk.ShortcutController()
       shortcut_controller.set_scope(Gtk.ShortcutScope.LOCAL)
-      
+
       trigger = Gtk.ShortcutTrigger.parse_string("<Ctrl>F")
       action = Gtk.CallbackAction.new(lambda *args: search_entry.grab_focus())
       shortcut = Gtk.Shortcut.new(trigger, action)
       shortcut_controller.add_shortcut(shortcut)
-      
+
       dialog.add_controller(shortcut_controller)
 
       dialog.present(window)
@@ -1269,6 +1279,8 @@ class View:
       # Connect signal when user responds
       def on_response(dialog, response):
         if response == "remove":
+          row = self._expenses_list.get_selected_row()
+          row.set_sensitive(False)
           self.handler.on_delete_expense(data.id)
 
         dialog.destroy()
@@ -1277,7 +1289,7 @@ class View:
 
       # Show the dialog
       dialog.present()
-    
+
     # Scrollable content
     scrolled = Gtk.ScrolledWindow()
     scrolled.set_vexpand(True)
@@ -1294,7 +1306,7 @@ class View:
       margin_start=16,
       margin_end=16
     )
-    
+
     # Expense details
     group_expenses = Adw.PreferencesGroup(title="Details")
     stack_info = build_info_stack(data)
@@ -1308,7 +1320,7 @@ class View:
     # Friends involved in the expense
     group_friends = Adw.PreferencesGroup(title="Friends")
     listbox_friends = Gtk.ListBox(hexpand=True)
-    listbox_friends.add_css_class("boxed-list") 
+    listbox_friends.add_css_class("boxed-list")
     listbox_friends.set_selection_mode(Gtk.SelectionMode.NONE)
     listbox_friends.bind_model(data.friends, on_build_row_friends, data)
     # Append "Add friend" row (always at bottom)
@@ -1316,7 +1328,7 @@ class View:
     group_friends.add(listbox_friends)
     clamp_friends = self._build_clamp_content(group_friends)
     outer_box.append(clamp_friends)
-    
+
     # Remove expense button
     remove_button = Gtk.Button(label="Remove expense")
     remove_button.add_css_class("destructive-action")
@@ -1340,7 +1352,7 @@ class View:
     title.set_xalign(0.0) # Left align text
     header.set_title_widget(title)
     # Bind reactive title to expense description
-    data.bind_property("description", title, "label", 
+    data.bind_property("description", title, "label",
                        flags=GObject.BindingFlags.SYNC_CREATE)
     # Button edit
     edit_button = Gtk.Button(icon_name="document-edit-symbolic")
@@ -1368,7 +1380,7 @@ class View:
 
       def load_edit_data():
         self._form_edit_desc.set_text(data.description)
-        self._form_edit_amount.set_text(f"{data.amount}") 
+        self._form_edit_amount.set_text(f"{data.amount}")
         self._date_row.set_subtitle(self._format_date(data.date))
 
       load_edit_data()
@@ -1460,7 +1472,7 @@ class View:
     self._visible_expense = -1 # Can skip to expense
     old = self._stack.get_child_by_name("no_one_expense")
     if not old:
-      no_one_expense = self._build_empty_expense_msg("Add an Expense", 
+      no_one_expense = self._build_empty_expense_msg("Add an Expense",
                                                      "list-add-symbolic")
       self._stack.add_titled(no_one_expense, "no_one_expense", "No One Expense")
 
@@ -1492,7 +1504,7 @@ class View:
     self._stack.add_titled(info, f"info{expense.id}", expense.description)
     # Don`t show the view
 
-  def show_expense_info(self, expense: Expense, l: list[dict], 
+  def show_expense_info(self, expense: Expense, l: list[dict],
                         create: bool) -> None:
     self._visible_expense = expense.id
     if create:
@@ -1514,12 +1526,12 @@ class View:
                                           l: list[dict]) -> None:
     data.credit_balance += amount
     self.show_expense_info(data, l, True)
-  
+
   def prepare_add_friend_credit_expense_info(self, amount: float, data: Expense,
                                              l: list[dict]) -> None:
     data.credit_balance += amount
     self.prepare_show_expense_info(data, l)
-    
+
   def rebuild_expense_info(self, data: Expense) -> None:
     old = self._stack.get_child_by_name(f"info{data.id}")
     if old:
@@ -1558,20 +1570,19 @@ class View:
     if not old:
       no_internet = self._build_no_internet_page()
       self._stack.add_titled(no_internet, "no_internet", "No internet")
- 
+
     self._stack.set_visible_child_name("no_internet")
 
-  def delete_expense(self, id) -> None:
-    self._stack.remove(self._stack.get_child_by_name(f"info{id}"))
+  def delete_expense(self, exp_id) -> None:
+    self._stack.remove(self._stack.get_child_by_name(f"info{exp_id}"))
 
-    old = self._stack.get_child_by_name(f"edit{id}")
-    # Remove previous edit view for this expense if exists 
+    old = self._stack.get_child_by_name(f"edit{exp_id}")
+    # Remove previous edit view for this expense if exists
     if old:
       self._stack.remove(old)
 
-    for i in range(len(self.data_model_expenses)):
-      expense = self.data_model_expenses[i]
-      if expense.id == id:
+    for i,expense in enumerate(self.data_model_expenses):
+      if expense.id == exp_id:
         self.data_model_expenses.remove(i)
         break
 

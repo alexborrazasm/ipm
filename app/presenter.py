@@ -53,11 +53,6 @@ class Presenter(ViewHandler):
     Thread(target=do_request, daemon=True).start()
 
   # ===== START Add Expense event handlers =====
-  def on_add_expense_clicked(self) -> None:
-    self.view.clear_expenses_list_selection()
-    self.view.set_sidebar_sensitive(False)
-    self.view.show_add_expense()
-
   def on_confirm_add_new_expense_clicked(self, data) -> None:
     def do_request():
       try:
@@ -103,10 +98,6 @@ class Presenter(ViewHandler):
     self.view.set_spinner(True)
     self.view.show_empty_expense()
     Thread(target=do_request, daemon=True).start()
-
-  def on_cancel_add_expense_clicked(self) -> None:
-    self.view.show_empty_expense()
-    self.view.set_sidebar_sensitive(True)
   # ===== END Add Expense event handlers =====
 
   # ===== START Show Expense event handlers =====
