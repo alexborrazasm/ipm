@@ -405,7 +405,7 @@ class View:
       
       return main_header
     
-    def build_listbox(self) -> Gtk.ListBox:
+    def build_listbox() -> Gtk.ListBox:
       def on_build_row(item: Expense, user_data: Any) -> Gtk.Widget:
         image = Gtk.Image.new_from_icon_name("help-about-symbolic")
         

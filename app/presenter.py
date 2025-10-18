@@ -240,7 +240,7 @@ class Presenter(ViewHandler):
         self.model.add_friend_expense(expense_id, friend_id)
         l = self.model.get_friends_by_expenses(expense_id)
         def update_view():
-          self.view.show_info_toast("Friend successfully added to expense")
+          self.view.show_info_toast("Friend successfully added from expense")
           self.view.set_spinner(False)
           if self.view.get_visible_expense() == -1:
             self.view.show_expense_info(data, l, True)
