@@ -115,13 +115,19 @@ class View:
 
     # Stack of views
     self._stack = None # type: Adw.Stack
-    # ID of expense info, -1 for can skip to expense -2 cannot
+    # ID of the currently visible expense info
+    # -1 means can skip the view
+    # -2 means cannot skip the view
+    # positive integer means the expense id
     self._visible_expense = 0
     self._toast_overlay = None # type: Adw.ToastOverlay
     
     # Spinner
     self._spinner = None
     self._spinner_count = 0 
+    
+    # Expense info buttons
+    self._expense_buttons: dict[int, list[Gtk.Button]] = {}
 
   def set_handler(self, handler: ViewHandler) -> None:
     self.handler = handler
@@ -925,9 +931,8 @@ class View:
       # Connect signal when user responds
       def on_response(dialog, response):
         if response == "remove":
-          # Call your delete logic here:
           self.handler.on_delete_friend_expense(expense.id, friend.id, expense)
-
+          self.set_buttons_sensitive_for(data.id, False)
         dialog.destroy()
 
       dialog.connect("response", on_response)
@@ -1032,6 +1037,10 @@ class View:
       delete_button.connect("clicked", on_remove_friend_expense_clicked, 
                             expense, item)
       
+      # Save buttons reference
+      self._register_expense_button(data.id, add_credit_button)
+      self._register_expense_button(data.id, delete_button)
+      
       # Main labels
       name_label = Gtk.Label(halign=Gtk.Align.START)
       item.bind_property("name", name_label, "label", 
@@ -1076,6 +1085,7 @@ class View:
       row.add_prefix(Gtk.Image.new_from_icon_name("contact-new-symbolic"))
       row.set_activatable(True)
       row.connect("activated", on_add_friend_clicked, expense)
+      self._register_expense_button(data.id, row)
       return row
 
     def on_add_friend_clicked(row, expense: Expense) -> None:
@@ -1306,6 +1316,7 @@ class View:
     remove_button.add_css_class("destructive-action")
     remove_button.set_halign(Gtk.Align.CENTER)
     remove_button.connect("clicked", on_remove_expense_clicked, data)
+    self._register_expense_button(data.id, remove_button)
 
     outer_box.append(remove_button)
 
@@ -1330,7 +1341,7 @@ class View:
     edit_button.connect(
       'clicked', lambda _wg: on_edit_expense_clicked(data))
     edit_button.set_tooltip_text("Edit Expense")
-    self._edit_btn = edit_button # save reference
+    self._register_expense_button(data.id, edit_button)
 
     # Button Cancel
     cancel_button = Gtk.Button(label="Cancel")
@@ -1460,6 +1471,7 @@ class View:
     old = self._stack.get_child_by_name(f"info{expense.id}")
     if old:
       self._stack.remove(old)
+      self._unregister_expense_buttons_for(expense.id)
     # Add friend data to expense
     expense.set_friends(l)
     # Build the view
@@ -1475,6 +1487,7 @@ class View:
       old = self._stack.get_child_by_name(f"info{expense.id}")
       if old:
         self._stack.remove(old)
+        self._unregister_expense_buttons_for(expense.id)
       # Add friend data to expense
       expense.set_friends(l)
       # Build the view
@@ -1494,6 +1507,29 @@ class View:
                                              l: list[dict]) -> None:
     data.credit_balance += amount
     self.prepare_show_expense_info(data, l)
+    
+  def rebuild_expense_info(self, data: Expense) -> None:
+    old = self._stack.get_child_by_name(f"info{data.id}")
+    if old:
+      self._stack.remove(old)
+      self._unregister_expense_buttons_for(data.id)
+    # Build the view
+    info = self._build_expense_info(data)
+    # Add to the stack
+    self._stack.add_titled(info, f"info{data.id}", data.description)
+    # Show the view
+    self._stack.set_visible_child_name(f"info{data.id}")
+
+  def prepare_rebuild_expense_info(self, data: Expense) -> None:
+    old = self._stack.get_child_by_name(f"info{data.id}")
+    if old:
+      self._stack.remove(old)
+      self._unregister_expense_buttons_for(data.id)
+    # Build the view
+    info = self._build_expense_info(data)
+    # Add to the stack
+    self._stack.add_titled(info, f"info{data.id}", data.description)
+    # Don`t show the view
 
   def show_loading_page(self) -> None:
     self._visible_expense = -1 # Can skip to expense
@@ -1564,4 +1600,19 @@ class View:
     self._build_toast(message, icon, timeout)
 # ===== END Public methods to show views =====
 
+  def _register_expense_button(self, expense_id: int, button: Gtk.Button) -> None:
+    """Add a button to the list for the given expense id."""
+    if expense_id not in self._expense_buttons:
+      self._expense_buttons[expense_id] = []
+    self._expense_buttons[expense_id].append(button)
+  
+  def _unregister_expense_buttons_for(self, expense_id: int) -> None:
+    """Remove all buttons registered for a given expense ID."""
+    if expense_id in self._expense_buttons:
+      del self._expense_buttons[expense_id]
+
+  def set_buttons_sensitive_for(self, expense_id: int, sensitive: bool) -> None:
+    """Enable or disable all buttons associated with a given expense."""
+    for btn in self._expense_buttons.get(expense_id, []):
+      btn.set_sensitive(sensitive)
 # ===== END View classes =====

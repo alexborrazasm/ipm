@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""APP main"""
 from model import Model
 from view import View
 from presenter import Presenter

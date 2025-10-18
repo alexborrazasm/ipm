@@ -279,6 +279,7 @@ class Presenter(ViewHandler):
         self.model.delete_friend_expense(expense_id, friend_id)
         l = self.model.get_friends_by_expenses(expense_id)
         def update_view():
+          self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.show_info_toast("Friend successfully deleted to expense")
           self.view.set_spinner(False)
           if self.view.get_visible_expense() == -1:
@@ -292,6 +293,7 @@ class Presenter(ViewHandler):
         msg = str(e)
         print(f"NETWORK ERROR in on_delete_friend_expense_clicked: {msg}")
         def update_view_error():
+          self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.set_spinner(False)
           self.view.show_error_toast(msg)
           self.view.show_no_internet()
@@ -303,8 +305,13 @@ class Presenter(ViewHandler):
         print(f"MODEL ERROR in on_delete_friend_expense_clicked: {msg}")
 
         def update_view_error():
+          self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.show_error_toast(msg)
           self.view.set_spinner(False)
+          if self.view.get_visible_expense() == expense_id:
+            self.view.rebuild_expense_info(data)
+          else:
+            self.view.prepare_rebuild_expense_info(data)
 
         run_on_main_thr(update_view_error)
 
