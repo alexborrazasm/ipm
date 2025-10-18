@@ -80,6 +80,3 @@ flowchart LR
 
     C --> |Retry| A
 ```
-
-> Nota: "Loading Screen" y "No Internet Screen" están las vistas hechas pero no
-están conectadas al flujo de la aplicación (pendiente para la tarea 2)
