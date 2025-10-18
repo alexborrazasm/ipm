@@ -1405,13 +1405,19 @@ class View:
         self.show_error_toast(message, 2)
         return
 
-      payload = {
-        "id": expense_id,
-        "description": description,
-        "date": date,
-        "amount": amount
-      }
-      self.handler.on_confirm_edit_expense_clicked(payload, data)
+      # If changes were made
+      if (description != data.description or
+          amount != data.amount or
+          date != data.date):
+        self.set_buttons_sensitive_for(data.id, False)
+        payload = {
+          "id": expense_id,
+          "description": description,
+          "date": date,
+          "amount": amount
+        }
+        self.handler.on_confirm_edit_expense_clicked(payload, data)
+
       add_button.set_visible(False)
       cancel_button.set_visible(False)
       header.set_show_end_title_buttons(True)
