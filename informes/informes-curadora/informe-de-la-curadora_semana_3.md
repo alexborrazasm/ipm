@@ -36,10 +36,10 @@ diagramas de secuencia.
 
 ---
 
-### 1. Concurrencia
+### 2. Concurrencia
 **🧾 Cómo usarlo:**   
 Aunque esté escrito pensando en código C/GNOME, este artículo contextualiza cómo
-en el ecosistema GNOME / GTK se piensa la concurrencia, los pools de trabajo, 
+en el ecosistema GNOME/GTK se piensa la concurrencia, los pools de trabajo, 
 cómo interaccionar con GMainContext, etc.
 
 **🔗 Enlaces:**
@@ -51,7 +51,7 @@ Visión de la programación asíncrona. Sirve de inspiración y/o guía.
 
 ---
 
-### 2. Manejo de errores  
+### 3. Manejo de errores  
 **🧾 Cómo usarlo:**  
 Lee para conocer el manejo de errores en Python.   
 
@@ -64,7 +64,7 @@ Obtención de una base para el control de errores y evitar problemas de concurre
 
 ---
 
-### 3. Documentación GTK4/Adwaita
+### 4. Documentación GTK4/Adwaita
 **🧾 Cómo usarlo:**  
 Consulta esta documentación para conocer los iconos de adwaita y métodos concretos
 disponibles en GTK4/Adwaita que utilizaremos en nuestra aplicación.
@@ -75,16 +75,16 @@ disponibles en GTK4/Adwaita que utilizaremos en nuestra aplicación.
 - [Gtk - InputPurpose](https://docs.gtk.org/gtk4/enum.InputPurpose.html)
 
 **🏆 Cómo ayuda:**   
-Proporciona referencia y ejemplos sobre cómo implementar elementos visuales de 
+Proporciona referencia y ejemplos sobre cómo implementar elementos visuales en 
 la aplicación.  
 
 ---
 
-### 4. Pylint
+### 5. Pylint
 **🧾 Cómo usarlo:**  
 Lee esta documentación sobre la herramienta de análisis estático de código para
 Python que analiza el código fuente para encontrar errores, imponer un estándar
-de codificación... 
+de codificación, etc. 
 
 **🔗 Enlaces:**  
 - [Pylint User Manual](https://docs.pylint.org/)
