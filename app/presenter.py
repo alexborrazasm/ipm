@@ -3,7 +3,6 @@ from threading import Thread
 from view import View, run, ViewHandler, run_on_main_thr
 from model import Model, ModelError, NetworkError
 
-
 class Presenter(ViewHandler):
   """Presenter class that mediates between the Model and the View"""
   def __init__(self, model: Model, view: View):
@@ -69,7 +68,7 @@ class Presenter(ViewHandler):
             self.view.prepare_show_expense_info(
               self.view.add_expense(new_expense), [])
           self.view.set_add_btn_sensitive(True)
-          self.view.show_info_toast("Expense added successfully")
+          self.view.show_info_toast("Expense successfully added")
           self.view.set_spinner(False)
 
         run_on_main_thr(update_view)
@@ -160,7 +159,7 @@ class Presenter(ViewHandler):
             self.view.show_expense_info(data, l, True)
           else:
             self.view.prepare_show_expense_info(data, l)
-          self.view.show_info_toast("Expense edited successfully")
+          self.view.show_info_toast("Expense successfully edited")
           self.view.set_spinner(False)
 
         run_on_main_thr(update_view)
@@ -239,7 +238,7 @@ class Presenter(ViewHandler):
         self.model.add_friend_expense(expense_id, friend_id)
         l = self.model.get_friends_by_expenses(expense_id)
         def update_view():
-          self.view.show_info_toast("Friend successfully added from expense")
+          self.view.show_info_toast("Friend successfully added to expense")
           self.view.set_spinner(False)
           if self.view.get_visible_expense() == -1:
             self.view.show_expense_info(data, l, True)
@@ -282,7 +281,7 @@ class Presenter(ViewHandler):
         l = self.model.get_friends_by_expenses(expense_id)
         def update_view():
           self.view.set_buttons_sensitive_for(expense_id, True)
-          self.view.show_info_toast("Friend successfully deleted to expense")
+          self.view.show_info_toast("Friend successfully deleted from expense")
           self.view.set_spinner(False)
           if self.view.get_visible_expense() == -1:
             self.view.show_expense_info(data, l, True)
