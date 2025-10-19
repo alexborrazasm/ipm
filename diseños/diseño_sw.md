@@ -205,3 +205,26 @@ sequenceDiagram
     View-->>User: Display new expense details
 ```
 
+## Diagrama de secuencia "Error al añadir gasto duplicado"
+```mermaid
+sequenceDiagram
+    actor User
+    participant View
+    participant Presenter
+    participant Thread
+    participant Model
+
+    User->>View: Fill form and click "Add"
+    View->>Presenter: on_confirm_add_new_expense_clicked(data)
+    
+    rect rgba(92, 130, 159, 0.2)
+        Presenter ->> Thread: do_request (add_expense)
+        Thread ->> Model: add_expense(description, date, amount)
+        note right of Model: The server responds with 409 Conflict
+        Model -->> Thread: raises ModelError("Expense already exists")
+        
+        Thread ->> View: show_error_toast("Expense already exists")
+    end
+    
+    View-->>User: Shows error message
+```
