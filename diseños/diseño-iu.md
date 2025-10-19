@@ -17,9 +17,9 @@
 # ✏️ Wireframes
 ![](images/main_screen.jpeg)
 ![](images/search_and_add_expense.jpeg)
-![](images/edit_remove_exp_and_add_friend.jpeg)
-![](images/add_credit_and_remove_friend_errors.jpeg)
-![](images/about_and_scale.jpeg)
+![](images/edit_remove_and_add_friend_exp.jpeg)
+![](images/add_credit_remove_friend_exp_scale_window.jpeg)
+![](images/about_and_view_exp.jpeg)
 ![](images/error_handling.jpeg)
 
 ---
