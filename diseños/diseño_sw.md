@@ -142,44 +142,53 @@ classDiagram
 ```mermaid
 sequenceDiagram
     participant app as Main
-    create participant model as Model
-    app ->> model: create
+    participant model as Model
+    participant view as View
+    participant presenter as Presenter
+    participant adw as Adw.App
+    participant thread as Thread
 
-    create participant view as View
-    app ->> view: create
-    create participant Presenter
-    app ->> Presenter: create(model, view)
-    app ->> Presenter: run(application_id)
-    Presenter ->> view : set_handler(self)  
-    Presenter ->> view : run(application_id, on_activate=view.on_activate)
+    note over app,presenter: Component initialization
+    app->>model: create()
+    app->>view: create()
+    app->>presenter: create(model, view)
 
     rect rgba(92, 130, 159, 0.2)
-        create participant Thread
-        Presenter ->> Thread: do_request (load_data)
-        Thread ->> model: get_expenses()
-        model -->> Thread: expenses
-        Thread ->> model: get_friends()
-        model -->> Thread: friends
-        Thread ->> view : update_expenses(expenses)
-        Thread ->> view : update_friends(friends)
-        
-        Thread ->> view : show_start()
+    note over app,presenter: Application start
+    app->>presenter: run(application_id)
+    presenter->>view: set_handler(presenter)
+    presenter->>view: run(application_id, on_activate=view.on_activate)
     end
 
+    note over view,adw: Interface configuration
+    view->>adw: Adw.Application(application_id)
+    view->>adw: connect('activate', on_activate)
+    view->>adw: run()
+    adw-->>adw: 'activate'
+    adw->>view: on_activate(app)
+    view->>view: _build(app)
+
     rect rgba(92, 130, 159, 1)
-        create participant adw as Adw.App
-        note right of view: view.run(application_id, AdwView.on_activate)
-        view ->> adw : Adw.App(application_id)
-        view ->> adw : connect('activate', on_activate)
-        view ->> adw : run()
+    note over view,thread: Asynchronous data loading
+    view->>presenter: load_data()
+    presenter->>view: show_loading_page()
+    presenter->>thread: start do_request()
     end
-    adw -->> adw: 'activate'
-    adw ->> view : on_activate(app)
-    view ->> view : _build(app)
-    Note right of view: builds window, sidebar, stack...
-    view->>view: show_empty_expense()
-    Note right of view: depending on whether or not there are registered expenses
-    view-->>adw: win.present()
+
+    note over thread,model: Get data
+    thread->>model: get_expenses()
+    model-->>thread: expenses
+    thread->>model: get_friends()
+    model-->>thread: friends
+
+    rect rgba(92, 130, 159, 0.2)
+    note over thread,view: Interface actualization
+    thread->>view: update_expenses(expenses)
+    thread->>view: update_friends(friends)
+    thread->>view: show_start()
+    view->>view: win.present()
+    end
+
 ```
 ## Diagrama de secuencia "Click Add Expense"
 ```mermaid
