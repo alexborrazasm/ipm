@@ -225,15 +225,17 @@ sequenceDiagram
 
     User->>View: Fill form and click "Add"
     View->>Presenter: on_confirm_add_new_expense_clicked(data)
-    
-    rect rgba(92, 130, 159, 0.2)
-        Presenter ->> Thread: do_request (add_expense)
-        Thread ->> Model: add_expense(description, date, amount)
-        note right of Model: The server responds with 409 Conflict
+    Presenter ->> Thread: do_request (add_expense)
+    Thread ->> Model: add_expense(description, date, amount)
+
+    alt Expense added successfully
+        Model -->> Thread: New expense data
+        Thread ->> View: add_expense(expense_data)
+        Thread ->> View: show_expense_info(new_expense)
+        View-->>User: Display new expense details
+    else Expense already exists
         Model -->> Thread: raises ModelError("Expense already exists")
-        
         Thread ->> View: show_error_toast("Expense already exists")
+        View-->>User: Shows error message
     end
-    
-    View-->>User: Shows error message
 ```
