@@ -346,14 +346,15 @@ class View:
 
     # Right panel (content)
     self._stack = Adw.ViewStack()
-    # Call handler to get backed data
-    self.handler.load_data()
 
     self._toast_overlay = Adw.ToastOverlay()
     self._toast_overlay.set_child(self._stack)
 
     self._content_page = Adw.NavigationPage(child=self._toast_overlay)
     self._content_page.set_title("Splitwithme")
+
+    # Call handler to get backed data
+    self.handler.load_data()
 
     # Split view
     self._split_view = Adw.NavigationSplitView()
@@ -1639,4 +1640,15 @@ class View:
     """Enable or disable all buttons associated with a given expense."""
     for btn in self._expense_buttons.get(expense_id, []):
       btn.set_sensitive(sensitive)
+
+  def clear_all_expense_info(self) -> None:
+    """Remove all expense info views from the stack"""
+    self._visible_expense = -1 # Can skip to expense
+    # Make a copy of the children to avoid modifying while iterating
+    for unused_i,e in enumerate(self.data_model_expenses):
+      child = self._stack.get_child_by_name(f"info{e.id}")
+      if child:
+        self._stack.remove(child)
+      self._unregister_expense_buttons_for(e.id)
+
 # ===== END View classes =====
