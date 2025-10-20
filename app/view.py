@@ -1064,6 +1064,8 @@ class View:
 
       balance_label = Gtk.Label(halign=Gtk.Align.START)
       balance_label.add_css_class("caption")
+      balance_label.set_wrap(True)
+      balance_label.set_wrap_mode(Pango.WrapMode.WORD_CHAR)
 
       # Function to update balance label
       def update_balance_label(_obj=None, _pspec=None):
@@ -1313,11 +1315,9 @@ class View:
     group_expenses = Adw.PreferencesGroup(title="Details")
     stack_info = build_info_stack(data)
     group_expenses.add(stack_info)
-    clamp_info = self._build_clamp_content(group_expenses)
-    outer_box.append(clamp_info)
+    outer_box.append(group_expenses)
     listbox_balance = build_listbox_balance(data)
-    clamp_balance = self._build_clamp_content(listbox_balance)
-    outer_box.append(clamp_balance)
+    outer_box.append(listbox_balance)
 
     # Friends involved in the expense
     group_friends = Adw.PreferencesGroup(title="Friends")
@@ -1328,8 +1328,7 @@ class View:
     # Append "Add friend" row (always at bottom)
     listbox_friends.append(build_add_friend_row(data))
     group_friends.add(listbox_friends)
-    clamp_friends = self._build_clamp_content(group_friends)
-    outer_box.append(clamp_friends)
+    outer_box.append(group_friends)
 
     # Remove expense button
     remove_button = Gtk.Button(label="Remove expense")
@@ -1339,8 +1338,9 @@ class View:
     self._register_expense_button(data.id, remove_button)
 
     outer_box.append(remove_button)
+    clamp = self._build_clamp_content(outer_box)
 
-    scrolled.set_child(outer_box)
+    scrolled.set_child(clamp)
 
     # Toolbar view (for header + content)
     toolbar_view = Adw.ToolbarView()
