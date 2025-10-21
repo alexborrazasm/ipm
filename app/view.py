@@ -14,6 +14,7 @@ from gi.repository import Gtk, Gio, GObject, Adw, GLib, Gdk, Pango
 
 run_on_main_thr = GLib.idle_add
 
+
 # Start Adwaita Application
 def run(application_id: str, on_activate: Callable) -> None:
   app = Adw.Application(application_id=application_id)
@@ -379,12 +380,12 @@ class View:
 
     def build_header_bar() -> Adw.HeaderBar:
       main_header = Adw.HeaderBar()
-      title_label = Gtk.Label(label="Expenses")
+      title_label = Gtk.Label(label=_("Expenses"))
       main_header.set_title_widget(title_label)
       main_header.set_show_end_title_buttons(False)
 
       add_button = Gtk.Button(icon_name="list-add-symbolic")
-      add_button.set_tooltip_text("Add An Expense")
+      add_button.set_tooltip_text(_("Add An Expense"))
       add_button.connect('clicked',
                          lambda _wg: on_add_expense_clicked())
       self._add_button = add_button # save reference
@@ -589,7 +590,7 @@ class View:
     content_box.append(spinner)
 
     # Label text
-    label = Gtk.Label(label="Loading...")
+    label = Gtk.Label(label=_("Loading..."))
     label.set_margin_top(12)
     label.set_css_classes(["title-2"])
     content_box.append(label)
@@ -621,17 +622,17 @@ class View:
     icon.set_pixel_size(96)
     content_box.append(icon)
 
-    title_label = Gtk.Label(label="No Internet Connection")
+    title_label = Gtk.Label(label=_("No Internet Connection"))
     title_label.set_margin_top(12)
     title_label.set_css_classes(["title-2"])
     content_box.append(title_label)
 
-    subtitle_label = Gtk.Label(label="Please check your connection and try again.")
+    subtitle_label = Gtk.Label(label=_("Please check your connection and try again."))
     subtitle_label.set_css_classes(["body"])
     subtitle_label.set_opacity(0.8)
     content_box.append(subtitle_label)
 
-    retry_button = Gtk.Button(label="Retry")
+    retry_button = Gtk.Button(label=_("Retry"))
     retry_button.set_margin_top(18)
     retry_button.connect("clicked", lambda _wg: self.handler.load_data())
 
@@ -658,7 +659,7 @@ class View:
 
   def _build_calendar(self, date: str | None = None) -> Adw.ActionRow:
     # Create the main row
-    date_row = Adw.ActionRow(title="Date")
+    date_row = Adw.ActionRow(title=_("Date"))
     date_row.set_activatable(False)
     date_row.set_selectable(False)
 
@@ -781,8 +782,8 @@ class View:
     form.set_selection_mode(Gtk.SelectionMode.NONE)
     form.add_css_class("boxed-list-separate")
 
-    self._form_add_description = Adw.EntryRow(title="Description")
-    self._form_add_amount = Adw.EntryRow(title="Amount")
+    self._form_add_description = Adw.EntryRow(title=_("Description"))
+    self._form_add_amount = Adw.EntryRow(title=_("Amount"))
     self._form_add_amount.set_input_purpose(Gtk.InputPurpose.DIGITS)
 
     # Calendar widget
@@ -813,9 +814,9 @@ class View:
 
     # Header bar (unique for this page)
     header = Adw.HeaderBar()
-    header.set_title_widget(Gtk.Label(label="New Expense"))
+    header.set_title_widget(Gtk.Label(label=_("New Expense")))
 
-    cancel_button = Gtk.Button(label="Cancel")
+    cancel_button = Gtk.Button(label=_("Cancel"))
     cancel_button.connect(
       'clicked', lambda _wg: on_cancel_add_expense_clicked())    
 
@@ -823,7 +824,7 @@ class View:
       self.set_sidebar_sensitive(True)
       self.show_empty_expense()
 
-    add_button = Gtk.Button(label="Add")
+    add_button = Gtk.Button(label=_("Add"))
     add_button.add_css_class("suggested-action")
     add_button.connect(
       'clicked', on_add_done_clicked)
@@ -847,7 +848,7 @@ class View:
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
       # Description
-      row = Adw.ActionRow(title="Description")
+      row = Adw.ActionRow(title=_("Description"))
       data.bind_property("description", row, "subtitle",
                          flags=GObject.BindingFlags.SYNC_CREATE)
       row.set_activatable(True)
@@ -855,7 +856,7 @@ class View:
       listbox.append(row)
 
       # Amount
-      row = Adw.ActionRow(title="Amount")
+      row = Adw.ActionRow(title=_("Amount"))
       data.bind_property("amount", row, "subtitle",
         transform_to=lambda binding, value: f"{float(value):.2f} €"
         if value not in (None, "") else "0.00 €",
@@ -866,7 +867,7 @@ class View:
       listbox.append(row)
 
       # Date
-      row = Adw.ActionRow(title="Date")
+      row = Adw.ActionRow(title=_("Date"))
       data.bind_property("date", row, "subtitle",
                          transform_to=lambda b, v: self._format_date(data.date),
                          flags=GObject.BindingFlags.SYNC_CREATE)
@@ -881,11 +882,11 @@ class View:
       listbox.add_css_class("boxed-list")
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
-      self._form_edit_desc = Adw.EntryRow(title="Description")
+      self._form_edit_desc = Adw.EntryRow(title=_("Description"))
       self._form_edit_desc.set_text(data.description)
       listbox.append(self._form_edit_desc)
 
-      self._form_edit_amount = Adw.EntryRow(title="Amount")
+      self._form_edit_amount = Adw.EntryRow(title=_("Amount"))
       self._form_edit_amount.set_text(f"{data.amount}")
       self._form_edit_amount.set_input_purpose(Gtk.InputPurpose.DIGITS)
       listbox.append(self._form_edit_amount)
@@ -907,7 +908,7 @@ class View:
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
       # Credit Balance
-      balance_row = Adw.ActionRow(title="Balance")
+      balance_row = Adw.ActionRow(title=_("Balance"))
       data.bind_property("credit_balance", balance_row, "subtitle",
         transform_to=lambda binding, value: f"{float(value):.2f} €"
         if value not in (None, "") else "0.00 €",
@@ -929,8 +930,9 @@ class View:
       dialog = Adw.MessageDialog(
         transient_for=window,
         modal=True,
-        heading="Confirm deletion",
-        body=f"Are you sure you want to remove '{friend.name}'?",
+        heading=_("Confirm deletion"),
+        body = _("Are you sure you want to remove '%s'?") % friend.name
+
       )
 
       # Add action buttons
@@ -971,17 +973,17 @@ class View:
 
       # Create dialog content
       header = Adw.HeaderBar()
-      title_label = Gtk.Label(label="Add Credit")
+      title_label = Gtk.Label(label=_("Add Credit"))
       title_label.set_halign(Gtk.Align.CENTER)
       title_label.set_hexpand(True)
       header.set_title_widget(title_label)
       header.set_show_end_title_buttons(False)
       header.set_show_start_title_buttons(False)
 
-      cancel_button = Gtk.Button(label="Cancel")
+      cancel_button = Gtk.Button(label=_("Cancel"))
       header.pack_start(cancel_button)
 
-      add_button = Gtk.Button(label="Add")
+      add_button = Gtk.Button(label=_("Add"))
       add_button.add_css_class("suggested-action")
       header.pack_end(add_button)
 
@@ -1099,7 +1101,7 @@ class View:
       return hbox
 
     def build_add_friend_row(expense: Expense) -> Gtk.Widget:
-      row = Adw.ActionRow(title="Add Friend")
+      row = Adw.ActionRow(title=_("Add Friend"))
       row.add_prefix(Gtk.Image.new_from_icon_name("contact-new-symbolic"))
       row.set_activatable(True)
       row.connect("activated", on_add_friend_clicked, expense)
@@ -1118,8 +1120,8 @@ class View:
         dialog = Adw.MessageDialog(
           transient_for=window,
           modal=True,
-          heading="No more friends available",
-          body="You have already added all your friends to this expense."
+          heading=_("No more friends available"),
+          body=_("You have already added all your friends to this expense.")
         )
         dialog.add_response("ok", "OK")
         dialog.set_response_appearance("ok", Adw.ResponseAppearance.SUGGESTED)
@@ -1133,23 +1135,23 @@ class View:
 
       # Header
       header = Adw.HeaderBar()
-      title_label = Gtk.Label(label="Add Friend")
+      title_label = Gtk.Label(label=_("Add Friend"))
       title_label.set_halign(Gtk.Align.CENTER)
       title_label.set_hexpand(True)
       header.set_title_widget(title_label)
       header.set_show_end_title_buttons(False)
       header.set_show_start_title_buttons(False)
 
-      cancel_button = Gtk.Button(label="Cancel")
+      cancel_button = Gtk.Button(label=_("Cancel"))
       header.pack_start(cancel_button)
 
-      add_button = Gtk.Button(label="Add")
+      add_button = Gtk.Button(label=_("Add"))
       add_button.add_css_class("suggested-action")
       header.pack_end(add_button)
 
       # Search Entry
       search_entry = Gtk.SearchEntry()
-      search_entry.set_placeholder_text("Search friends...")
+      search_entry.set_placeholder_text(_("Search friends..."))
       search_entry.set_hexpand(True)
 
       # Friends list
@@ -1269,7 +1271,7 @@ class View:
       dialog = Adw.MessageDialog(
         transient_for=window,
         modal=True,
-        heading="Confirm deletion",
+        heading=_("Confirm deletion"),
         body=f"Are you sure you want to remove '{expense.description}'?",
       )
 
@@ -1312,7 +1314,7 @@ class View:
     )
 
     # Expense details
-    group_expenses = Adw.PreferencesGroup(title="Details")
+    group_expenses = Adw.PreferencesGroup(title=_("Details"))
     stack_info = build_info_stack(data)
     group_expenses.add(stack_info)
     outer_box.append(group_expenses)
@@ -1320,7 +1322,7 @@ class View:
     outer_box.append(listbox_balance)
 
     # Friends involved in the expense
-    group_friends = Adw.PreferencesGroup(title="Friends")
+    group_friends = Adw.PreferencesGroup(title=_("Friends"))
     listbox_friends = Gtk.ListBox(hexpand=True)
     listbox_friends.add_css_class("boxed-list")
     listbox_friends.set_selection_mode(Gtk.SelectionMode.NONE)
@@ -1331,7 +1333,7 @@ class View:
     outer_box.append(group_friends)
 
     # Remove expense button
-    remove_button = Gtk.Button(label="Remove expense")
+    remove_button = Gtk.Button(label=_("Remove expense"))
     remove_button.add_css_class("destructive-action")
     remove_button.set_halign(Gtk.Align.CENTER)
     remove_button.connect("clicked", on_remove_expense_clicked, data)
@@ -1364,14 +1366,14 @@ class View:
     self._register_expense_button(data.id, edit_button)
 
     # Button Cancel
-    cancel_button = Gtk.Button(label="Cancel")
+    cancel_button = Gtk.Button(label=_("Cancel"))
     cancel_button.set_visible(False)
     cancel_button.connect(
         'clicked', lambda _wg: on_edit_cancel_clicked()
     )
 
     # Button Done
-    add_button = Gtk.Button(label="Done")
+    add_button = Gtk.Button(label=_("Done"))
     add_button.add_css_class("suggested-action")
     add_button.set_visible(False)
     add_button.connect(

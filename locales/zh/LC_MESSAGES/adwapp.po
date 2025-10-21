@@ -1,0 +1,152 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2025 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#  <danielgf@desktop-m64t3fa.localdomain>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 07:42+0200\n"
+"PO-Revision-Date: 2025-10-21 05:25+0200\n"
+"Last-Translator:  <danielgf@desktop-m64t3fa.localdomain>\n"
+"Language-Team: Chinese\n"
+"Language: zh\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: app/view.py:383
+msgid "Expenses"
+msgstr "支出"
+
+#: app/view.py:388
+msgid "Add An Expense"
+msgstr "添加支出"
+
+#: app/view.py:593
+msgid "Loading..."
+msgstr "加载中..."
+
+#: app/view.py:625
+msgid "No Internet Connection"
+msgstr "无网络连接"
+
+#: app/view.py:630
+msgid "Please check your connection and try again."
+msgstr "请检查您的网络连接并重试。"
+
+#: app/view.py:635
+msgid "Retry"
+msgstr "重试"
+
+#: app/view.py:662 app/view.py:870
+msgid "Date"
+msgstr "日期"
+
+#: app/view.py:785 app/view.py:851 app/view.py:885
+msgid "Description"
+msgstr "描述"
+
+#: app/view.py:786 app/view.py:859 app/view.py:889
+msgid "Amount"
+msgstr "金额"
+
+#: app/view.py:817
+msgid "New Expense"
+msgstr "新支出"
+
+#: app/view.py:819 app/view.py:983 app/view.py:1145 app/view.py:1369
+msgid "Cancel"
+msgstr "取消"
+
+#: app/view.py:827 app/view.py:986 app/view.py:1148
+msgid "Add"
+msgstr "添加"
+
+#: app/view.py:911
+msgid "Balance"
+msgstr "余额"
+
+#: app/view.py:933 app/view.py:1274
+msgid "Confirm deletion"
+msgstr "确认删除"
+
+#: app/view.py:934
+#, python-format
+msgid "Are you sure you want to remove '%s'?"
+msgstr "您确定要删除 '%s' 吗？"
+
+#: app/view.py:976
+msgid "Add Credit"
+msgstr "添加信用"
+
+#: app/view.py:1104 app/view.py:1138
+msgid "Add Friend"
+msgstr "添加好友"
+
+#: app/view.py:1123
+msgid "No more friends available"
+msgstr "没有更多可用好友"
+
+#: app/view.py:1124
+msgid "You have already added all your friends to this expense."
+msgstr "您已经将所有好友添加到此支出。"
+
+#: app/view.py:1154
+msgid "Search friends..."
+msgstr "搜索好友..."
+
+#: app/view.py:1317
+msgid "Details"
+msgstr "详情"
+
+#: app/view.py:1325
+msgid "Friends"
+msgstr "好友"
+
+#: app/view.py:1336
+msgid "Remove expense"
+msgstr "删除支出"
+
+#: app/view.py:1376
+msgid "Done"
+msgstr "完成"
+
+#: app/presenter.py:36 app/presenter.py:85 app/presenter.py:134
+#: app/presenter.py:189 app/presenter.py:235 app/presenter.py:284
+#: app/presenter.py:333 app/presenter.py:386
+#, python-brace-format
+msgid "NETWORK ERROR in {function}: {message}"
+msgstr "网络错误在 {function}: {message}"
+
+#: app/presenter.py:48 app/presenter.py:100 app/presenter.py:149
+#: app/presenter.py:205 app/presenter.py:250 app/presenter.py:300
+#: app/presenter.py:349 app/presenter.py:402
+#, python-brace-format
+msgid "MODEL ERROR in {function}: {message}"
+msgstr "模型错误在 {function}: {message}"
+
+#: app/presenter.py:79
+msgid "Expense successfully added"
+msgstr "支出添加成功"
+
+#: app/presenter.py:182
+msgid "Expense successfully edited"
+msgstr "支出修改成功"
+
+#: app/presenter.py:229
+msgid "Expense successfully deleted"
+msgstr "支出删除成功"
+
+#: app/presenter.py:273
+msgid "Friend successfully added to expense"
+msgstr "好友成功添加到支出"
+
+#: app/presenter.py:322
+msgid "Friend successfully deleted from expense"
+msgstr "好友成功从支出中删除"
+
+#: app/presenter.py:374
+msgid "Credit successfully added to friend"
+msgstr "信用成功添加给好友"
