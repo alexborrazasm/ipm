@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VERSIÓN DEL PAQUETE\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 20:45+0200\n"
+"POT-Creation-Date: 2025-10-21 21:29+0200\n"
 "PO-Revision-Date: 2025-10-21 05:18+0200\n"
 "Last-Translator: danielgf@desktop-m64t3fa.localdomain\n"
 "Language-Team: Spanish es@tp.org.es\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: app/model.py:29 app/model.py:51 app/model.py:80 app/model.py:100
 #: app/model.py:131 app/model.py:153 app/model.py:175 app/model.py:202
 #: app/model.py:230 app/model.py:253
-msgid "Unexpected error" 
+msgid "Unexpected error"
 msgstr "Error inesperado"
 
 #: app/model.py:33 app/model.py:55 app/model.py:84 app/model.py:104
@@ -118,6 +118,18 @@ msgstr "Reintentar"
 #: app/view.py:662 app/view.py:870
 msgid "Date"
 msgstr "Fecha"
+
+#: app/view.py:752 app/view.py:1408
+msgid "None of the fields should be empty"
+msgstr "Ninguno de los campos debe estar vacío"
+
+#: app/view.py:759 app/view.py:1415
+msgid "The 'Amount' field must contain positive numbers"
+msgstr "El campo 'Cantidad' debe contener números positivos"
+
+#: app/view.py:764 app/view.py:1420
+msgid "Amount must be greater than 0"
+msgstr "La cantidad debe ser mayor que 0"
 
 #: app/view.py:785 app/view.py:851 app/view.py:885
 msgid "Description"

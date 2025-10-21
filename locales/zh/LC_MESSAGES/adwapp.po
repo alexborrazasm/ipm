@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 20:45+0200\n"
+"POT-Creation-Date: 2025-10-21 21:29+0200\n"
 "PO-Revision-Date: 2025-10-21 05:25+0200\n"
 "Last-Translator: danielgf@desktop-m64t3fa.localdomain\n"
 "Language-Team: Chinese\n"
@@ -118,6 +118,18 @@ msgstr "重试"
 #: app/view.py:662 app/view.py:870
 msgid "Date"
 msgstr "日期"
+
+#: app/view.py:752 app/view.py:1408
+msgid "None of the fields should be empty"
+msgstr "所有字段都不能为空"
+
+#: app/view.py:759 app/view.py:1415
+msgid "The 'Amount' field must contain positive numbers"
+msgstr "'金额'字段必须包含正数"
+
+#: app/view.py:764 app/view.py:1420
+msgid "Amount must be greater than 0"
+msgstr "金额必须大于0"
 
 #: app/view.py:785 app/view.py:851 app/view.py:885
 msgid "Description"

@@ -749,19 +749,19 @@ class View:
 
       # Data cannot be null but it is a good practice
       if not description or not amount_text or not date:
-        message = "None of the fields should be empty"
+        message = _("None of the fields should be empty") 
         self.show_error_toast(message, 2)
         return
 
       try:
         amount = float(amount_text)
       except ValueError:
-        message = "The 'Amount' field must contain positive numbers"
+        message = _("The 'Amount' field must contain positive numbers")
         self.show_error_toast(message, 2)
         return
 
       if amount <= 0:
-        message = "Amount must be greater than 0"
+        message = _("Amount must be greater than 0")
         self.show_error_toast(message, 2)
         return
 
@@ -1405,19 +1405,19 @@ class View:
 
       # Data cannot be null but it is a good practice
       if not description or not amount_text or not date:
-        message = "None of the fields should be empty"
+        message = _("None of the fields should be empty")
         self.show_error_toast(message, 2)
         return
 
       try:
         amount = float(amount_text)
       except ValueError:
-        message = "The 'Amount' field must contain positive numbers"
+        message = _("The 'Amount' field must contain positive numbers")
         self.show_error_toast(message, 2)
         return
 
       if amount <= 0:
-        message = "Amount must be greater than 0"
+        message = _("Amount must be greater than 0")
         self.show_error_toast(message, 2)
         return
 
