@@ -5,17 +5,91 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: VERSIÓN DEL PAQUETE\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 07:42+0200\n"
+"POT-Creation-Date: 2025-10-21 20:45+0200\n"
 "PO-Revision-Date: 2025-10-21 05:18+0200\n"
-"Last-Translator:  <danielgf@desktop-m64t3fa.localdomain>\n"
-"Language-Team: Spanish <es@tp.org.es>\n"
+"Last-Translator: danielgf@desktop-m64t3fa.localdomain\n"
+"Language-Team: Spanish es@tp.org.es\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: app/model.py:29 app/model.py:51 app/model.py:80 app/model.py:100
+#: app/model.py:131 app/model.py:153 app/model.py:175 app/model.py:202
+#: app/model.py:230 app/model.py:253
+msgid "Unexpected error" 
+msgstr "Error inesperado"
+
+#: app/model.py:33 app/model.py:55 app/model.py:84 app/model.py:104
+#: app/model.py:135 app/model.py:157 app/model.py:179 app/model.py:206
+#: app/model.py:234 app/model.py:257
+msgid "Cannot connect to server, please check your network"
+msgstr "No se puede conectar al servidor, por favor verifica tu red"
+
+#: app/model.py:39
+#, python-brace-format
+msgid "Unexpected exception in get_expense: {error}"
+msgstr "Excepción inesperada en get_expense: {error}"
+
+#: app/model.py:61
+#, python-brace-format
+msgid "Unexpected exception in get_expenses: {error}"
+msgstr "Excepción inesperada en get_expenses: {error}"
+
+#: app/model.py:90
+#, python-brace-format
+msgid "Unexpected exception in put_expense: {error}"
+msgstr "Excepción inesperada en put_expense: {error}"
+
+#: app/model.py:110
+#, python-brace-format
+msgid "Unexpected exception in delete_expense: {error}"
+msgstr "Excepción inesperada en delete_expense: {error}"
+
+#: app/model.py:128
+msgid "Expense already exists"
+msgstr "El gasto ya existe"
+
+#: app/model.py:141
+#, python-brace-format
+msgid "Unexpected exception in add_expense: {error}"
+msgstr "Excepción inesperada en add_expense: {error}"
+
+#: app/model.py:163
+#, python-brace-format
+msgid "Unexpected exception in get_friends: {error}"
+msgstr "Excepción inesperada en get_friends: {error}"
+
+#: app/model.py:185
+#, python-brace-format
+msgid "Unexpected exception in get_friends_by_expenses: {error}"
+msgstr "Excepción inesperada en get_friends_by_expenses: {error}"
+
+#: app/model.py:199
+msgid "Couldn't delete friend from expense"
+msgstr "No se pudo eliminar al amigo del gasto"
+
+#: app/model.py:212
+#, python-brace-format
+msgid "Unexpected exception in delete_friend_expense: {error}"
+msgstr "Excepción inesperada en delete_friend_expense: {error}"
+
+#: app/model.py:227
+msgid "Couldn't add friend to expense"
+msgstr "No se pudo añadir al amigo al gasto"
+
+#: app/model.py:240
+#, python-brace-format
+msgid "Unexpected exception in add_friend_expense: {error}"
+msgstr "Excepción inesperada en add_friend_expense: {error}"
+
+#: app/model.py:263
+#, python-brace-format
+msgid "Unexpected exception in add_friend_expense_credit: {error}"
+msgstr "Excepción inesperada en add_friend_expense_credit: {error}"
 
 #: app/view.py:383
 msgid "Expenses"

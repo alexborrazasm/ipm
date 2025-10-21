@@ -5,17 +5,91 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: ВЕРСИЯ ПАКЕТА\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 07:42+0200\n"
+"POT-Creation-Date: 2025-10-21 20:45+0200\n"
 "PO-Revision-Date: 2025-10-21 05:25+0200\n"
-"Last-Translator:  <danielgf@desktop-m64t3fa.localdomain>\n"
-"Language-Team: Russian <ru@tp.org.ru>\n"
+"Last-Translator: danielgf@desktop-m64t3fa.localdomain\n"
+"Language-Team: Russian ru@tp.org.ru\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+
+#: app/model.py:29 app/model.py:51 app/model.py:80 app/model.py:100
+#: app/model.py:131 app/model.py:153 app/model.py:175 app/model.py:202
+#: app/model.py:230 app/model.py:253
+msgid "Unexpected error"
+msgstr "Неожиданная ошибка"
+
+#: app/model.py:33 app/model.py:55 app/model.py:84 app/model.py:104
+#: app/model.py:135 app/model.py:157 app/model.py:179 app/model.py:206
+#: app/model.py:234 app/model.py:257
+msgid "Cannot connect to server, please check your network"
+msgstr "Не удается подключиться к серверу, проверьте подключение к сети"
+
+#: app/model.py:39
+#, python-brace-format
+msgid "Unexpected exception in get_expense: {error}"
+msgstr "Неожиданное исключение в get_expense: {error}"
+
+#: app/model.py:61
+#, python-brace-format
+msgid "Unexpected exception in get_expenses: {error}"
+msgstr "Неожиданное исключение в get_expenses: {error}"
+
+#: app/model.py:90
+#, python-brace-format
+msgid "Unexpected exception in put_expense: {error}"
+msgstr "Неожиданное исключение в put_expense: {error}"
+
+#: app/model.py:110
+#, python-brace-format
+msgid "Unexpected exception in delete_expense: {error}"
+msgstr "Неожиданное исключение в delete_expense: {error}"
+
+#: app/model.py:128
+msgid "Expense already exists"
+msgstr "Расход уже существует"
+
+#: app/model.py:141
+#, python-brace-format
+msgid "Unexpected exception in add_expense: {error}"
+msgstr "Неожиданное исключение в add_expense: {error}"
+
+#: app/model.py:163
+#, python-brace-format
+msgid "Unexpected exception in get_friends: {error}"
+msgstr "Неожиданное исключение в get_friends: {error}"
+
+#: app/model.py:185
+#, python-brace-format
+msgid "Unexpected exception in get_friends_by_expenses: {error}"
+msgstr "Неожиданное исключение в get_friends_by_expenses: {error}"
+
+#: app/model.py:199
+msgid "Couldn't delete friend from expense"
+msgstr "Не удалось удалить друга из расхода"
+
+#: app/model.py:212
+#, python-brace-format
+msgid "Unexpected exception in delete_friend_expense: {error}"
+msgstr "Неожиданное исключение в delete_friend_expense: {error}"
+
+#: app/model.py:227
+msgid "Couldn't add friend to expense"
+msgstr "Не удалось добавить друга к расходу"
+
+#: app/model.py:240
+#, python-brace-format
+msgid "Unexpected exception in add_friend_expense: {error}"
+msgstr "Неожиданное исключение в add_friend_expense: {error}"
+
+#: app/model.py:263
+#, python-brace-format
+msgid "Unexpected exception in add_friend_expense_credit: {error}"
+msgstr "Неожиданное исключение в add_friend_expense_credit: {error}"
 
 #: app/view.py:383
 msgid "Expenses"
