@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ВЕРСИЯ ПАКЕТА\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 21:29+0200\n"
+"POT-Creation-Date: 2025-10-21 21:39+0200\n"
 "PO-Revision-Date: 2025-10-21 05:25+0200\n"
 "Last-Translator: danielgf@desktop-m64t3fa.localdomain\n"
 "Language-Team: Russian ru@tp.org.ru\n"
@@ -120,15 +120,15 @@ msgstr "Повторить"
 msgid "Date"
 msgstr "Дата"
 
-#: app/view.py:752 app/view.py:1408
+#: app/view.py:752 app/view.py:1409
 msgid "None of the fields should be empty"
 msgstr "Ни одно из полей не должно быть пустым"
 
-#: app/view.py:759 app/view.py:1415
+#: app/view.py:759 app/view.py:1416
 msgid "The 'Amount' field must contain positive numbers"
 msgstr "Поле 'Сумма' должно содержать положительные числа"
 
-#: app/view.py:764 app/view.py:1420
+#: app/view.py:764 app/view.py:1421
 msgid "Amount must be greater than 0"
 msgstr "Сумма должна быть больше 0"
 
@@ -144,11 +144,11 @@ msgstr "Сумма"
 msgid "New Expense"
 msgstr "Новый расход"
 
-#: app/view.py:819 app/view.py:983 app/view.py:1145 app/view.py:1369
+#: app/view.py:819 app/view.py:983 app/view.py:1146 app/view.py:1370
 msgid "Cancel"
 msgstr "Отмена"
 
-#: app/view.py:827 app/view.py:986 app/view.py:1148
+#: app/view.py:827 app/view.py:986 app/view.py:1149
 msgid "Add"
 msgstr "Добавить"
 
@@ -156,7 +156,7 @@ msgstr "Добавить"
 msgid "Balance"
 msgstr "Баланс"
 
-#: app/view.py:933 app/view.py:1274
+#: app/view.py:933 app/view.py:1275
 msgid "Confirm deletion"
 msgstr "Подтвердить удаление"
 
@@ -169,35 +169,40 @@ msgstr "Вы уверены, что хотите удалить '%s'?"
 msgid "Add Credit"
 msgstr "Добавить кредит"
 
-#: app/view.py:1104 app/view.py:1138
+#: app/view.py:1076
+#, python-brace-format
+msgid "Credit: {credit:+.2f} €   |   Debit: {debit:+.2f} €"
+msgstr "Кредит: {credit:+.2f} €   |   Дебет: {debit:+.2f} €"
+
+#: app/view.py:1105 app/view.py:1139
 msgid "Add Friend"
 msgstr "Добавить друга"
 
-#: app/view.py:1123
+#: app/view.py:1124
 msgid "No more friends available"
 msgstr "Другие друзья недоступны"
 
-#: app/view.py:1124
+#: app/view.py:1125
 msgid "You have already added all your friends to this expense."
 msgstr "Вы уже добавили всех своих друзей к этому расходу."
 
-#: app/view.py:1154
+#: app/view.py:1155
 msgid "Search friends..."
 msgstr "Поиск друзей..."
 
-#: app/view.py:1317
+#: app/view.py:1318
 msgid "Details"
 msgstr "Детали"
 
-#: app/view.py:1325
+#: app/view.py:1326
 msgid "Friends"
 msgstr "Друзья"
 
-#: app/view.py:1336
+#: app/view.py:1337
 msgid "Remove expense"
 msgstr "Удалить расход"
 
-#: app/view.py:1376
+#: app/view.py:1377
 msgid "Done"
 msgstr "Готово"
 

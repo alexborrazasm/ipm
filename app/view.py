@@ -1073,8 +1073,9 @@ class View:
       def update_balance_label(_obj=None, _pspec=None):
         credit = float(item.credit_balance)
         debit = float(item.debit_balance)
-        balance_label.set_label(f"Credit: {credit:+.2f} €   |   "
-                                f"Debit: {debit:+.2f} €")
+        balance_label.set_label(_("Credit: {credit:+.2f} €   |   Debit: {debit:+.2f} €").format(
+                                credit=credit, debit=debit
+        ))
 
       # Initial update
       update_balance_label()
