@@ -27,16 +27,12 @@ class ViewHandler(Protocol):
   """Protocol defining the interface for the view handler (presenter)"""
   def load_data(self) -> None:
     pass
-  def on_add_expense_clicked(self) -> None:
-    pass
   def on_confirm_add_new_expense_clicked(self, data) -> None:
     pass
   def on_show_expense_info_clicked(self, data: Expense, exp_id: int,
                                    request: bool) -> None:
     pass
   def on_confirm_edit_expense_clicked(self, payload, data) -> None:
-    pass
-  def on_cancel_edit_expense_clicked(self, data) -> None:
     pass
   def on_delete_expense(self, exp_id: int) -> None:
     pass
@@ -48,6 +44,12 @@ class ViewHandler(Protocol):
   def on_confirm_add_credit_friend_expense(self, expense_id: int, friend_id: int,
                                            amount: float, expense) -> None:
     pass
+
+class ExpenseForm:
+  """Data model representing an Expense form"""
+  desc: Adw.EntryRow = None
+  amount: Adw.EntryRow = None
+  date: str = None
 
 # ===== START Data models =====
 class Friend(GObject.GObject):
@@ -114,10 +116,8 @@ class View:
     self._form_add_description = None # type: Adw.EntryRow
     self._form_add_amount = None      # type: Adw.EntryRow
     self._form_add_date = None
-    # Forms edit
-    self._form_edit_desc = None
-    self._form_edit_amount = None
-    self._form_edit_date = None
+    # Expense edit forms
+    self._expense_forms: dict[int, ExpenseForm] = {}
 
     self._date_row = None
 
@@ -657,7 +657,9 @@ class View:
     clamp.set_hexpand(True)
     return clamp
 
-  def _build_calendar(self, date: str | None = None) -> Adw.ActionRow:
+  def _build_calendar(
+      self, date: str | None = None, exp_id: int | None = None
+      ) -> Adw.ActionRow:
     # Create the main row
     date_row = Adw.ActionRow(title=_("Date"))
     date_row.set_activatable(False)
@@ -681,7 +683,7 @@ class View:
       calendar.set_month(month - 1)
       calendar.set_day(day)
       formatted_date = date
-      self._form_edit_date = formatted_date
+      self._expense_forms[exp_id].date = formatted_date if exp_id is not None else None
     else:
       now = datetime.now()
       formatted_date = f"{now.year}-{now.month:02d}-{now.day:02d}"
@@ -705,11 +707,13 @@ class View:
         month = date_obj.get_month()
         day = date_obj.get_day_of_month()
         formatted_date = f"{year}-{month:02d}-{day:02d}"
-        self._date_row.set_subtitle(self._format_date(formatted_date))
         if date:
-          self._form_edit_date = formatted_date
+          self._expense_forms[exp_id].date = formatted_date
+          self._date_row.set_subtitle(
+            self._format_date(self._expense_forms[exp_id].date))
         else:
           self._form_add_date = formatted_date
+          self._date_row.set_subtitle(self._format_date(formatted_date))
         date_popover.popdown()
 
     gesture = Gtk.GestureClick.new()
@@ -724,11 +728,13 @@ class View:
         month = date_obj.get_month()
         day = date_obj.get_day_of_month()
         formatted_date = f"{year}-{month:02d}-{day:02d}"
-        self._date_row.set_subtitle(self._format_date(formatted_date))
         if date:
-          self._form_edit_date = formatted_date
+          self._expense_forms[exp_id].date = formatted_date
+          self._date_row.set_subtitle(
+            self._format_date(self._expense_forms[exp_id].date))
         else:
           self._form_add_date = formatted_date
+          self._date_row.set_subtitle(self._format_date(formatted_date))
         date_popover.popdown()
         return True
       return False
@@ -882,16 +888,20 @@ class View:
       listbox.add_css_class("boxed-list")
       listbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
-      self._form_edit_desc = Adw.EntryRow(title=_("Description"))
-      self._form_edit_desc.set_text(data.description)
-      listbox.append(self._form_edit_desc)
+      self._expense_forms[data.id] = ExpenseForm()
 
-      self._form_edit_amount = Adw.EntryRow(title=_("Amount"))
-      self._form_edit_amount.set_text(f"{data.amount}")
-      self._form_edit_amount.set_input_purpose(Gtk.InputPurpose.DIGITS)
-      listbox.append(self._form_edit_amount)
+      self._expense_forms[data.id].desc = Adw.EntryRow(title=_("Description"))
+      self._expense_forms[data.id].desc.set_text(data.description)
+      listbox.append(self._expense_forms[data.id].desc)
 
-      row = self._build_calendar(data.date)
+      self._expense_forms[data.id].amount = Adw.EntryRow(title=_("Amount"))
+      self._expense_forms[data.id].amount.set_text(f"{data.amount:.2f}")
+      self._expense_forms[data.id].amount.set_input_purpose(
+        Gtk.InputPurpose.DIGITS
+      )
+      listbox.append(self._expense_forms[data.id].amount)
+
+      row = self._build_calendar(date=data.date, exp_id=data.id)
 
       listbox.append(row)
 
@@ -1384,12 +1394,12 @@ class View:
     def on_edit_expense_clicked(data: Expense) -> None:
 
       def load_edit_data():
-        self._form_edit_desc.set_text(data.description)
-        self._form_edit_amount.set_text(f"{data.amount}")
-        self._date_row.set_subtitle(self._format_date(data.date))
+        self._expense_forms[data.id].desc.set_text(data.description)
+        self._expense_forms[data.id].amount.set_text(f"{data.amount:.2f}")
+        self._expense_forms[data.id].date = data.date
 
-      load_edit_data()
       self._visible_expense = -2 # Cannot skip to expense
+      load_edit_data()
       add_button.set_visible(True)
       cancel_button.set_visible(True)
       header.set_show_end_title_buttons(False)
@@ -1400,9 +1410,9 @@ class View:
       edit_button.set_visible(False)
 
     def on_edit_done_clicked(expense_id, data: Expense) -> None:
-      description = self._form_edit_desc.get_text().strip()
-      amount_text = self._form_edit_amount.get_text().strip()
-      date = self._form_edit_date
+      description = self._expense_forms[data.id].desc.get_text().strip()
+      amount_text= self._expense_forms[data.id].amount.get_text().strip()
+      date = self._expense_forms[data.id].date
 
       # Data cannot be null but it is a good practice
       if not description or not amount_text or not date:
@@ -1590,6 +1600,9 @@ class View:
       if expense.id == exp_id:
         self.data_model_expenses.remove(i)
         break
+
+    del self._expense_buttons[exp_id]
+    del self._expense_forms[exp_id]
 
   def show_empty_expense(self) -> None:
     self._visible_expense = -1 # Can skip to expense
