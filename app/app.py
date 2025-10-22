@@ -7,7 +7,7 @@ from view import View
 from presenter import Presenter
 
 # i18n
-LOCALE_DIR = Path(__file__).parent.parent/"locales"
+LOCALE_DIR = Path(__file__).parent/"locale"
 _ = setup_i18n(LOCALE_DIR)
 
 if __name__ == "__main__":
