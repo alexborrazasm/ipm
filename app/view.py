@@ -291,7 +291,7 @@ class View:
     self._about.set_title("About")
     # Makes the dialog always appear in from of the parent window
     # Makes the parent window unresponsive while dialog is showing
-    self._about.set_application_name("Splitwithme")
+    self._about.set_application_name("SplitWithTheMachine")
     self._about.set_developers([
       "Nerea Pérez",
       "Daniel García",
@@ -352,7 +352,7 @@ class View:
     self._toast_overlay.set_child(self._stack)
 
     self._content_page = Adw.NavigationPage(child=self._toast_overlay)
-    self._content_page.set_title("Splitwithme")
+    self._content_page.set_title("SplitWithTheMachine")
 
     # Call handler to get backed data
     self.handler.load_data()
@@ -601,7 +601,7 @@ class View:
 
     # HeaderBar
     header = Adw.HeaderBar()
-    header.set_title_widget(Gtk.Label(label="Splitwithme"))
+    header.set_title_widget(Gtk.Label(label="SplitWithTheMachine"))
     toolbar_view.add_top_bar(header)
 
     return toolbar_view
@@ -644,7 +644,7 @@ class View:
 
     # HeaderBar
     header = Adw.HeaderBar()
-    header.set_title_widget(Gtk.Label(label="Splitwithme"))
+    header.set_title_widget(Gtk.Label(label="SplitWithTheMachine"))
     toolbar_view.add_top_bar(header)
 
     return toolbar_view

@@ -13,4 +13,4 @@ _ = setup_i18n(LOCALE_DIR)
 if __name__ == "__main__":
 
   presenter = Presenter(model=Model(), view=View())
-  presenter.run(application_id="es.udc.fic.ipm.AdwRageAgainstTheMachine")
+  presenter.run(application_id="es.udc.fic.ipm.SplitWithTheMachine")
