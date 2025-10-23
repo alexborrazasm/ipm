@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ВЕРСИЯ ПАКЕТА\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-23 16:24+0200\n"
+"POT-Creation-Date: 2025-10-23 17:15+0200\n"
 "PO-Revision-Date: 2025-10-21 05:25+0200\n"
 "Last-Translator: danielgf@desktop-m64t3fa.localdomain\n"
 "Language-Team: Russian ru@tp.org.ru\n"
@@ -126,6 +126,11 @@ msgstr "Друг успешно удалён из расхода"
 msgid "Credit successfully added to friend"
 msgstr "Кредит успешно добавлен другу"
 
+#: view.py:329
+#, fuzzy, python-brace-format
+msgid "Balance: {amount:.2f} €"
+msgstr "Баланс: {balance} ₽"
+
 #: view.py:388
 msgid "Expenses"
 msgstr "Расходы"
@@ -134,108 +139,113 @@ msgstr "Расходы"
 msgid "Add An Expense"
 msgstr "Добавить расход"
 
-#: view.py:597
+#: view.py:439
+#, python-brace-format
+msgid "Balance: {balance}"
+msgstr "Баланс: {balance}"
+
+#: view.py:598
 msgid "Loading..."
 msgstr "Загрузка..."
 
-#: view.py:629
+#: view.py:630
 msgid "No Internet Connection"
 msgstr "Нет подключения к интернету"
 
-#: view.py:634
+#: view.py:635
 msgid "Please check your connection and try again."
 msgstr "Пожалуйста, проверьте соединение и попробуйте снова."
 
-#: view.py:639
+#: view.py:640
 msgid "Retry"
 msgstr "Повторить"
 
-#: view.py:668 view.py:880
+#: view.py:669 view.py:881
 msgid "Date"
 msgstr "Дата"
 
-#: view.py:762 view.py:1423
+#: view.py:763 view.py:1424
 msgid "None of the fields should be empty"
 msgstr "Ни одно из полей не должно быть пустым"
 
-#: view.py:769 view.py:1430
+#: view.py:770 view.py:1431
 msgid "The 'Amount' field must contain positive numbers"
 msgstr "Поле 'Сумма' должно содержать положительные числа"
 
-#: view.py:774 view.py:1435
+#: view.py:775 view.py:1436
 msgid "Amount must be greater than 0"
 msgstr "Сумма должна быть больше 0"
 
-#: view.py:795 view.py:861 view.py:897
+#: view.py:796 view.py:862 view.py:898
 msgid "Description"
 msgstr "Описание"
 
-#: view.py:796 view.py:869 view.py:901
+#: view.py:797 view.py:870 view.py:902
 msgid "Amount"
 msgstr "Сумма"
 
-#: view.py:827
+#: view.py:828
 msgid "New Expense"
 msgstr "Новый расход"
 
-#: view.py:829 view.py:997 view.py:1160 view.py:1384
+#: view.py:830 view.py:998 view.py:1161 view.py:1385
 msgid "Cancel"
 msgstr "Отмена"
 
-#: view.py:837 view.py:1000 view.py:1163
+#: view.py:838 view.py:1001 view.py:1164
 msgid "Add"
 msgstr "Добавить"
 
-#: view.py:925
+#: view.py:926
 msgid "Balance"
 msgstr "Баланс"
 
-#: view.py:947 view.py:1289
+#: view.py:948 view.py:1290
 msgid "Confirm deletion"
 msgstr "Подтвердить удаление"
 
-#: view.py:948
+#: view.py:949
 #, python-format
 msgid "Are you sure you want to remove '%s'?"
 msgstr "Вы уверены, что хотите удалить '%s'?"
 
-#: view.py:990
+#: view.py:991
 msgid "Add Credit"
 msgstr "Добавить кредит"
 
-#: view.py:1090
+#: view.py:1091
 #, fuzzy, python-brace-format
 msgid "Credit: {credit}   |   Debit: {debit}"
 msgstr "Кредит: {credit}   |   Дебет: {debit}"
 
-#: view.py:1119 view.py:1153
+#: view.py:1120 view.py:1154
 msgid "Add Friend"
 msgstr "Добавить друга"
 
-#: view.py:1138
+#: view.py:1139
 msgid "No more friends available"
 msgstr "Другие друзья недоступны"
 
-#: view.py:1139
+#: view.py:1140
 msgid "You have already added all your friends to this expense."
 msgstr "Вы уже добавили всех своих друзей к этому расходу."
 
-#: view.py:1169
+#: view.py:1170
 msgid "Search friends..."
 msgstr "Поиск друзей..."
 
-#: view.py:1332
+#: view.py:1333
 msgid "Details"
 msgstr "Детали"
 
-#: view.py:1340
+#: view.py:1341
 msgid "Friends"
 msgstr "Друзья"
 
-#: view.py:1351
+#: view.py:1352
 msgid "Remove expense"
 msgstr "Удалить расход"
 
-#: view.py:1391
+#: view.py:1392
 msgid "Done"
 msgstr "Готово"

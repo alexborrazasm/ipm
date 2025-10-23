@@ -326,7 +326,7 @@ class View:
 
   def _format_currency(self, value) -> str:
     if self.language is None:
-      return f"Balance: {float(value):.2f} €"  # DEFAULT
+      return _("Balance: {amount:.2f} €").format(amount=float(value))  # DEFAULT
     return locale.currency(value, symbol=True, grouping=True)
 
 
@@ -436,8 +436,9 @@ class View:
         label2 = Gtk.Label(halign=Gtk.Align.START)
         label2.add_css_class("caption")
         item.bind_property("credit_balance", label2, "label",
-          transform_to=lambda binding, value: self._format_currency(value)
-          if value not in (None, "") else self._format_currency(0),
+          transform_to=lambda binding, value: _("Balance: {balance}").format(
+            balance=self._format_currency(value or 0)
+          ),
           flags=GObject.BindingFlags.SYNC_CREATE
         )
 
