@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Callable, Protocol
 from datetime import datetime
-
+import locale
 import gi
 
 gi.require_version('Gtk', '4.0')
@@ -99,6 +99,7 @@ class View:
     self.handler = None
     self.data_model_friends = Gio.ListStore(item_type=Friend)
     self.data_model_expenses = Gio.ListStore(item_type=Expense)
+    self.language = locale.getlocale()[0]
 
     self.window = None          # type: Adw.ApplicationWindow
     self._expenses_list = None  # type: Gtk.ListBox
@@ -110,7 +111,7 @@ class View:
     self._search_box = None     # type: Gtk.Box
     self._search_entry = None   # type: Gtk.SearchEntry
     self._search_button = None  # type: Gtk.ToggleButton
-    self._add_button = None
+    self._add_button = None     # type: Gtk.ToggleButton
 
     # Forms add
     self._form_add_description = None # type: Adw.EntryRow
@@ -323,12 +324,17 @@ class View:
 
     self._about.present(self.window)
 
+  def _format_currency(self, value) -> str:
+    if self.language is None:
+      return f"Balance: {float(value):.2f} €"  # DEFAULT
+    return locale.currency(value, symbol=True, grouping=True)
+
+
   def _format_date(self, date_str: str) -> str:
     if not date_str:
       return ""
     try:
       date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-      #locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')  TODO ITERACIÓN 3
       return date_obj.strftime("%a %d %b, %Y")
     except ValueError:
       return date_str  # Return the original string if parsing fails
@@ -341,7 +347,6 @@ class View:
     win.connect("destroy", lambda win: win.close())
     win.set_default_size(800, 600)
     win.set_size_request(450, 200)
-
     # Left panel (expenses list)
     self._sidebar_page = self._build_side_bar()
 
@@ -431,8 +436,8 @@ class View:
         label2 = Gtk.Label(halign=Gtk.Align.START)
         label2.add_css_class("caption")
         item.bind_property("credit_balance", label2, "label",
-          transform_to=lambda binding, value: f"Balance: {float(value):.2f} €"
-          if value not in (None, "") else "0.00 €",
+          transform_to=lambda binding, value: self._format_currency(value)
+          if value not in (None, "") else self._format_currency(0),
           flags=GObject.BindingFlags.SYNC_CREATE
         )
 
@@ -480,7 +485,6 @@ class View:
                            margin_end=16)
       search_box.set_hexpand(True)
       search_box.set_visible(False)
-
       self._search_entry = Gtk.SearchEntry()
       self._search_entry.set_hexpand(True)
 
@@ -864,8 +868,8 @@ class View:
       # Amount
       row = Adw.ActionRow(title=_("Amount"))
       data.bind_property("amount", row, "subtitle",
-        transform_to=lambda binding, value: f"{float(value):.2f} €"
-        if value not in (None, "") else "0.00 €",
+        transform_to=lambda binding, value: self._format_currency(value)
+        if value not in (None, "") else self._format_currency(0),
         flags=GObject.BindingFlags.SYNC_CREATE
       )
       row.set_activatable(True)
@@ -920,8 +924,8 @@ class View:
       # Credit Balance
       balance_row = Adw.ActionRow(title=_("Balance"))
       data.bind_property("credit_balance", balance_row, "subtitle",
-        transform_to=lambda binding, value: f"{float(value):.2f} €"
-        if value not in (None, "") else "0.00 €",
+        transform_to=lambda binding, value: self._format_currency(value)
+        if value not in (None, "") else self._format_currency(0),
         flags=GObject.BindingFlags.SYNC_CREATE
       )
       balance_row.set_activatable(True)
@@ -1083,8 +1087,8 @@ class View:
       def update_balance_label(_obj=None, _pspec=None):
         credit = float(item.credit_balance)
         debit = float(item.debit_balance)
-        balance_label.set_label(_("Credit: {credit:+.2f} €   |   Debit: {debit:+.2f} €").format(
-                                credit=credit, debit=debit
+        balance_label.set_label(_("Credit: {credit}   |   Debit: {debit}").format(
+                  credit=self._format_currency(credit), debit=self._format_currency(debit)
         ))
 
       # Initial update
