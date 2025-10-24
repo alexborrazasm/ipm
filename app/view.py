@@ -798,7 +798,7 @@ class View:
     self._form_add_amount.set_input_purpose(Gtk.InputPurpose.DIGITS)
 
     # Calendar widget
-    date_row = self._build_calendar(self._form_add_date)
+    date_row = self._build_calendar()
 
     form.append(self._form_add_description)
     form.append(self._form_add_amount)
