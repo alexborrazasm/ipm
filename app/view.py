@@ -198,7 +198,7 @@ class View:
 
     # Create a new menu, containing that action
     menu = Gio.Menu.new()
-    menu.append("About", "win.about")
+    menu.append(_("About"), "win.about")
 
     # Create a popover
     popover = Gtk.PopoverMenu()  # Create a new popover menu
@@ -208,7 +208,7 @@ class View:
     dots = Gtk.MenuButton()
     dots.set_popover(popover)
     dots.set_icon_name("open-menu-symbolic")
-    dots.set_tooltip_text("Main Menu")
+    dots.set_tooltip_text(_("Main Menu"))
     return dots
 
   # ===== START public methods =====
@@ -325,11 +325,8 @@ class View:
     self._about.present(self.window)
 
   def _format_currency(self, value) -> str:
-    if self.language is None:
-      return _("Balance: {amount:.2f} €").format(amount=float(value))  # DEFAULT
     return locale.currency(value, symbol=True, grouping=True)
-
-
+  
   def _format_date(self, date_str: str) -> str:
     if not date_str:
       return ""
@@ -390,7 +387,7 @@ class View:
       main_header.set_show_end_title_buttons(False)
 
       add_button = Gtk.Button(icon_name="list-add-symbolic")
-      add_button.set_tooltip_text(_("Add An Expense"))
+      add_button.set_tooltip_text(_("Add an Expense"))
       add_button.connect('clicked',
                          lambda _wg: on_add_expense_clicked())
       self._add_button = add_button # save reference
@@ -401,7 +398,7 @@ class View:
         self.show_add_expense()
 
       self._search_button = Gtk.ToggleButton(icon_name="system-search-symbolic")
-      self._search_button.set_tooltip_text("Search")
+      self._search_button.set_tooltip_text(_("Search"))
 
       def on_search_clicked(_wg):
         self._toggle_search()
@@ -675,7 +672,7 @@ class View:
     calendar_button.set_icon_name("x-office-calendar-symbolic")
     calendar_button.add_css_class("flat")
     calendar_button.set_valign(Gtk.Align.CENTER)
-    calendar_button.set_tooltip_text("Pick a Date")
+    calendar_button.set_tooltip_text(_("Pick a Date"))
     date_row.add_suffix(calendar_button)
 
     # Create the calendar widget
@@ -951,8 +948,8 @@ class View:
       )
 
       # Add action buttons
-      dialog.add_response("cancel", "Cancel")
-      dialog.add_response("remove", "Remove")
+      dialog.add_response("cancel", _("Cancel"))
+      dialog.add_response("remove", _("Remove"))
 
       # Style the destructive one in red
       dialog.set_response_appearance("remove", Adw.ResponseAppearance.DESTRUCTIVE)
@@ -1011,7 +1008,7 @@ class View:
 
       content_box.append(spin)
 
-      content_box.append(Gtk.Label(label=f"to {friend.name}"))
+      content_box.append(Gtk.Label(label=_("to {friend}").format(friend=friend.name)))
 
       toolbar_view = Adw.ToolbarView()
       toolbar_view.add_top_bar(header)
@@ -1056,14 +1053,14 @@ class View:
       # Add credit button
       add_credit_button = Gtk.Button.new_from_icon_name("list-add-symbolic")
       add_credit_button.add_css_class("flat")
-      add_credit_button.set_tooltip_text("Add Credit")
+      add_credit_button.set_tooltip_text(_("Add Credit"))
       add_credit_button.connect("clicked", on_add_credit_clicked, expense, item)
 
       # Remove button
       delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic")
       delete_button.add_css_class("flat")
       delete_button.add_css_class("destructive-action")
-      delete_button.set_tooltip_text("Remove Friend")
+      delete_button.set_tooltip_text(_("Remove Friend"))
       delete_button.connect("clicked", on_remove_friend_expense_clicked,
                             expense, item)
 
@@ -1378,7 +1375,7 @@ class View:
     edit_button = Gtk.Button(icon_name="document-edit-symbolic")
     edit_button.connect(
       'clicked', lambda _wg: on_edit_expense_clicked(data))
-    edit_button.set_tooltip_text("Edit Expense")
+    edit_button.set_tooltip_text(_("Edit Expense"))
     self._register_expense_button(data.id, edit_button)
 
     # Button Cancel
@@ -1482,7 +1479,7 @@ class View:
   def show_pick_an_expense(self) -> None:
     old = self._stack.get_child_by_name("pick_an_expense")
     if not old:
-      pick_an_expense = self._build_empty_expense_msg("Pick an Expense",
+      pick_an_expense = self._build_empty_expense_msg(_("Pick an Expense"),
                                             "dialog-information-symbolic")
       self._stack.add_titled(pick_an_expense, "pick_an_expense", "Pick an expense")
 
@@ -1492,7 +1489,7 @@ class View:
     self._visible_expense = -1 # Can skip to expense
     old = self._stack.get_child_by_name("no_one_expense")
     if not old:
-      no_one_expense = self._build_empty_expense_msg("Add an Expense",
+      no_one_expense = self._build_empty_expense_msg(_("Add an Expense"),
                                                      "list-add-symbolic")
       self._stack.add_titled(no_one_expense, "no_one_expense", "No One Expense")
 

@@ -33,10 +33,7 @@ class Presenter(ViewHandler):
         ))
       except NetworkError as e:
         msg = str(e)
-        print(_("NETWORK ERROR in {function}: {message}").format(
-            function="load_data",
-            message=msg
-        ))
+        print(f"NETWORK ERROR in load_data: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.show_no_internet()
@@ -45,10 +42,7 @@ class Presenter(ViewHandler):
 
       except ModelError as e:
         msg = str(e)
-        print(_("MODEL ERROR in {function}: {message}").format(
-          function="load_data",
-          message=msg
-        ))
+        print(f"MODEL ERROR in load_data: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
 
@@ -82,10 +76,7 @@ class Presenter(ViewHandler):
         run_on_main_thr(update_view)
       except NetworkError as e:
         msg = str(e)
-        print(_("NETWORK ERROR in {function}: {message}").format(
-          function="on_confirm_add_new_expense_clicked",
-          message=msg
-        ))
+        print(f"NETWORK ERROR in on_confirm_add_new_expense_clicked: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_sidebar_sensitive(False)
@@ -97,10 +88,7 @@ class Presenter(ViewHandler):
 
       except ModelError as e:
         msg = str(e)
-        print(_("MODEL ERROR in {function}: {message}").format(
-          function="on_confirm_add_new_expense_clicked",
-          message=msg
-        ))
+        print(f"MODEL ERROR in on_confirm_add_new_expense_clicked: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_add_btn_sensitive(True)
@@ -131,10 +119,7 @@ class Presenter(ViewHandler):
 
       except NetworkError as e:
         msg = str(e)
-        print(_("NETWORK ERROR in {function}: {message}").format(
-          function="on_show_expense_info_clicked",
-          message=msg
-        ))
+        print(f"NETWORK ERROR in on_show_expense_info_clicked: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_spinner(False)
@@ -146,10 +131,7 @@ class Presenter(ViewHandler):
 
       except ModelError as e:
         msg = str(e)
-        print(_("MODEL ERROR in {function}: {message}").format(
-          function="on_show_expense_info_clicked",
-          message=msg
-        ))
+        print(f"MODEL ERROR in on_show_expense_info_clicked: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_spinner(False)
@@ -186,10 +168,7 @@ class Presenter(ViewHandler):
 
       except NetworkError as e:
         msg = str(e)
-        print(_("NETWORK ERROR in {function}: {message}").format(
-          function="on_confirm_edit_expense_clicked",
-          message=msg
-        ))
+        print(f"NETWORK ERROR in on_confirm_edit_expense_clicked: {msg}")
         def update_view_error():
           self.view.set_spinner(False)
           self.view.show_error_toast(msg)
@@ -202,10 +181,7 @@ class Presenter(ViewHandler):
 
       except ModelError as e:
         msg = str(e)
-        print(_("MODEL ERROR in {function}: {message}").format(
-          function="on_confirm_edit_expense_clicked",
-          message=msg
-        ))
+        print(f"MODEL ERROR in on_confirm_edit_expense_clicked: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_buttons_sensitive_for(payload["id"], True)
@@ -232,10 +208,7 @@ class Presenter(ViewHandler):
 
       except NetworkError as e:
         msg = str(e)
-        print(_("NETWORK ERROR in {function}: {message}").format(
-          function="on_delete_expense_clicked",
-          message=msg
-        ))
+        print(f"NETWORK ERROR in on_delete_expense_clicked: {msg}")
         def update_view_error():
           self.view.set_spinner(False)
           self.view.show_error_toast(msg)
@@ -247,10 +220,7 @@ class Presenter(ViewHandler):
 
       except ModelError as e:
         msg = str(e)
-        print(_("MODEL ERROR in {function}: {message}").format(
-          function="on_delete_expense_clicked",
-          message=msg
-        ))
+        print(f"MODEL ERROR in on_delete_expense_clicked: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_spinner(False)
@@ -281,10 +251,7 @@ class Presenter(ViewHandler):
 
       except NetworkError as e:
         msg = str(e)
-        print(_("NETWORK ERROR in {function}: {message}").format(
-          function="on_add_friend_expense_clicked",
-          message=msg
-        ))
+        print(f"NETWORK ERROR in on_add_friend_expense_clicked: {msg}")
         def update_view_error():
           self.view.set_spinner(False)
           self.view.set_buttons_sensitive_for(expense_id, True)
@@ -297,10 +264,7 @@ class Presenter(ViewHandler):
 
       except ModelError as e:
         msg = str(e)
-        print(_("MODEL ERROR in {function}: {message}").format(
-          function="on_add_friend_expense_clicked",
-          message=msg
-        ))
+        print(f"MODEL ERROR in on_add_friend_expense_clicked: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_spinner(False)
@@ -330,10 +294,7 @@ class Presenter(ViewHandler):
 
       except NetworkError as e:
         msg = str(e)
-        print(_("NETWORK ERROR in {function}: {message}").format(
-          function="on_delete_friend_expense_clicked",
-          message=msg
-        ))
+        print(f"NETWORK ERROR in on_delete_friend_expense_clicked: {msg}")
         def update_view_error():
           self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.set_spinner(False)
@@ -346,10 +307,7 @@ class Presenter(ViewHandler):
 
       except ModelError as e:
         msg = str(e)
-        print(_("MODEL ERROR in {function}: {message}").format(
-          function="on_delete_friend_expense_clicked",
-          message=msg
-        ))
+        print(f"MODEL ERROR in on_delete_friend_expense_clicked: {msg}")
         def update_view_error():
           self.view.set_buttons_sensitive_for(expense_id, True)
           self.view.show_error_toast(msg)
@@ -383,10 +341,7 @@ class Presenter(ViewHandler):
 
       except NetworkError as e:
         msg = str(e)
-        print(_("NETWORK ERROR in {function}: {message}").format(
-          function="on_confirm_add_credit_friend_expense",
-          message=msg
-        ))
+        print(f"NETWORK ERROR in on_confirm_add_credit_friend_expense: {msg}")
         def update_view_error():
           self.view.set_spinner(False)
           self.view.set_buttons_sensitive_for(expense_id, True)
@@ -399,10 +354,7 @@ class Presenter(ViewHandler):
 
       except ModelError as e:
         msg = str(e)
-        print(_("MODEL ERROR in {function}: {message}").format(
-          function="on_confirm_add_credit_friend_expense",
-          message=msg
-        ))
+        print(f"MODEL ERROR in on_confirm_add_credit_friend_expense: {msg}")
         def update_view_error():
           self.view.show_error_toast(msg)
           self.view.set_spinner(False)

@@ -36,9 +36,7 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in get_expense: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in get_expense: {e}")
       return []
 
   def get_expenses(self) -> list:
@@ -58,9 +56,7 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in get_expenses: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in get_expenses: {e}")
       return []
 
   def put_expense(self, expense_id: int, description: str, date: str,
@@ -87,9 +83,7 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in put_expense: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in put_expense: {e}")
   def delete_expense(self, expense_id: int) -> None:
     try:
       r = requests.delete(f"{SERVER_URL}/expenses/{expense_id}", timeout=TIMEOUT)
@@ -107,9 +101,7 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in delete_expense: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in delete_expense: {e}")
   def add_expense(self, description: str, date: str, amount: float) -> dict:
     payload = {
       # could be expense_id
@@ -138,9 +130,7 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in add_expense: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in add_expense: {e}")
       return []
 
   def get_friends(self) -> list:
@@ -160,9 +150,7 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in get_friends: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in get_friends: {e}")
       return []
 
   def get_friends_by_expenses(self, expense_id: int) -> list:
@@ -182,9 +170,7 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in get_friends_by_expenses: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in get_friends_by_expenses: {e}")
       return []
 
   def delete_friend_expense(self, expense_id: int, friend_id: int) -> None:
@@ -209,9 +195,7 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in delete_friend_expense: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in delete_friend_expense: {e}")
 
   def add_friend_expense(self, expense_id: int, friend_id: int) -> None:
     try:
@@ -237,9 +221,7 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in add_friend_expense: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in add_friend_expense: {e}")
   def add_friend_expense_credit(self, expense_id: int, friend_id: int,
                                 amount: float) -> None:
     url = f"{SERVER_URL}/expenses/{expense_id}/friends/{friend_id}"
@@ -260,6 +242,4 @@ class Model:
       raise
 
     except Exception as e:
-      print(_("Unexpected exception in add_friend_expense_credit: {error}").format(
-          error=str(e)
-      ))
+      print(f"Unexpected exception in add_friend_expense_credit: {e}")

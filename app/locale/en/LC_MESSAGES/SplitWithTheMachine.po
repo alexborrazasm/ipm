@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-23 17:15+0200\n"
+"POT-Creation-Date: 2025-10-24 11:54+0200\n"
 "PO-Revision-Date: 2025-10-21 05:22+0200\n"
 "Last-Translator:  <danielgf@desktop-m64t3fa.localdomain>\n"
 "Language-Team: English\n"
@@ -17,235 +17,204 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: model.py:29 model.py:51 model.py:80 model.py:100 model.py:131 model.py:153
-#: model.py:175 model.py:202 model.py:230 model.py:253
+#: model.py:29 model.py:49 model.py:76 model.py:94 model.py:123 model.py:143
+#: model.py:163 model.py:188 model.py:214 model.py:235
 msgid "Unexpected error"
 msgstr ""
 
-#: model.py:33 model.py:55 model.py:84 model.py:104 model.py:135 model.py:157
-#: model.py:179 model.py:206 model.py:234 model.py:257
+#: model.py:33 model.py:53 model.py:80 model.py:98 model.py:127 model.py:147
+#: model.py:167 model.py:192 model.py:218 model.py:239
 msgid "Cannot connect to server, please check your network"
 msgstr ""
 
-#: model.py:39
-#, python-brace-format
-msgid "Unexpected exception in get_expense: {error}"
-msgstr ""
-
-#: model.py:61
-#, python-brace-format
-msgid "Unexpected exception in get_expenses: {error}"
-msgstr ""
-
-#: model.py:90
-#, python-brace-format
-msgid "Unexpected exception in put_expense: {error}"
-msgstr ""
-
-#: model.py:110
-#, python-brace-format
-msgid "Unexpected exception in delete_expense: {error}"
-msgstr ""
-
-#: model.py:128
+#: model.py:120
 msgid "Expense already exists"
 msgstr ""
 
-#: model.py:141
-#, python-brace-format
-msgid "Unexpected exception in add_expense: {error}"
-msgstr ""
-
-#: model.py:163
-#, python-brace-format
-msgid "Unexpected exception in get_friends: {error}"
-msgstr ""
-
 #: model.py:185
-#, python-brace-format
-msgid "Unexpected exception in get_friends_by_expenses: {error}"
-msgstr ""
-
-#: model.py:199
 msgid "Couldn't delete friend from expense"
 msgstr ""
 
-#: model.py:212
-#, python-brace-format
-msgid "Unexpected exception in delete_friend_expense: {error}"
-msgstr ""
-
-#: model.py:227
-#, fuzzy
+#: model.py:211
 msgid "Couldn't add friend to expense"
-msgstr "You have already added all your friends to this expense."
-
-#: model.py:240
-#, python-brace-format
-msgid "Unexpected exception in add_friend_expense: {error}"
 msgstr ""
 
-#: model.py:263
-#, python-brace-format
-msgid "Unexpected exception in add_friend_expense_credit: {error}"
+#: view.py:201
+msgid "About"
 msgstr ""
 
-#: presenter.py:36 presenter.py:85 presenter.py:134 presenter.py:189
-#: presenter.py:235 presenter.py:284 presenter.py:333 presenter.py:386
-#, python-brace-format
-msgid "NETWORK ERROR in {function}: {message}"
+#: view.py:211
+msgid "Main Menu"
 msgstr ""
 
-#: presenter.py:48 presenter.py:100 presenter.py:149 presenter.py:205
-#: presenter.py:250 presenter.py:300 presenter.py:349 presenter.py:402
-#, python-brace-format
-msgid "MODEL ERROR in {function}: {message}"
-msgstr ""
-
-#: presenter.py:79
-msgid "Expense successfully added"
-msgstr ""
-
-#: presenter.py:182
-msgid "Expense successfully edited"
-msgstr ""
-
-#: presenter.py:229
-msgid "Expense successfully deleted"
-msgstr ""
-
-#: presenter.py:273
-msgid "Friend successfully added to expense"
-msgstr ""
-
-#: presenter.py:322
-msgid "Friend successfully deleted from expense"
-msgstr ""
-
-#: presenter.py:374
-msgid "Credit successfully added to friend"
-msgstr ""
-
-#: view.py:329
-#, fuzzy, python-brace-format
-msgid "Balance: {amount:.2f} €"
-msgstr "Balance: ${balance}"
-
-#: view.py:388
+#: view.py:385
 msgid "Expenses"
-msgstr "Expenses"
+msgstr ""
 
-#: view.py:393
-msgid "Add An Expense"
-msgstr "Add An Expense"
+#: view.py:390 view.py:1492
+msgid "Add an Expense"
+msgstr ""
 
-#: view.py:439
+#: view.py:401
+msgid "Search"
+msgstr ""
+
+#: view.py:436
 #, python-brace-format
 msgid "Balance: {balance}"
-msgstr "Balance: {balance}"
+msgstr ""
 
-#: view.py:598
+#: view.py:595
 msgid "Loading..."
-msgstr "Loading..."
+msgstr ""
 
-#: view.py:630
+#: view.py:627
 msgid "No Internet Connection"
-msgstr "No Internet Connection"
+msgstr ""
 
-#: view.py:635
+#: view.py:632
 msgid "Please check your connection and try again."
-msgstr "Please check your connection and try again."
+msgstr ""
 
-#: view.py:640
+#: view.py:637
 msgid "Retry"
-msgstr "Retry"
+msgstr ""
 
-#: view.py:669 view.py:881
+#: view.py:666 view.py:878
 msgid "Date"
-msgstr "Date"
+msgstr ""
 
-#: view.py:763 view.py:1424
+#: view.py:675
+msgid "Pick a Date"
+msgstr ""
+
+#: view.py:760 view.py:1421
 msgid "None of the fields should be empty"
 msgstr ""
 
-#: view.py:770 view.py:1431
+#: view.py:767 view.py:1428
 msgid "The 'Amount' field must contain positive numbers"
 msgstr ""
 
-#: view.py:775 view.py:1436
+#: view.py:772 view.py:1433
 msgid "Amount must be greater than 0"
 msgstr ""
 
-#: view.py:796 view.py:862 view.py:898
+#: view.py:793 view.py:859 view.py:895
 msgid "Description"
-msgstr "Description"
+msgstr ""
 
-#: view.py:797 view.py:870 view.py:902
+#: view.py:794 view.py:867 view.py:899
 msgid "Amount"
-msgstr "Amount"
+msgstr ""
 
-#: view.py:828
+#: view.py:825
 msgid "New Expense"
-msgstr "New Expense"
+msgstr ""
 
-#: view.py:830 view.py:998 view.py:1161 view.py:1385
+#: view.py:827 view.py:951 view.py:995 view.py:1158 view.py:1382
 msgid "Cancel"
-msgstr "Cancel"
+msgstr ""
 
-#: view.py:838 view.py:1001 view.py:1164
+#: view.py:835 view.py:998 view.py:1161
 msgid "Add"
-msgstr "Add"
+msgstr ""
 
-#: view.py:926
+#: view.py:923
 msgid "Balance"
-msgstr "Balance"
+msgstr ""
 
-#: view.py:948 view.py:1290
+#: view.py:945 view.py:1287
 msgid "Confirm deletion"
-msgstr "Confirm deletion"
+msgstr ""
 
-#: view.py:949
+#: view.py:946
 #, python-format
 msgid "Are you sure you want to remove '%s'?"
-msgstr "Are you sure you want to remove '%s'?"
+msgstr ""
 
-#: view.py:991
+#: view.py:952
+msgid "Remove"
+msgstr ""
+
+#: view.py:988 view.py:1056
 msgid "Add Credit"
-msgstr "Add Credit"
+msgstr ""
 
-#: view.py:1091
+#: view.py:1011
+#, python-brace-format
+msgid "to {friend}"
+msgstr ""
+
+#: view.py:1063
+msgid "Remove Friend"
+msgstr ""
+
+#: view.py:1088
 #, python-brace-format
 msgid "Credit: {credit}   |   Debit: {debit}"
 msgstr ""
 
-#: view.py:1120 view.py:1154
+#: view.py:1117 view.py:1151
 msgid "Add Friend"
-msgstr "Add Friend"
+msgstr ""
 
-#: view.py:1139
+#: view.py:1136
 msgid "No more friends available"
-msgstr "No more friends available"
+msgstr ""
 
-#: view.py:1140
+#: view.py:1137
 msgid "You have already added all your friends to this expense."
-msgstr "You have already added all your friends to this expense."
+msgstr ""
 
-#: view.py:1170
+#: view.py:1167
 msgid "Search friends..."
-msgstr "Search friends..."
+msgstr ""
 
-#: view.py:1333
+#: view.py:1330
 msgid "Details"
-msgstr "Details"
+msgstr ""
 
-#: view.py:1341
+#: view.py:1338
 msgid "Friends"
-msgstr "Friends"
+msgstr ""
 
-#: view.py:1352
+#: view.py:1349
 msgid "Remove expense"
-msgstr "Remove expense"
+msgstr ""
 
-#: view.py:1392
+#: view.py:1378
+msgid "Edit Expense"
+msgstr ""
+
+#: view.py:1389
 msgid "Done"
-msgstr "Done"
+msgstr ""
+
+#: view.py:1482
+msgid "Pick an Expense"
+msgstr ""
+
+#: presenter.py:73
+msgid "Expense successfully added"
+msgstr ""
+
+#: presenter.py:164
+msgid "Expense successfully edited"
+msgstr ""
+
+#: presenter.py:205
+msgid "Expense successfully deleted"
+msgstr ""
+
+#: presenter.py:243
+msgid "Friend successfully added to expense"
+msgstr ""
+
+#: presenter.py:286
+msgid "Friend successfully deleted from expense"
+msgstr ""
+
+#: presenter.py:332
+msgid "Credit successfully added to friend"
+msgstr ""
