@@ -1290,7 +1290,7 @@ class View:
         transient_for=window,
         modal=True,
         heading=_("Confirm deletion"),
-        body=f"Are you sure you want to remove '{expense.description}'?",
+        body = _("Are you sure you want to remove '%s'?") % expense.description
       )
 
       # Add action buttons

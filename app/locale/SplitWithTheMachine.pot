@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-24 13:42+0200\n"
+"POT-Creation-Date: 2025-10-24 19:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,162 +39,6 @@ msgstr ""
 msgid "Couldn't add friend to expense"
 msgstr ""
 
-#: view.py:201
-msgid "About"
-msgstr ""
-
-#: view.py:211
-msgid "Main Menu"
-msgstr ""
-
-#: view.py:385
-msgid "Expenses"
-msgstr ""
-
-#: view.py:390 view.py:1492
-msgid "Add an Expense"
-msgstr ""
-
-#: view.py:401
-msgid "Search"
-msgstr ""
-
-#: view.py:436
-#, python-brace-format
-msgid "Balance: {balance}"
-msgstr ""
-
-#: view.py:595
-msgid "Loading..."
-msgstr ""
-
-#: view.py:627
-msgid "No Internet Connection"
-msgstr ""
-
-#: view.py:632
-msgid "Please check your connection and try again."
-msgstr ""
-
-#: view.py:637
-msgid "Retry"
-msgstr ""
-
-#: view.py:666 view.py:878
-msgid "Date"
-msgstr ""
-
-#: view.py:675
-msgid "Pick a Date"
-msgstr ""
-
-#: view.py:760 view.py:1421
-msgid "None of the fields should be empty"
-msgstr ""
-
-#: view.py:767 view.py:1428
-msgid "The 'Amount' field must contain positive numbers"
-msgstr ""
-
-#: view.py:772 view.py:1433
-msgid "Amount must be greater than 0"
-msgstr ""
-
-#: view.py:793 view.py:859 view.py:895
-msgid "Description"
-msgstr ""
-
-#: view.py:794 view.py:867 view.py:899
-msgid "Amount"
-msgstr ""
-
-#: view.py:825
-msgid "New Expense"
-msgstr ""
-
-#: view.py:827 view.py:951 view.py:995 view.py:1158 view.py:1382
-msgid "Cancel"
-msgstr ""
-
-#: view.py:835 view.py:998 view.py:1161
-msgid "Add"
-msgstr ""
-
-#: view.py:923
-msgid "Balance"
-msgstr ""
-
-#: view.py:945 view.py:1287
-msgid "Confirm deletion"
-msgstr ""
-
-#: view.py:946
-#, python-format
-msgid "Are you sure you want to remove '%s'?"
-msgstr ""
-
-#: view.py:952
-msgid "Remove"
-msgstr ""
-
-#: view.py:988 view.py:1056
-msgid "Add Credit"
-msgstr ""
-
-#: view.py:1011
-#, python-brace-format
-msgid "to {friend}"
-msgstr ""
-
-#: view.py:1063
-msgid "Remove Friend"
-msgstr ""
-
-#: view.py:1088
-#, python-brace-format
-msgid "Credit: {credit}   |   Debit: {debit}"
-msgstr ""
-
-#: view.py:1117 view.py:1151
-msgid "Add Friend"
-msgstr ""
-
-#: view.py:1136
-msgid "No more friends available"
-msgstr ""
-
-#: view.py:1137
-msgid "You have already added all your friends to this expense."
-msgstr ""
-
-#: view.py:1167
-msgid "Search friends..."
-msgstr ""
-
-#: view.py:1330
-msgid "Details"
-msgstr ""
-
-#: view.py:1338
-msgid "Friends"
-msgstr ""
-
-#: view.py:1349
-msgid "Remove expense"
-msgstr ""
-
-#: view.py:1378
-msgid "Edit Expense"
-msgstr ""
-
-#: view.py:1389
-msgid "Done"
-msgstr ""
-
-#: view.py:1482
-msgid "Pick an Expense"
-msgstr ""
-
 #: presenter.py:73
 msgid "Expense successfully added"
 msgstr ""
@@ -217,4 +61,160 @@ msgstr ""
 
 #: presenter.py:332
 msgid "Credit successfully added to friend"
+msgstr ""
+
+#: view.py:201
+msgid "About"
+msgstr ""
+
+#: view.py:211
+msgid "Main Menu"
+msgstr ""
+
+#: view.py:390
+msgid "Expenses"
+msgstr ""
+
+#: view.py:395 view.py:1497
+msgid "Add an Expense"
+msgstr ""
+
+#: view.py:406
+msgid "Search"
+msgstr ""
+
+#: view.py:441
+#, python-brace-format
+msgid "Balance: {balance}"
+msgstr ""
+
+#: view.py:600
+msgid "Loading..."
+msgstr ""
+
+#: view.py:632
+msgid "No Internet Connection"
+msgstr ""
+
+#: view.py:637
+msgid "Please check your connection and try again."
+msgstr ""
+
+#: view.py:642
+msgid "Retry"
+msgstr ""
+
+#: view.py:671 view.py:883
+msgid "Date"
+msgstr ""
+
+#: view.py:680
+msgid "Pick a Date"
+msgstr ""
+
+#: view.py:765 view.py:1426
+msgid "None of the fields should be empty"
+msgstr ""
+
+#: view.py:772 view.py:1433
+msgid "The 'Amount' field must contain positive numbers"
+msgstr ""
+
+#: view.py:777 view.py:1438
+msgid "Amount must be greater than 0"
+msgstr ""
+
+#: view.py:798 view.py:864 view.py:900
+msgid "Description"
+msgstr ""
+
+#: view.py:799 view.py:872 view.py:904
+msgid "Amount"
+msgstr ""
+
+#: view.py:830
+msgid "New Expense"
+msgstr ""
+
+#: view.py:832 view.py:956 view.py:1000 view.py:1163 view.py:1387
+msgid "Cancel"
+msgstr ""
+
+#: view.py:840 view.py:1003 view.py:1166
+msgid "Add"
+msgstr ""
+
+#: view.py:928
+msgid "Balance"
+msgstr ""
+
+#: view.py:950 view.py:1292
+msgid "Confirm deletion"
+msgstr ""
+
+#: view.py:951 view.py:1293
+#, python-format
+msgid "Are you sure you want to remove '%s'?"
+msgstr ""
+
+#: view.py:957
+msgid "Remove"
+msgstr ""
+
+#: view.py:993 view.py:1061
+msgid "Add Credit"
+msgstr ""
+
+#: view.py:1016
+#, python-brace-format
+msgid "to {friend}"
+msgstr ""
+
+#: view.py:1068
+msgid "Remove Friend"
+msgstr ""
+
+#: view.py:1093
+#, python-brace-format
+msgid "Credit: {credit}   |   Debit: {debit}"
+msgstr ""
+
+#: view.py:1122 view.py:1156
+msgid "Add Friend"
+msgstr ""
+
+#: view.py:1141
+msgid "No more friends available"
+msgstr ""
+
+#: view.py:1142
+msgid "You have already added all your friends to this expense."
+msgstr ""
+
+#: view.py:1172
+msgid "Search friends..."
+msgstr ""
+
+#: view.py:1335
+msgid "Details"
+msgstr ""
+
+#: view.py:1343
+msgid "Friends"
+msgstr ""
+
+#: view.py:1354
+msgid "Remove expense"
+msgstr ""
+
+#: view.py:1383
+msgid "Edit Expense"
+msgstr ""
+
+#: view.py:1394
+msgid "Done"
+msgstr ""
+
+#: view.py:1487
+msgid "Pick an Expense"
 msgstr ""
