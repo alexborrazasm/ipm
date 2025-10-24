@@ -325,8 +325,13 @@ class View:
     self._about.present(self.window)
 
   def _format_currency(self, value) -> str:
-    return locale.currency(value, symbol=True, grouping=True)
-  
+    try:
+      # Try to format with current locale
+      return locale.currency(value, symbol=True, grouping=True)
+    except (ValueError, locale.Error):
+      # Fallback: simple formatting without currency symbol
+      return f"{value:,.2f}"
+
   def _format_date(self, date_str: str) -> str:
     if not date_str:
       return ""
