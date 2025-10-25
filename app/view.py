@@ -699,11 +699,31 @@ class View:
     date_row.set_subtitle(self._format_date(formatted_date))
     self._date_row = date_row # save reference
 
+    def on_popover_show(unused_popover):
+      # Parse the date string from the form ("2025-10-25")
+      date_str = self._expense_forms[exp_id].date if exp_id is not None else self._form_add_date
+      if date_str:
+        try:
+          year, month, day = map(int, date_str.split("-"))
+          calendar.set_year(year)
+          calendar.set_month(month - 1)
+          calendar.set_day(day)
+        except ValueError:
+          # fallback to today's date if format is invalid
+          now = datetime.now()
+          calendar.set_year(now.year)
+          calendar.set_month(now.month - 1)
+          calendar.set_day(now.day)
+
     # Create the popover attached to the button
     date_popover = Gtk.Popover()
     date_popover.set_child(calendar)
     date_popover.set_has_arrow(True)
     date_popover.set_position(Gtk.PositionType.BOTTOM)
+    
+    # Connect event so it resets every time the popover opens
+    date_popover.connect("show", on_popover_show)
+
     calendar_button.set_popover(date_popover)
 
     # Handle date selection by mouse click
@@ -1404,6 +1424,8 @@ class View:
         self._expense_forms[data.id].desc.set_text(data.description)
         self._expense_forms[data.id].amount.set_text(f"{data.amount:.2f}")
         self._expense_forms[data.id].date = data.date
+        self._date_row.set_subtitle(
+          self._format_date(self._expense_forms[data.id].date))
 
       self._visible_expense = -2 # Cannot skip to expense
       load_edit_data()
