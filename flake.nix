@@ -17,7 +17,6 @@
 
       shellHook = ''
         echo "🚀 Flutter + Dart devShell loaded"
-        flutter --version
       '';
     };
   };
