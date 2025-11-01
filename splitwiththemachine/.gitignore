@@ -47,6 +47,10 @@ app.*.map.json
 # Flutter generates it automatically
 android
 ios
+windows
+web
+macos
+linux
 
 # Flutter metadata
 .metadata
