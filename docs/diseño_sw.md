@@ -433,3 +433,178 @@ ExpenseViewModel ..> Command1 : uses
 ExpenseViewModel ..> FriendExpenseArgs : uses
 ExpenseViewModel ..> CreditArgs : uses
 ```
+
+## Mobile Flowchart
+```mermaid
+flowchart LR
+
+    A[Loading Screen] -->|Internet OK| B[View Expenses]
+    A -->|No Internet| C[No Internet Screen]
+
+    B -->|There are expenses| D[Expenses List]
+    B -->|No expenses| E[Add Your First Expense]
+
+    D -->|Search| F[Search Expense]
+    D -->|Add| G[Add Expense]
+    D -->|About| H[About Screen]
+    D -->|View expense| I[Expense Details info]
+    D -->|Delete| J[Delete Expense]
+
+    I -->|Go back| D
+    I -->|Delete| J
+    I -->|Edit| L[Edit Expense]
+    I -->|View expense friends| K[Expense Details friends]
+
+    K -->|View expense info| I
+    K -->|Add friend to expense| M[Add Friend Expense]
+    K -->|Add credit to expense| N[Add Credit Expense]
+    K -->|Remove friend from expense| O[Remove Expense Friend]
+
+    O --> |Confirm| K
+    O --> |Back| K
+
+    N -->|Confirm| K
+    N -->|Back| K
+
+    M --> |Save| K
+    M --> |Cancel| K
+    
+    L -->|Save| I
+    L -->|Cancel| I
+ 
+    J -->|Cancel| D
+    J -->|Confirm Delete| D
+
+    G -->|Save| D
+    G -->|Cancel| D
+
+    H -->|Close| D
+
+    F -->|View| D
+
+    E -->|Add Expense| D
+
+    C -->|Retry| A
+
+```
+
+
+## Tablet Flowchart
+```mermaid
+flowchart LR
+
+    A[Loading Screen] -->|Internet OK| B[View Expenses]
+    A -->|No Internet| C[No Internet Screen]
+
+    B -->|There are expenses| D[Expenses List]
+    B -->|No expenses| E[Add Your First Expense]
+
+    D -->|Search| F[Search Expense]
+    D -->|Add| G[Add Expense]
+    D -->|About| H[About Screen]
+    D -->|View expense| I[Expense Details]
+    D -->|Delete| J[Delete Expense]
+
+    I -->|Go back| D
+    I -->|Delete| J
+    I -->|Edit| L[Edit Expense]
+    I -->|Add friend to expense| M[Add Friend Expense]
+    I -->|Add credit to expense| N[Add Credit Expense]
+    I -->|Remove friend expense| O[Remove Expense Friend]
+
+    O -->|Confirm| I
+    O -->|Back| I
+
+    N -->|Confirm| I
+    N -->|Back| I
+
+    M -->|Save| I
+    M -->|Cancel| I
+
+    L -->|Save| I
+    L -->|Cancel| I
+
+    J -->|Cancel| D
+    J -->|Confirm Delete| D
+
+    G -->|Save| D
+    G -->|Cancel| D
+
+    H -->|Close| D
+
+    F -->|View| D
+
+    E -->|Add Expense| D
+
+    C -->|Retry| A
+
+
+```
+
+## Sequence diagram: Load initial data
+```mermaid
+sequenceDiagram
+    autonumber
+    participant User
+    participant ExpensesScreen
+    participant ExpenseViewModel
+    participant Command0
+    participant ExpenseRepository
+    participant FriendRepository
+    participant SplitWithMeAPIService
+    participant ExpenseList as List<Expense>
+    participant FriendList as List<Friend>
+
+    Note over ExpensesScreen: App starts or user opens ExpensesScreen
+
+    User ->> ExpensesScreen: View appears
+
+    %% ---- LOAD EXPENSES ----
+    ExpensesScreen ->> ExpenseViewModel: loadExpenses.execute()
+    ExpenseViewModel ->> Command0: set running = true
+    Note over Command0: Command0 notifies listeners (running = true)
+    Command0 ->> ExpensesScreen: notifies listeners (running = true)
+    ExpensesScreen ->> ExpensesScreen: show CircularProgressIndicator()
+
+    Note over ExpenseViewModel: _loadExpenses() is invoked
+    ExpenseViewModel ->> ExpenseRepository: fetchExpenses()
+    ExpenseRepository ->> SplitWithMeAPIService: GET /expenses
+    SplitWithMeAPIService -->> ExpenseRepository: List<Expense> or Error
+
+    alt success (Ok)
+        ExpenseRepository -->> ExpenseViewModel: Result.ok(List<Expense>)
+        ExpenseViewModel ->> ExpenseList: update expenses list
+    else failure (Error)
+        ExpenseRepository -->> ExpenseViewModel: Result.error(Exception)
+        ExpenseViewModel ->> ExpenseViewModel: set errorMessage = "Cannot retrieve the list of expenses"
+    end
+
+    ExpenseViewModel ->> Command0: set running = false
+    Command0 ->> ExpensesScreen: notifies listeners (running = false)
+    ExpensesScreen ->> ExpensesScreen: hide CircularProgressIndicator()
+
+    %% ---- LOAD FRIENDS (initial) ----
+    Note over ExpenseViewModel,FriendRepository: Friends are loaded once at startup and kept in memory
+    ExpenseViewModel ->> FriendRepository: fetchFriends()
+    FriendRepository ->> SplitWithMeAPIService: GET /friends
+    SplitWithMeAPIService -->> FriendRepository: List<Friend> or Error
+
+    alt success (Ok)
+        FriendRepository -->> ExpenseViewModel: Result.ok(List<Friend>)
+        ExpenseViewModel ->> FriendList: store friends in memory
+    else failure (Error)
+        FriendRepository -->> ExpenseViewModel: Result.error(Exception)
+        ExpenseViewModel ->> ExpenseViewModel: set errorMessage = "Cannot retrieve the list of friends"
+    end
+
+    %% ---- FINAL STATE ----
+    alt success
+        ExpensesScreen ->> ExpensesScreen: rebuild UI with friends + expenses
+    else error
+        ExpensesScreen ->> ExpensesScreen: display InfoBar with errorMessage
+    end
+
+    Note over ExpensesScreen: UI shows final state (lists or error)
+
+
+```
