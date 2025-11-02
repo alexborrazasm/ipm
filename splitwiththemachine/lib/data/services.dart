@@ -20,14 +20,27 @@ abstract class SplitWithMeService {
 class SplitWithMeAPIService implements SplitWithMeService {
   final serverURL = Platform.isAndroid ? "10.0.2.2" : "127.0.0.1";
   final serverPort = "8000";
+  final Map<String, String> _headers = {
+    'Content-Type': 'application/json; charset=UTF-8',
+  };
 
   Uri _buildUri(String path, [Map<String, dynamic>? query]) =>
       Uri.http('$serverURL:$serverPort', path, query);
 
   @override
   Future<List<Expense>> fetchExpenses() async {
-    // TODO: implement this
-    throw UnimplementedError();
+    var uri = _buildUri("expenses");
+    try {
+      var response = await http.get(uri);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return List<Expense>.from(data.map((item) => Friend.fromJson(item)));
+      } else {
+        throw ServerException("Invalid data");
+      }
+    } on http.ClientException {
+      throw ServerException("Service is not available. Try again later.");
+    }
   }
 
   @override
@@ -48,39 +61,109 @@ class SplitWithMeAPIService implements SplitWithMeService {
 
   @override
   Future<Expense> addExpense(Expense expense) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    var uri = _buildUri("expenses");
+    try {
+      var response = await http.post(
+        uri,
+        headers: _headers,
+        body: json.encode(expense.toJson()),
+      );
+      if (response.statusCode == 201) {
+        var data = json.decode(response.body);
+        return Expense.fromJson(data);
+      } else {
+        throw ServerException("Invalid data");
+      }
+    } on http.ClientException {
+      throw ServerException("Service is not available. Try again later.");
+    }
   }
 
   @override
   Future<Expense> editExpense(Expense expense) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    var uri = _buildUri("expenses/${expense.id}");
+    try {
+      var response = await http.put(
+            uri,
+            headers: _headers,
+            body: json.encode(expense.toJson()),
+      );
+      if (response.statusCode == 204) {
+        var data = json.decode(response.body);
+        return Expense.fromJson(data);
+      } else {
+        throw ServerException("Invalid data");
+      }
+    } on http.ClientException {
+      throw ServerException("Service is not available. Try again later.");
+    }
   }
 
   @override
   Future<void> deleteExpense(int id) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    var uri = _buildUri("expenses/$id");
+    try {
+      var response = await http.delete(uri);
+      if (response.statusCode != 204) {
+        throw ServerException("Invalid data");
+      }
+    } on http.ClientException {
+      throw ServerException("Service is not available. Try again later.");
+    }
   }
 
   @override
   Future<List<Friend>> addFriendToExpense(int expenseId, int friendId) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    var uri = _buildUri(
+        "expenses/$expenseId/friends",
+        {'friendId': friendId.toString()}
+    );
+    try {
+      var response = await http.post(uri);
+      if (response.statusCode == 201) {
+        var data = json.decode(response.body);
+        return List<Friend>.from(data.map((item) => Friend.fromJson(item)));
+      } else {
+        throw ServerException("Invalid data");
+      }
+    } on http.ClientException {
+      throw ServerException("Service is not available. Try again later.");
+    }
   }
 
   @override
-  Future<List<Friend>> deleteFriendFromExpense(int expenseId, int friendId) async {
-    // TODO: implement this
-    throw UnimplementedError();
+  Future<List<Friend>> deleteFriendFromExpense(int expenseId, int friendId)
+      async {
+    var uri = _buildUri("expenses/$expenseId/friends/$friendId");
+    try {
+      var response = await http.delete(uri);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return List<Friend>.from(data.map((item) => Friend.fromJson(item)));
+      } else {
+        throw ServerException("Invalid data");
+      }
+    } on http.ClientException {
+      throw ServerException("Service is not available. Try again later.");
+    }
   }
 
   @override
   Future<List<Friend>> addCreditToFriend(int expenseId, int friendId,
       double amount) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    var uri = _buildUri("expenses/$expenseId/friends/$friendId",
+        {'amount': amount.toString()}
+    );
+    try {
+      var response = await http.put(uri);
+      if (response.statusCode == 204) {
+        var data = json.decode(response.body);
+        return List<Friend>.from(data.map((item) => Friend.fromJson(item)));
+      } else {
+        throw ServerException("Invalid data");
+      }
+    } on http.ClientException {
+      throw ServerException("Service is not available. Try again later.");
+    }
   }
-
 }

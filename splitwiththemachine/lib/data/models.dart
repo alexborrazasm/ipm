@@ -19,6 +19,17 @@ class Expense {
       creditBalance = json["credit_balance"],
       friends = [];
 
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "description": description,
+      "date": date,
+      "amount": amount,
+      "num_friends": numFriends,
+      "credit_balance": creditBalance,
+    };
+  }
+
   @override
   String toString() {
     return "$id | $description | $date | $amount | $numFriends | $creditBalance"
@@ -26,6 +37,7 @@ class Expense {
   }
 
 }
+
 class Friend {
 
   Friend({this.id, required this.name, this.creditBalance, this.debitBalance});
