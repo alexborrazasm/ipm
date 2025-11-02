@@ -1,16 +1,16 @@
 
 ---
 
-# 🔨 Casos de Uso
+# 🔨 Use Cases
 
 ---
-- Añadir/Eliminar gasto
-- Ver lista de gastos
-- Editar gastos
-- Buscar gastos
-- Añadir/Eliminar amigos a gasto
-- Añadir/Eliminar aportación
-- Ver about
+- Add/Remove Expense
+- View Expenses List
+- Edit Expense
+- Search Expenses
+- Add/Remove Friends to/from Expense
+- Add/Remove Credit
+- View Help
 
 ---
 
@@ -30,3 +30,7 @@
 ![](wireframes/t3.jpeg)
 ![](wireframes/t4.jpeg)
 ![](wireframes/t5.jpeg)
+
+---
+
+# 🔄 Flowcharts
