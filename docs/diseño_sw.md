@@ -456,6 +456,8 @@ flowchart LR
     I -->|View expense friends| K[Expense Details friends]
 
     K -->|View expense info| I
+    K --> |View About| H
+
     K -->|Add friend to expense| M[Add Friend Expense]
     K -->|Add credit to expense| N[Add Credit Expense]
     K -->|Remove friend from expense| O[Remove Expense Friend]
@@ -479,6 +481,7 @@ flowchart LR
     G -->|Cancel| D
 
     H -->|Close| D
+    H --> |Go back| K
 
     F -->|View| D
 
@@ -506,6 +509,7 @@ flowchart LR
     D -->|Delete| J[Delete Expense]
 
     I -->|Go back| D
+    I -->|View about| H
     I -->|Delete| J
     I -->|Edit| L[Edit Expense]
     I -->|Add friend to expense| M[Add Friend Expense]
@@ -515,6 +519,8 @@ flowchart LR
     O -->|Confirm| I
     O -->|Back| I
 
+    H -->|Go back| I
+    
     N -->|Confirm| I
     N -->|Back| I
 
