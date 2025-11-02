@@ -1,13 +1,15 @@
 # 📋 **INFORME FACILITADORA-ADMINISTRADORA**
 ## SEMANA 1
 
-> A continuación se ofrece el informe de la facilitadorea-administradora de la semana 1 de trabajo 27/10/2025 - 02/11/2025,
-> cuyo papel desempeña: Nerea Pérez Pértega
+> A continuación se ofrece el informe de la facilitadorea-administradora de la 
+>semana 1 de trabajo 27/10/2025 - 02/11/2025, cuyo papel desempeña: 
+> Nerea Pérez Pértega
 
 ---
 
 ## 🎯 **Objetivo de la semana:**   
-Organización inicial, diseño de interfaz, elección del patrón arquitectónico y diseño software.
+Organización inicial, diseño de interfaz, elección del patrón arquitectónico y 
+diseño software.
 
 ---
 
@@ -29,14 +31,16 @@ Roles asignados:
 
 **Estado:** *Completada* ✅
 
-**Conflictos o incidencias:** ninguno. Como ya nos conocíamos, la coordinación fue fluida.
+**Conflictos o incidencias:** ninguno. Como ya nos conocíamos, la coordinación 
+fue fluida.
 
 ---
 
 ### ✏️ **2. Diseño de la interfaz de usuario para móvil y tablet**
 
 **Descripción:**   
-Adaptación del diseño de la aplicación de escritorio a una versión para móvil y tablet.
+Adaptación del diseño de la aplicación de escritorio a una versión para móvil y 
+tablet.
 
 **Responsables:**
 - Ideas y revisión: Trabajo en grupo
@@ -45,14 +49,17 @@ Adaptación del diseño de la aplicación de escritorio a una versión para móv
 
 **Estado:** *Completada* ✅
 
-**Conflictos o incidencias:**  el primer diseño fue ajustado para adaptarse mejor a las limitaciones de Flutter.
+**Conflictos o incidencias:**  el primer diseño fue ajustado para adaptarse 
+mejor a las limitaciones de Flutter.
 
 ---
 
 ### 🏛️ **3. Selección del patrón de diseño SW**
 
 **Descripción:**  
-Discusión sobre diferentes patrones de arquitectura. Finalmente, se decidió usar el MVVM, por su capacidad de separar responsabilidades y facilitar la escalabilidad del proyecto.
+Discusión sobre diferentes patrones de arquitectura. Finalmente, se decidió 
+usar el MVVM, por su capacidad de separar responsabilidades y facilitar la 
+escalabilidad del proyecto.
 
 **Asignación de responsables:** Trabajo en grupo.
 
@@ -80,20 +87,23 @@ incluyendo los diagramas de la parte estática y dinámica.
 ### ⚙️ **5. Configuración del entorno de trabajo**
 **Descripción:**  
 Para gestionar el entorno de trabajo se ha decido 
-usar el gestor de paquetes [Nix](https://nixos.org/) y sus *flakes* para garantizar reproducibilidad y consistencia entre equipos.
+usar el gestor de paquetes [Nix](https://nixos.org/) y sus *flakes* para 
+garantizar reproducibilidad y consistencia entre equipos.
 
 **Asignación de responsables:**
 - Preparación del entorno: Alexandre
 
 **Estado:** *Completada* ✅
 
-**Conflictos o incidencias:** Nerea experimentó un problema al usar la shell *fish*, resuelto fácilmente.
+**Conflictos o incidencias:** Nerea experimentó un problema al usar la shell 
+*fish*, resuelto fácilmente.
 
 ---
 
 ### 🧩 **6. Creación de la base del proyecto**
 **Descripción:**  
-Estructuración de la base del proyecto para asegurar un estilo y organización comunes.
+Estructuración de la base del proyecto para asegurar un estilo y organización 
+comunes.
 
 **Asignación de responsables:**
 - Base general: Alexandre
@@ -108,7 +118,8 @@ Estructuración de la base del proyecto para asegurar un estilo y organización 
 
 ### 👩‍💻 **7. Implementación de los Models**
 **Descripción:**   
-Inicio de la implementación de la capa Models, que gestiona los datos y la lógica de negocio del sistema.
+Inicio de la implementación de la capa Models, que gestiona los datos y la lógica
+ de negocio del sistema.
 
 **Asignación de responsables:**
 - Peticiones a la API: Nerea
@@ -121,7 +132,9 @@ Inicio de la implementación de la capa Models, que gestiona los datos y la lóg
 
 ## 📊 Análisis final
 El equipo lleva el proyecto bastante adelantado.
-Según el enunciado de la práctica, estaba planificado que esta semana solo se completase el diseño de la interfaz, pero ya se inició también la fase de implementación.
+Según el enunciado de la práctica, estaba planificado que esta semana solo se 
+completase el diseño de la interfaz, pero ya se inició también la fase de 
+implementación.
 
 ---
 
