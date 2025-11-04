@@ -31,43 +31,43 @@ class ExpenseRepository {
   late final SplitWithMeService _service;
 
   // Fetch all expenses
-  Future<Result<List<Expense>>> fetchExpenses() {
+  Future<Result<List<Expense>>> fetchExpenses() async {
     // TODO: implement this
     throw UnimplementedError();
   }
 
   // Add a new expense
-  Future<Result<Expense>> addExpense(Expense expense) {
+  Future<Result<Expense>> addExpense(Expense expense) async {
     // TODO: implement this
     throw UnimplementedError();
   }
 
   // Edit an existing expense
-  Future<Result<Expense>> editExpense(Expense expense) {
+  Future<Result<Expense>> editExpense(Expense expense) async {
     // TODO: implement this
     throw UnimplementedError();
   }
 
   // Remove an expense by ID
-  Future<Result<void>> removeExpense(int id) {
+  Future<Result<void>> removeExpense(int id) async {
     // TODO: implement this
     throw UnimplementedError();
   }
 
   // Add friends to an expense (multiple IDs possible)
-  Future<Result<void>> addFriendToExpense(FriendExpenseArgs args) {
+  Future<Result<void>> addFriendToExpense(FriendExpenseArgs args) async {
     // TODO: implement this
     throw UnimplementedError();
   }
 
   // Delete friends from an expense
-  Future<Result<void>> deleteFriendFromExpense(FriendExpenseArgs args) {
+  Future<Result<void>> deleteFriendFromExpense(FriendExpenseArgs args) async {
     // TODO: implement this
     throw UnimplementedError();
   }
 
   // Add credit to a friend in an expense
-  Future<Result<void>> addCreditToFriend(CreditArgs args) {
+  Future<Result<void>> addCreditToFriend(CreditArgs args) async {
     // TODO: implement this
     throw UnimplementedError();
   }
@@ -82,7 +82,7 @@ class FriendRepository {
     try {
       final friends = await _service.fetchFriends();
       return Result.ok(friends);
-    } on Exception catch (e){
+    } on Exception catch (e) {
       return Result.error(e);
     }
   }
