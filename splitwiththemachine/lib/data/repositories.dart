@@ -5,12 +5,7 @@ import 'models.dart';
 // Args for adding/removing a friends from an expense
 class FriendExpenseArgs {
   final int expenseId;
-  final List<int> friendIds;
-
-  const FriendExpenseArgs({
-    required this.expenseId,
-    required this.friendIds,
-  });
+  final int friendIds;
 }
 
 // Args for adding credit to a friend in an expense
@@ -32,46 +27,83 @@ class ExpenseRepository {
 
   // Fetch all expenses
   Future<Result<List<Expense>>> fetchExpenses() async {
-    // TODO: implement this
-    throw UnimplementedError();
+    try {
+      final expenses = await _service.fetchExpenses();
+      return Result.ok(expenses);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 
   // Add a new expense
   Future<Result<Expense>> addExpense(Expense expense) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    try {
+      final expense = await _service.addExpense(expense);
+      return Result.ok(expense);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 
   // Edit an existing expense
   Future<Result<Expense>> editExpense(Expense expense) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    try{
+      final expense = await _service.editExpense(expense);
+      return Result.ok(expense);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 
   // Remove an expense by ID
   Future<Result<void>> removeExpense(int id) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    try {
+      await _service.deleteExpense(id);
+      return Result.ok(null);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 
   // Add friends to an expense (multiple IDs possible)
   Future<Result<void>> addFriendToExpense(FriendExpenseArgs args) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    try {
+      await _service.addFriendToExpense(args.expenseId, args.friendId);
+      return Result.ok(null);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 
   // Delete friends from an expense
   Future<Result<void>> deleteFriendFromExpense(FriendExpenseArgs args) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    try {
+      await _service.deleteFriendFromExpense(args.expenseId, args.friendId);
+      return Result.ok(null);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 
   // Add credit to a friend in an expense
   Future<Result<void>> addCreditToFriend(CreditArgs args) async {
-    // TODO: implement this
-    throw UnimplementedError();
+    try {
+      await _service.addCreditToFriend(args.expenseId, args.friendId, args.amount);
+      return Result.ok(null);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 
+  // Add credit to a friend in an expense
+  Future<Result<void>> addCreditToFriend(CreditArgs args) async {
+    try {
+      await _service.addCreditToFriend(args.expenseId, args.friendId, args.amount);
+      return Result.ok(null);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
 }
 
 class FriendRepository {
@@ -86,5 +118,4 @@ class FriendRepository {
       return Result.error(e);
     }
   }
-
 }
