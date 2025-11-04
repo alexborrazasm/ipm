@@ -455,15 +455,15 @@ sequenceDiagram
     User ->> ExpensesScreen: View appears
 
     %% ---- LOAD EXPENSES ----
-    ExpensesScreen ->> ExpenseViewModel: loadExpenses.execute()
+    ExpensesScreen -) ExpenseViewModel: loadExpenses.execute()
     ExpenseViewModel ->> Command0: set running = true
     Note over Command0: Command0 notifies listeners (running = true)
     Command0 ->> ExpensesScreen: notifies listeners (running = true)
     ExpensesScreen ->> ExpensesScreen: show CircularProgressIndicator()
 
     Note over ExpenseViewModel: _loadExpenses() is invoked
-    ExpenseViewModel ->> ExpenseRepository: fetchExpenses()
-    ExpenseRepository ->> SplitWithMeAPIService: GET /expenses
+    ExpenseViewModel -) ExpenseRepository: fetchExpenses()
+    ExpenseRepository -) SplitWithMeAPIService: GET /expenses
     SplitWithMeAPIService -->> ExpenseRepository: List<Expense> or Error
 
     alt success (Ok)
@@ -480,8 +480,8 @@ sequenceDiagram
 
     %% ---- LOAD FRIENDS (initial) ----
     Note over ExpenseViewModel,FriendRepository: Friends are loaded once at startup and kept in memory
-    ExpenseViewModel ->> FriendRepository: fetchFriends()
-    FriendRepository ->> SplitWithMeAPIService: GET /friends
+    ExpenseViewModel -) FriendRepository: fetchFriends()
+    FriendRepository -) SplitWithMeAPIService: GET /friends
     SplitWithMeAPIService -->> FriendRepository: List<Friend> or Error
 
     alt success (Ok)
