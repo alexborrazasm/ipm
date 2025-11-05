@@ -5,7 +5,12 @@ import 'models.dart';
 // Args for adding/removing a friends from an expense
 class FriendExpenseArgs {
   final int expenseId;
-  final int friendIds;
+  final int friendId;
+
+  const FriendExpenseArgs({
+    required this.expenseId,
+    required this.friendId,
+  });
 }
 
 // Args for adding credit to a friend in an expense
@@ -38,8 +43,8 @@ class ExpenseRepository {
   // Add a new expense
   Future<Result<Expense>> addExpense(Expense expense) async {
     try {
-      final expense = await _service.addExpense(expense);
-      return Result.ok(expense);
+      final newExpense = await _service.addExpense(expense);
+      return Result.ok(newExpense);
     } on Exception catch (e) {
       return Result.error(e);
     }
@@ -47,9 +52,9 @@ class ExpenseRepository {
 
   // Edit an existing expense
   Future<Result<Expense>> editExpense(Expense expense) async {
-    try{
-      final expense = await _service.editExpense(expense);
-      return Result.ok(expense);
+    try {
+      final editedExpense = await _service.editExpense(expense);
+      return Result.ok(editedExpense);
     } on Exception catch (e) {
       return Result.error(e);
     }
@@ -88,17 +93,8 @@ class ExpenseRepository {
   // Add credit to a friend in an expense
   Future<Result<void>> addCreditToFriend(CreditArgs args) async {
     try {
-      await _service.addCreditToFriend(args.expenseId, args.friendId, args.amount);
-      return Result.ok(null);
-    } on Exception catch (e) {
-      return Result.error(e);
-    }
-  }
-
-  // Add credit to a friend in an expense
-  Future<Result<void>> addCreditToFriend(CreditArgs args) async {
-    try {
-      await _service.addCreditToFriend(args.expenseId, args.friendId, args.amount);
+      await _service.addCreditToFriend(
+          args.expenseId, args.friendId, args.amount);
       return Result.ok(null);
     } on Exception catch (e) {
       return Result.error(e);
