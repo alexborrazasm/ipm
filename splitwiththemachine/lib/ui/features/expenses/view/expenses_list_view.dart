@@ -66,7 +66,11 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           );
         },
       ),
-
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {}, // TODO
+        tooltip: 'Add an expense',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
