@@ -29,7 +29,7 @@ class ExpenseRow extends StatelessWidget {
             ),
             Expanded(
               child: InkWell(
-                onTap: () {}, // puedes añadir acción si quieres
+                onTap: () {}, // TODO
                 child: Text(
                   expense.description,
                   style: Theme.of(context).textTheme.bodyLarge,
