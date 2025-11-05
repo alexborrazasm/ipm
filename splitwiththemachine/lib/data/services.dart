@@ -34,7 +34,7 @@ class SplitWithMeAPIService implements SplitWithMeService {
       var response = await http.get(uri);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        return List<Expense>.from(data.map((item) => Friend.fromJson(item)));
+        return List<Expense>.from(data.map((item) => Expense.fromJson(item)));
       } else {
         throw ServerException("Invalid data");
       }

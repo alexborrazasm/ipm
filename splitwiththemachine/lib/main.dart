@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 
 import 'data/services.dart';
 import 'data/repositories.dart';
-import 'ui/expenses_view.dart';
-import 'ui/expenses_viewmodel.dart';
+import 'ui/core/themes/app_theme.dart';
+import 'ui/features/expenses/view/expenses_list_view.dart';
+import 'ui/features/expenses/viewmodel/expenses_viewmodel.dart';
 
 void main() {
   runApp(MyApp(
@@ -25,25 +26,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        Provider(create: (context) => expenseRepository),
-        Provider(create: (context) => friendRepository),
-      ],
-      builder: (context, widget) {
-        return MaterialApp(
-          title: 'SplitWithFriends',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
-          ),
-          home: FriendsScreen(
-            title: 'Friend list',
-            viewModel: ExpenseViewModel(
-                expenseRepository: context.read(),
-                friendRepository: context.read()
+        providers: [
+          Provider(create: (context) => expenseRepository),
+          Provider(create: (context) => friendRepository),
+        ],
+        builder: (context, widget) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'SplitWithTheMachine',
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            home: ExpenseListScreen(
+              title: 'Expenses',
+              viewModel: ExpenseViewModel(
+                  expenseRepository: context.read(),
+                  friendRepository: context.read()
+              ),
             ),
-          ),
-        );
-      }
+          );
+        }
     );
   }
 }
