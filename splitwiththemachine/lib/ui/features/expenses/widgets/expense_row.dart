@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/data/models.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../view/expense_detail_view.dart';
 
 class ExpenseRow extends StatelessWidget {
   const ExpenseRow({super.key, required this.expense});
@@ -9,34 +10,45 @@ class ExpenseRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.only(top: 12.0, left: 12.0, right: 12.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          key: ValueKey("expense-${expense.id}"),
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: FaIcon(
-                FontAwesomeIcons.creditCard,
-                color: Theme.of(context).colorScheme.primary,
-                size: 20,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      child: Material(
+        color: Theme.of(context).colorScheme.surfaceContainer, // Card background
+        elevation: 2,
+        borderRadius: BorderRadius.circular(12),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ExpenseDetailScreen(expense: expense),
               ),
-            ),
-            Expanded(
-              child: InkWell(
-                onTap: () {}, // TODO
-                child: Text(
-                  expense.description,
-                  style: Theme.of(context).textTheme.bodyLarge,
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              key: ValueKey("expense-${expense.id}"),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: FaIcon(
+                    FontAwesomeIcons.creditCard,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: Text(
+                    expense.description,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

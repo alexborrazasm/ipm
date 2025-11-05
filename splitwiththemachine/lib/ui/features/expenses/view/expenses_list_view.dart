@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:splitwiththemachine/ui/core/widgets/info_bar.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import '../widgets/expense_row.dart';
 
@@ -40,28 +39,26 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
               widget.viewModel.expenses.isEmpty
                   ? Center(child: Text("No expenses"))
                   : CustomScrollView(
-                      slivers: [
-                        if (widget.viewModel.loadExpenses.error)
-                          SliverToBoxAdapter(
-                            child: InfoBar(
-                              message: widget.viewModel.errorMessage!,
-                              onPressed: widget.viewModel.loadExpenses.clearResult,
-                              isError: true,
-                            ),
-                          ),
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            return ExpenseRow(
-                              expense: widget.viewModel.expenses[index],
-                            );
-                          }, childCount: widget.viewModel.expenses.length),
-                        ),
-                        const SliverToBoxAdapter(child: SizedBox(height: 200)),
-                      ],
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.only(
+                        top: 8, left: 12,
+                        right: 12, bottom: 8
                     ),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                          return ExpenseRow(
+                            expense: widget.viewModel.expenses[index],
+                          );
+                        },
+                        childCount: widget.viewModel.expenses.length,
+                      ),
+                    ),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 200)),
+                ],
+              ),
             ],
           );
         },
