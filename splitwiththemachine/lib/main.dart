@@ -5,6 +5,7 @@ import 'data/services.dart';
 import 'data/repositories.dart';
 import 'ui/core/themes/app_theme.dart';
 import 'ui/features/expenses/view/expenses_list_view.dart';
+import 'ui/features/expenses/view/add_expense_view.dart';
 import 'ui/features/expenses/viewmodel/expenses_viewmodel.dart';
 
 void main() {
@@ -29,22 +30,30 @@ class MyApp extends StatelessWidget {
         providers: [
           Provider(create: (context) => expenseRepository),
           Provider(create: (context) => friendRepository),
-        ],
-        builder: (context, widget) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'SplitWithTheMachine',
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            home: ExpenseListScreen(
-              title: 'Expenses',
-              viewModel: ExpenseViewModel(
-                  expenseRepository: context.read(),
-                  friendRepository: context.read()
-              ),
+          ChangeNotifierProvider(
+            create: (context) => ExpenseViewModel(
+              expenseRepository: context.read(),
+              friendRepository: context.read(),
             ),
-          );
-        }
+          ),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'SplitWithTheMachine',
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          initialRoute: '/expenses',
+          routes: {
+            '/expenses': (context) => ExpenseListScreen(
+              title: 'Expenses',
+              viewModel: context.read<ExpenseViewModel>(),
+            ),
+            '/add_expense': (context) => AddExpenseScreen(
+              title: 'New expense',
+              viewModel: context.read<ExpenseViewModel>(),
+            ),
+          },
+        ),
     );
   }
 }

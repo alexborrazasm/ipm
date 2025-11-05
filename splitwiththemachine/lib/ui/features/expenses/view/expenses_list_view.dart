@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/ui/core/widgets/info_bar.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import '../widgets/expense_row.dart';
+import 'add_expense_view.dart';
 
 class ExpenseListScreen extends StatefulWidget {
   const ExpenseListScreen({
@@ -67,10 +68,12 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {}, // TODO
         tooltip: 'Add an expense',
         child: const Icon(Icons.add),
-      ),
+          onPressed: () {
+            Navigator.pushNamed(context, '/add_expense');
+          },
+      )
     );
   }
 }
