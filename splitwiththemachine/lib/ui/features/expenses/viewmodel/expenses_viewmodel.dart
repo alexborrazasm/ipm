@@ -13,6 +13,12 @@ class ExpenseViewModel extends ChangeNotifier {
         _expenseRepository = expenseRepository {
     loadFriends = Command0(_loadFriends);
     loadExpenses = Command0(_loadExpenses);
+    addFriend = Command1(_addFriend);
+    editExpense = Command1(_editExpense);
+    deleteExpense = Command1(_deleteExpense);
+    addFriendToExpense = Command1(_addFriendToExpense);
+    deleteFriendFromExpense = Command1(_deleteFriendFromExpense);
+    addCreditToFriend = Command1(_addCreditToFriend);
 
     if (friends.isEmpty) {
       loadFriends.execute();
@@ -27,6 +33,12 @@ class ExpenseViewModel extends ChangeNotifier {
   final FriendRepository _friendRepository;
   late final Command0 loadFriends;
   late final Command0 loadExpenses;
+  late final Command1<void,Expense> addFriend;
+  late final Command1<void,Expense> editExpense;
+  late final Command1<void,int> deleteExpense;
+  late final Command1<void,FriendExpenseArgs> addFriendToExpense;
+  late final Command1<void,FriendExpenseArgs> deleteFriendFromExpense;
+  late final Command1<void,CreditArgs> addCreditToFriend;
 
   List<Expense> expenses = [];
   List<Friend> friends = [];
@@ -60,6 +72,53 @@ class ExpenseViewModel extends ChangeNotifier {
     }
   }
 
-  // TODO implements all necessary methods
+  Future<Result<void>> _addFriend(Expense expense) async { // TODO
+    return Result.ok(null);
+  }
+
+  Future<Result<void>> _editExpense(Expense expense) async { // TODO
+    return Result.ok(null);
+  }
+
+  Future<Result<void>> _deleteExpense(int expenseId) async { // TODO
+    return Result.ok(null);
+  }
+
+  Future<Result<void>> _addFriendToExpense(FriendExpenseArgs args) async { // TODO
+    return Result.ok(null);
+  }
+
+  Future<Result<void>> _deleteFriendFromExpense(FriendExpenseArgs args) async { // TODO
+    return Result.ok(null);
+  }
+
+  Future<Result<void>> _addCreditToFriend(CreditArgs args) async { // TODO
+    return Result.ok(null);
+  }
 
 }
+
+// Args for adding/removing a friends from an expense using Command1
+class FriendExpenseArgs {
+  final int expenseId;
+  final int friendId;
+
+  const FriendExpenseArgs({
+    required this.expenseId,
+    required this.friendId,
+  });
+}
+
+// Args for adding credit to a friend in an expense using Command1
+class CreditArgs {
+  final int expenseId;
+  final int friendId;
+  final double amount;
+
+  const CreditArgs({
+    required this.expenseId,
+    required this.friendId,
+    required this.amount
+  });
+}
+

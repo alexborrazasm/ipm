@@ -2,30 +2,6 @@ import 'package:splitwiththemachine/utils/result.dart';
 import 'services.dart';
 import 'models.dart';
 
-// Args for adding/removing a friends from an expense
-class FriendExpenseArgs {
-  final int expenseId;
-  final int friendId;
-
-  const FriendExpenseArgs({
-    required this.expenseId,
-    required this.friendId,
-  });
-}
-
-// Args for adding credit to a friend in an expense
-class CreditArgs {
-  final int expenseId;
-  final int friendId;
-  final double amount;
-
-  const CreditArgs({
-    required this.expenseId,
-    required this.friendId,
-    required this.amount
-  });
-}
-
 class ExpenseRepository {
   ExpenseRepository({required SplitWithMeService service}) : _service = service;
   late final SplitWithMeService _service;
@@ -61,7 +37,7 @@ class ExpenseRepository {
   }
 
   // Remove an expense by ID
-  Future<Result<void>> removeExpense(int id) async {
+  Future<Result<void>> deleteExpense(int id) async {
     try {
       await _service.deleteExpense(id);
       return Result.ok(null);
@@ -71,9 +47,9 @@ class ExpenseRepository {
   }
 
   // Add friends to an expense (multiple IDs possible)
-  Future<Result<void>> addFriendToExpense(FriendExpenseArgs args) async {
+  Future<Result<void>> addFriendToExpense(int expenseId, int friendId) async {
     try {
-      await _service.addFriendToExpense(args.expenseId, args.friendId);
+      await _service.addFriendToExpense(expenseId, friendId);
       return Result.ok(null);
     } on Exception catch (e) {
       return Result.error(e);
@@ -81,9 +57,9 @@ class ExpenseRepository {
   }
 
   // Delete friends from an expense
-  Future<Result<void>> deleteFriendFromExpense(FriendExpenseArgs args) async {
+  Future<Result<void>> deleteFriendFromExpense(int expenseId, int friendId) async {
     try {
-      await _service.deleteFriendFromExpense(args.expenseId, args.friendId);
+      await _service.deleteFriendFromExpense(expenseId, friendId);
       return Result.ok(null);
     } on Exception catch (e) {
       return Result.error(e);
@@ -91,10 +67,10 @@ class ExpenseRepository {
   }
 
   // Add credit to a friend in an expense
-  Future<Result<void>> addCreditToFriend(CreditArgs args) async {
+  Future<Result<void>> addCreditToFriend(int expenseId, int friendId,
+      double amount) async {
     try {
-      await _service.addCreditToFriend(
-          args.expenseId, args.friendId, args.amount);
+      await _service.addCreditToFriend(expenseId, friendId, amount);
       return Result.ok(null);
     } on Exception catch (e) {
       return Result.error(e);

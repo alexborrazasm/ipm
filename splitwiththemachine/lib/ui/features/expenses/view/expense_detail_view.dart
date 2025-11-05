@@ -19,6 +19,7 @@ class ExpenseDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(expense.description),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        centerTitle: true
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
