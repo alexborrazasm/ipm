@@ -70,7 +70,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         tooltip: 'Add an expense',
         child: const Icon(Icons.add),
           onPressed: () {
-            Navigator.pushNamed(context, '/add_expense');
+            Navigator.pushNamed(context, '/help_feedback');
           },
       )
     );

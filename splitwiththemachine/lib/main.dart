@@ -6,6 +6,7 @@ import 'data/repositories.dart';
 import 'ui/core/themes/app_theme.dart';
 import 'ui/features/expenses/view/expenses_list_view.dart';
 import 'ui/features/expenses/view/add_expense_view.dart';
+import 'ui/features/help_feedback/view/help_feedback_view.dart';
 import 'ui/features/expenses/viewmodel/expenses_viewmodel.dart';
 
 void main() {
@@ -51,6 +52,9 @@ class MyApp extends StatelessWidget {
             '/add_expense': (context) => AddExpenseScreen(
               title: 'New expense',
               viewModel: context.read<ExpenseViewModel>(),
+            ),
+            '/help_feedback': (context) => HelpAndFeedbackScreen(
+              title: 'Help and feedback',
             ),
           },
         ),
