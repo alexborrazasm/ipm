@@ -33,6 +33,16 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     super.dispose();
   }
 
+  String _getLocalizedDateFormat(BuildContext context) {
+    final locale = Localizations.localeOf(context).toString();
+    final pattern = DateFormat.yMd(locale).pattern ?? 'yyyy-MM-dd';
+
+    return pattern
+        .replaceAll('y', 'YYYY')
+        .replaceAll('M', 'MM')
+        .replaceAll('d', 'DD');
+  }
+
   Future<void> _pickDate(BuildContext context) async {
     final DateTime today = DateTime.now();
 
@@ -49,13 +59,16 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+        final locale = Localizations.localeOf(context).toString();
+        dateController.text = DateFormat.yMd(locale).format(picked);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizedPattern = _getLocalizedDateFormat(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -72,7 +85,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 labelText: 'Description',
               ),
             ),
-
             TextField(
               controller: amountController,
               decoration: const InputDecoration(
@@ -83,20 +95,16 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
               ],
             ),
-
-
             TextField(
               controller: dateController,
               readOnly: true,
-              decoration: const InputDecoration(
-                labelText: 'Date (YYYY-MM-DD)',
-                suffixIcon: Icon(Icons.calendar_today),
+              decoration: InputDecoration(
+                labelText: '$localizedPattern',
+                suffixIcon: const Icon(Icons.calendar_today),
               ),
               onTap: () => _pickDate(context),
             ),
-
             const SizedBox(height: 24),
-
             ElevatedButton(
               onPressed: () async {
                 final description = descriptionController.text;
@@ -120,7 +128,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   );
 
                   await widget.viewModel.addExpense.execute(expense);
-
                   Navigator.pop(context);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
