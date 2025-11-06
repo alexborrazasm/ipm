@@ -127,8 +127,14 @@ class SplitWithMeAPIService implements SplitWithMeService {
             body: json.encode(payload),
       );
       if (response.statusCode == 204) {
-        var data = json.decode(response.body);
-        return Expense.fromJson(data);
+        // Backend returns no content, so reuse the local expense
+        // Fetch updated friends (e.g., balances might change)
+        final friends = await _fetchFriendsByExpense(expense.id!);
+
+        // Combine updated friends with the current expense data
+        final expenseWithFriends = expense.copyWith(friends: friends);
+
+        return expenseWithFriends;
       } else {
         throw ServerException("Invalid data");
       }

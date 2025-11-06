@@ -43,6 +43,8 @@ class Expense {
     String? description,
     DateTime? date,
     double? amount,
+    int? numFriends,
+    double? creditBalance,
     List<Friend>? friends,
   }) {
     return Expense(
@@ -50,7 +52,9 @@ class Expense {
       description: description ?? this.description,
       date: date ?? this.date,
       amount: amount ?? this.amount,
-      friends: friends ?? this.friends
+      numFriends: numFriends ?? this.numFriends,
+      creditBalance: creditBalance ?? this.creditBalance,
+      friends: friends ?? this.friends,
     );
   }
 

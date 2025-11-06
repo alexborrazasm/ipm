@@ -116,15 +116,79 @@ class ExpenseViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _addFriendToExpense(FriendExpenseArgs args) async { // TODO
-    return Result.ok(null);
+    final result = await _expenseRepository.addFriendToExpense(
+      args.expense.id!, args.friend.id!
+    );
+
+    switch (result) {
+      case Ok<List<Friend>>():
+        final index = expenses.indexWhere((e) => e.id == args.expense.id);
+        if (index != -1) {
+          final old = expenses[index];
+          // Update friends list
+          final updated = old.copyWith(
+            numFriends: result.value.length,
+            friends: result.value,
+          );
+          expenses[index] = updated;
+        }
+      case Error<List<Friend>>():
+        errorMessage = "Cannot add ${args.friend.name} to "
+                       "${args.expense.description}";
+    }
+    notifyListeners();
+    return result;
   }
 
   Future<Result<void>> _deleteFriendFromExpense(FriendExpenseArgs args) async { // TODO
-    return Result.ok(null);
+    final result = await _expenseRepository.deleteFriendFromExpense(
+        args.expense.id!, args.friend.id!
+    );
+
+    switch (result) {
+      case Ok<List<Friend>>():
+        final index = expenses.indexWhere((e) => e.id == args.expense.id);
+        if (index != -1) {
+          final old = expenses[index];
+          // Update friends list
+          final updated = old.copyWith(
+            numFriends: result.value.length,
+            friends: result.value,
+          );
+          expenses[index] = updated;
+        }
+      case Error<List<Friend>>():
+        errorMessage = "Cannot add ${args.friend.name} to "
+            "${args.expense.description}";
+    }
+    notifyListeners();
+    return result;
   }
 
   Future<Result<void>> _addCreditToFriend(CreditArgs args) async { // TODO
-    return Result.ok(null);
+    final result = await _expenseRepository.addCreditToFriend(
+        args.expense.id!, args.friend.id!, args.amount
+    );
+
+    switch (result) {
+      case Ok<List<Friend>>():
+        final index = expenses.indexWhere((e) => e.id == args.expense.id);
+        if (index != -1) {
+          final old = expenses[index];
+          // Update friends list
+          final updated = old.copyWith(
+            numFriends: result.value.length,
+            friends: result.value,
+            creditBalance: (old.creditBalance ?? 0) + args.amount,
+          );
+          expenses[index] = updated;
+        }
+      case Error<List<Friend>>():
+        errorMessage = "Cannot add ${args.friend.name} to "
+            "${args.expense.description}";
+    }
+    notifyListeners();
+    return result;
   }
 
 }
