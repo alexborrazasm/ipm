@@ -4,7 +4,7 @@ class Expense {
   this.amount, this.numFriends, this.creditBalance});
   final int? id;
   final String description;
-  final String date;
+  final DateTime date;
   final double amount;
   final int? numFriends;
   final double? creditBalance;
@@ -13,7 +13,7 @@ class Expense {
   Expense.fromJson(Map json)
     : id = json["id"],
       description = json["description"],
-      date = json["date"],
+      date = DateTime.parse(json["date"]),
       amount = json["amount"],
       numFriends = json["num_friends"],
       creditBalance = json["credit_balance"],
@@ -23,7 +23,9 @@ class Expense {
     return {
       "id": id,
       "description": description,
-      "date": date,
+      "date":
+      "${date.year}-${date.month.toString().padLeft(2, '0')}-"
+          "${date.day.toString().padLeft(2, '0')}",
       "amount": amount,
       "num_friends": numFriends,
       "credit_balance": creditBalance,
