@@ -1,14 +1,22 @@
 class Expense {
 
-  Expense({this.id, required this.description, required this.date, required
-  this.amount, this.numFriends, this.creditBalance});
+  Expense({
+    this.id,
+    required this.description,
+    required this.date,
+    required this.amount,
+    this.numFriends,
+    this.creditBalance,
+    this.friends = const [],
+  });
+
   final int? id;
   final String description;
   final DateTime date;
   final double amount;
   final int? numFriends;
   final double? creditBalance;
-  List<Friend> friends = [];
+  final List<Friend> friends;
 
   Expense.fromJson(Map json)
     : id = json["id"],
@@ -28,6 +36,22 @@ class Expense {
   String toString() {
     return "$id | $description | $date | $amount | $numFriends | $creditBalance"
         "\n Friends: $friends";
+  }
+
+  Expense copyWith({
+    int? id,
+    String? description,
+    DateTime? date,
+    double? amount,
+    List<Friend>? friends,
+  }) {
+    return Expense(
+      id: id ?? this.id,
+      description: description ?? this.description,
+      date: date ?? this.date,
+      amount: amount ?? this.amount,
+      friends: friends ?? this.friends
+    );
   }
 
 }

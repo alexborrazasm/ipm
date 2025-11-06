@@ -46,32 +46,36 @@ class ExpenseRepository {
     }
   }
 
-  // Add friends to an expense
-  Future<Result<void>> addFriendToExpense(int expenseId, int friendId) async {
+  // Add friend to an expense
+  Future<Result<List<Friend>>> addFriendToExpense(int expenseId,
+      int friendId) async {
     try {
-      await _service.addFriendToExpense(expenseId, friendId);
-      return Result.ok(null);
+      var data = await _service.addFriendToExpense(expenseId, friendId);
+      return Result.ok(data);
     } on Exception catch (e) {
       return Result.error(e);
     }
   }
 
-  // Delete friends from an expense
-  Future<Result<void>> deleteFriendFromExpense(int expenseId, int friendId) async {
+  // Delete friend from an expense
+  Future<Result<List<Friend>>> deleteFriendFromExpense(int expenseId,
+      int friendId) async {
     try {
       await _service.deleteFriendFromExpense(expenseId, friendId);
-      return Result.ok(null);
+      var data = await _service.addFriendToExpense(expenseId, friendId);
+      return Result.ok(data);
     } on Exception catch (e) {
       return Result.error(e);
     }
   }
 
   // Add credit to a friend in an expense
-  Future<Result<void>> addCreditToFriend(int expenseId, int friendId,
+  Future<Result<List<Friend>>> addCreditToFriend(int expenseId, int friendId,
       double amount) async {
     try {
       await _service.addCreditToFriend(expenseId, friendId, amount);
-      return Result.ok(null);
+      var data = await _service.addFriendToExpense(expenseId, friendId);
+      return Result.ok(data);
     } on Exception catch (e) {
       return Result.error(e);
     }

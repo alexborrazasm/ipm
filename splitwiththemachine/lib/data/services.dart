@@ -34,7 +34,20 @@ class SplitWithMeAPIService implements SplitWithMeService {
       var response = await http.get(uri);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        return List<Expense>.from(data.map((item) => Expense.fromJson(item)));
+
+        final expenses = List<Expense>.from(
+          data.map((item) => Expense.fromJson(item)),
+        );
+
+        // For each expense get friends
+        final expensesWithFriends = await Future.wait(
+          expenses.map((expense) async {
+            final friends = await _fetchFriendsByExpense(expense.id!);
+            return expense.copyWith(friends: friends);
+          }),
+        );
+
+        return expensesWithFriends;
       } else {
         throw ServerException("Invalid data");
       }
@@ -46,6 +59,21 @@ class SplitWithMeAPIService implements SplitWithMeService {
   @override
   Future<List<Friend>> fetchFriends() async {
     var uri = _buildUri("friends");
+    try {
+      var response = await http.get(uri);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return List<Friend>.from(data.map((item) => Friend.fromJson(item)));
+      } else {
+        throw ServerException("Invalid data");
+      }
+    } on http.ClientException {
+      throw ServerException("Service is not available. Try again later.");
+    }
+  }
+
+  Future<List<Friend>> _fetchFriendsByExpense(int expenseId) async {
+    var uri = _buildUri("expenses/$expenseId/friends");
     try {
       var response = await http.get(uri);
       if (response.statusCode == 200) {
@@ -131,8 +159,7 @@ class SplitWithMeAPIService implements SplitWithMeService {
     try {
       var response = await http.post(uri);
       if (response.statusCode == 201) {
-        var data = json.decode(response.body);
-        return List<Friend>.from(data.map((item) => Friend.fromJson(item)));
+        return _fetchFriendsByExpense(expenseId);
       } else {
         throw ServerException("Invalid data");
       }
@@ -147,9 +174,8 @@ class SplitWithMeAPIService implements SplitWithMeService {
     var uri = _buildUri("expenses/$expenseId/friends/$friendId");
     try {
       var response = await http.delete(uri);
-      if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        return List<Friend>.from(data.map((item) => Friend.fromJson(item)));
+      if (response.statusCode == 204) {
+        return _fetchFriendsByExpense(expenseId);
       } else {
         throw ServerException("Invalid data");
       }
@@ -167,8 +193,7 @@ class SplitWithMeAPIService implements SplitWithMeService {
     try {
       var response = await http.put(uri);
       if (response.statusCode == 204) {
-        var data = json.decode(response.body);
-        return List<Friend>.from(data.map((item) => Friend.fromJson(item)));
+        return _fetchFriendsByExpense(expenseId);
       } else {
         throw ServerException("Invalid data");
       }
@@ -176,4 +201,5 @@ class SplitWithMeAPIService implements SplitWithMeService {
       throw ServerException("Service is not available. Try again later.");
     }
   }
+
 }
