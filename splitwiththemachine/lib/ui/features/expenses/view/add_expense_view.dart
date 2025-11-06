@@ -49,7 +49,7 @@ class AddExpenseScreen extends StatelessWidget {
             TextField(
               controller: dateController,
               decoration: const InputDecoration(
-                labelText: 'Date (DD--MM--YYY)',
+                labelText: 'Date (YYYY--MM-DD)',
               ),
               keyboardType: TextInputType.datetime,
             ),
@@ -57,9 +57,9 @@ class AddExpenseScreen extends StatelessWidget {
 
             ElevatedButton(
               onPressed: () async {
-                final description = descriptionController.text;
-                final amount = double.tryParse(amountController.text) ?? 0.0;
-                final dateText = dateController.text;
+                final String description = descriptionController.text;
+                final double amount = double.tryParse(amountController.text) ?? 0.0;
+                final DateTime dateText = DateTime.parse(dateController.text);
 
                 if (description.isEmpty || amount <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -71,12 +71,12 @@ class AddExpenseScreen extends StatelessWidget {
                 }
 
                 try {
-                  DateTime.parse(dateText);
+
 
                   final expense = Expense(
                     description: description,
                     amount: amount,
-                    date: dateText.,
+                    date: dateText,
                   );
 
                   await viewModel.addExpense.execute(expense);

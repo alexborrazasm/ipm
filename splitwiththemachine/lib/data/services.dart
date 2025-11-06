@@ -61,12 +61,17 @@ class SplitWithMeAPIService implements SplitWithMeService {
 
   @override
   Future<Expense> addExpense(Expense expense) async {
-    var uri = _buildUri("expenses");
+    var uri = _buildUri("expenses/");
+    final Map<String, dynamic> payload = {
+      "description": expense.description,
+      "amount": expense.amount,
+      "date": expense.getDateString(),
+    };
     try {
       var response = await http.post(
         uri,
         headers: _headers,
-        body: json.encode(expense.toJson()),
+        body: json.encode(payload),
       );
       if (response.statusCode == 201) {
         var data = json.decode(response.body);
@@ -81,12 +86,17 @@ class SplitWithMeAPIService implements SplitWithMeService {
 
   @override
   Future<Expense> editExpense(Expense expense) async {
-    var uri = _buildUri("expenses/${expense.id}");
+    var uri = _buildUri("expenses/${expense.id}/");
+    final Map<String, dynamic> payload = {
+      "description": expense.description,
+      "amount": expense.amount,
+      "date": expense.getDateString(),
+    };
     try {
       var response = await http.put(
             uri,
             headers: _headers,
-            body: json.encode(expense.toJson()),
+            body: json.encode(payload),
       );
       if (response.statusCode == 204) {
         var data = json.decode(response.body);
@@ -101,7 +111,7 @@ class SplitWithMeAPIService implements SplitWithMeService {
 
   @override
   Future<void> deleteExpense(int id) async {
-    var uri = _buildUri("expenses/$id");
+    var uri = _buildUri("expenses/$id/");
     try {
       var response = await http.delete(uri);
       if (response.statusCode != 204) {
@@ -115,7 +125,7 @@ class SplitWithMeAPIService implements SplitWithMeService {
   @override
   Future<List<Friend>> addFriendToExpense(int expenseId, int friendId) async {
     var uri = _buildUri(
-        "expenses/$expenseId/friends",
+        "expenses/$expenseId/friends/",
         {'friendId': friendId.toString()}
     );
     try {
@@ -134,7 +144,7 @@ class SplitWithMeAPIService implements SplitWithMeService {
   @override
   Future<List<Friend>> deleteFriendFromExpense(int expenseId, int friendId)
       async {
-    var uri = _buildUri("expenses/$expenseId/friends/$friendId");
+    var uri = _buildUri("expenses/$expenseId/friends/$friendId/");
     try {
       var response = await http.delete(uri);
       if (response.statusCode == 200) {
@@ -151,7 +161,7 @@ class SplitWithMeAPIService implements SplitWithMeService {
   @override
   Future<List<Friend>> addCreditToFriend(int expenseId, int friendId,
       double amount) async {
-    var uri = _buildUri("expenses/$expenseId/friends/$friendId",
+    var uri = _buildUri("expenses/$expenseId/friends/$friendId/",
         {'amount': amount.toString()}
     );
     try {

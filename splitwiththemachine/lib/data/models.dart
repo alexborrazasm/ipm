@@ -19,17 +19,9 @@ class Expense {
       creditBalance = json["credit_balance"],
       friends = [];
 
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "description": description,
-      "date":
-      "${date.year}-${date.month.toString().padLeft(2, '0')}-"
-          "${date.day.toString().padLeft(2, '0')}",
-      "amount": amount,
-      "num_friends": numFriends,
-      "credit_balance": creditBalance,
-    };
+  String getDateString() {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-"
+        "${date.day.toString().padLeft(2, '0')}";
   }
 
   @override
