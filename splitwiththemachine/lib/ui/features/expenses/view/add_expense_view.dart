@@ -76,7 +76,7 @@ class AddExpenseScreen extends StatelessWidget {
                   final expense = Expense(
                     description: description,
                     amount: amount,
-                    date: dateText,
+                    date: dateText.,
                   );
 
                   await viewModel.addExpense.execute(expense);
