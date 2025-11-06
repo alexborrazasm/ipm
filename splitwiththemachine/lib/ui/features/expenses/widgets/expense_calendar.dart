@@ -8,7 +8,6 @@ class ExpenseCalendar extends StatefulWidget {
     required this.onDateSelected,
   });
 
-  /// Callback que devuelve la fecha seleccionada al padre
   final ValueChanged<DateTime> onDateSelected;
 
   @override
@@ -17,7 +16,7 @@ class ExpenseCalendar extends StatefulWidget {
 
 class _ExpenseCalendarState extends State<ExpenseCalendar> {
   DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  DateTime _selectedDay = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -57,19 +56,16 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
             ),
           ),
           const SizedBox(height: 24),
-          if (_selectedDay != null)
-            Text(
-              "Selected: ${DateFormat('yyyy-MM-dd').format(_selectedDay!)}",
-              style: const TextStyle(fontSize: 18),
-            ),
+          Text(
+            "Selected: ${DateFormat('EEEE, MMMM d').format(_selectedDay)}",
+            style: const TextStyle(fontSize: 18),
+          ),
           const Spacer(),
           ElevatedButton.icon(
             icon: const Icon(Icons.check),
             label: const Text("Confirm Date"),
-            onPressed: _selectedDay == null
-                ? null
-                : () {
-              widget.onDateSelected(_selectedDay!);
+            onPressed: () {
+              widget.onDateSelected(_selectedDay);
               Navigator.pop(context);
             },
           ),

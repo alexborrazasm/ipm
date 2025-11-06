@@ -19,11 +19,18 @@ class AddExpenseScreen extends StatefulWidget {
 }
 
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
+  DateTime selectedDate = DateTime.now();
   final descriptionController = TextEditingController();
   final amountController = TextEditingController();
-  final dateController = TextEditingController();
+  late final TextEditingController dateController;
 
-  DateTime? selectedDate;
+  @override
+  void initState() {
+    super.initState();
+    dateController = TextEditingController(
+      text: DateFormat('EEEE, MMMM d').format(selectedDate),
+    );
+  }
 
   @override
   void dispose() {
@@ -33,22 +40,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     super.dispose();
   }
 
-  String _getLocalizedDateFormat(BuildContext context) {
-    final locale = Localizations.localeOf(context).toString();
-    final pattern = DateFormat.yMd(locale).pattern ?? 'yyyy-MM-dd';
-
-    return pattern
-        .replaceAll('y', 'YYYY')
-        .replaceAll('M', 'MM')
-        .replaceAll('d', 'DD');
-  }
-
   Future<void> _pickDate(BuildContext context) async {
-    final DateTime today = DateTime.now();
 
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? today,
+      initialDate: selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       helpText: 'Select expense date',
@@ -56,18 +52,16 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       confirmText: 'OK',
     );
 
-    if (picked != null && picked != selectedDate) {
+    if (picked != null) {
       setState(() {
         selectedDate = picked;
-        final locale = Localizations.localeOf(context).toString();
-        dateController.text = DateFormat.yMd(locale).format(picked);
+        dateController.text = DateFormat('EEEE, MMMM d').format(picked);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final localizedPattern = _getLocalizedDateFormat(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -99,7 +93,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               controller: dateController,
               readOnly: true,
               decoration: InputDecoration(
-                labelText: '$localizedPattern',
+                labelText: 'Date',
                 suffixIcon: const Icon(Icons.calendar_today),
               ),
               onTap: () => _pickDate(context),
@@ -111,7 +105,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 final amount = double.tryParse(amountController.text) ?? 0.0;
                 final date = selectedDate;
 
-                if (description.isEmpty || amount <= 0 || date == null) {
+                if (description.isEmpty || amount <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Please fill in all fields correctly.'),
