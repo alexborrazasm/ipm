@@ -46,7 +46,7 @@ class ExpenseRepository {
     }
   }
 
-  // Add friends to an expense (multiple IDs possible)
+  // Add friends to an expense
   Future<Result<void>> addFriendToExpense(int expenseId, int friendId) async {
     try {
       await _service.addFriendToExpense(expenseId, friendId);

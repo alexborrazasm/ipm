@@ -92,6 +92,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.inversePrimary
+              ),
               onPressed: () async {
                 final description = descriptionController.text;
                 final amount = double.tryParse(amountController.text) ?? 0.0;

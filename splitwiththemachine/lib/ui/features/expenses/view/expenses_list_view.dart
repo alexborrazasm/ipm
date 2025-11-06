@@ -104,6 +104,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add an expense',
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         child: const Icon(Icons.add),
           onPressed: () {
             Navigator.pushNamed(context, '/add_expense');

@@ -29,6 +29,7 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Select a Date"),
         centerTitle: true,
       ),
@@ -72,6 +73,9 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton.icon(
               icon: const Icon(Icons.check),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary
+              ),
               label: const Text("Confirm Date"),
               onPressed: () {
                 Navigator.pop(context, _selectedDay);

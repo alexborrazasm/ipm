@@ -19,10 +19,20 @@ class AppTheme {
 
   static final dark = ThemeData(
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blueGrey,
+      seedColor: Colors.blue,
       brightness: Brightness.dark,
     ),
     useMaterial3: true,
+    tooltipTheme: TooltipThemeData(
+      decoration: BoxDecoration(
+        color: Colors.grey[800], // darker grey background in dark mode
+        borderRadius: BorderRadius.circular(8),
+      ),
+      textStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+      ),
+    ),
   );
 }
 
