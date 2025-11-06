@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:flutter/services.dart';
 import 'package:splitwiththemachine/data/models.dart';
+import 'package:intl/intl.dart';
 
-
-class AddExpenseScreen extends StatelessWidget {
+class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({
     super.key,
     required this.title,
@@ -15,15 +15,51 @@ class AddExpenseScreen extends StatelessWidget {
   final ExpenseViewModel viewModel;
 
   @override
-  Widget build(BuildContext context) {
-    final descriptionController = TextEditingController();
-    final amountController = TextEditingController();
-    final dateController = TextEditingController();
+  State<AddExpenseScreen> createState() => _AddExpenseScreenState();
+}
 
+class _AddExpenseScreenState extends State<AddExpenseScreen> {
+  final descriptionController = TextEditingController();
+  final amountController = TextEditingController();
+  final dateController = TextEditingController();
+
+  DateTime? selectedDate;
+
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    amountController.dispose();
+    dateController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate(BuildContext context) async {
+    final DateTime today = DateTime.now();
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? today,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      helpText: 'Select expense date',
+      cancelText: 'Cancel',
+      confirmText: 'OK',
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(title),
+        title: Text(widget.title),
         centerTitle: true,
       ),
       body: Padding(
@@ -36,6 +72,7 @@ class AddExpenseScreen extends StatelessWidget {
                 labelText: 'Description',
               ),
             ),
+
             TextField(
               controller: amountController,
               decoration: const InputDecoration(
@@ -46,22 +83,27 @@ class AddExpenseScreen extends StatelessWidget {
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
               ],
             ),
+
+
             TextField(
               controller: dateController,
+              readOnly: true,
               decoration: const InputDecoration(
-                labelText: 'Date (YYYY--MM-DD)',
+                labelText: 'Date (YYYY-MM-DD)',
+                suffixIcon: Icon(Icons.calendar_today),
               ),
-              keyboardType: TextInputType.datetime,
+              onTap: () => _pickDate(context),
             ),
+
             const SizedBox(height: 24),
 
             ElevatedButton(
               onPressed: () async {
-                final String description = descriptionController.text;
-                final double amount = double.tryParse(amountController.text) ?? 0.0;
-                final DateTime date = DateTime.parse(dateController.text);
+                final description = descriptionController.text;
+                final amount = double.tryParse(amountController.text) ?? 0.0;
+                final date = selectedDate;
 
-                if (description.isEmpty || amount <= 0) {
+                if (description.isEmpty || amount <= 0 || date == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Please fill in all fields correctly.'),
@@ -77,20 +119,17 @@ class AddExpenseScreen extends StatelessWidget {
                     date: date,
                   );
 
-                  await viewModel.addExpense.execute(expense);
+                  await widget.viewModel.addExpense.execute(expense);
 
                   Navigator.pop(context);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Invalid date format. Use YYYY-MM-DD.'),
-                    ),
+                    SnackBar(content: Text('Error: $e')),
                   );
                 }
               },
               child: const Text('Save'),
             ),
-
           ],
         ),
       ),
