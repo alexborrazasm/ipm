@@ -36,6 +36,10 @@ class HelpAndFeedbackScreen extends StatelessWidget {
                     const Text('0.1', style: TextStyle(fontSize: 16.0)),
                     const SizedBox(height: 24.0),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 4,
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                      ),
                       onPressed: () {
                         showDialog(
                           context: context,
@@ -67,21 +71,25 @@ class HelpAndFeedbackScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12.0),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 4,
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                      ),
                       onPressed: () {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: const Text('License'),
-                              content: const SingleChildScrollView(
+                              content: SingleChildScrollView(
                                 child: ListBody(
                                   children: <Widget>[
-                                    Text('© 2025 Alexandre Borrazás Mancebo.'
+                                    Text('© 2025 Alexandre Borrazás Mancebo, '
                                         'Daniel García Figueroa and '
-                                        'Nerea Pérez Pértega, '
-                                        'This program comes WITHOUT ANY WARRANTY.'
-                                        'See the GNU General Public License, '
-                                        'version 3 or later for more details.')
+                                        'Nerea Pérez Pértega. '
+                                        'This program comes WITHOUT ANY WARRANTY. '
+                                        'See the GNU General Public License, version'
+                                        '3 or later for more details.'),
                                   ],
                                 ),
                               ),
@@ -98,6 +106,41 @@ class HelpAndFeedbackScreen extends StatelessWidget {
                         );
                       },
                       child: const Text('License'),
+                    ),
+                    const SizedBox(height: 12.0),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 4,
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Send us feedback!'),
+                              content: SingleChildScrollView(
+                                child: ListBody(
+                                  children: <Widget>[
+                                    Text('alexandre.bmancebo@udc.es'),
+                                    Text('d.figueroa@udc.es'),
+                                    Text('nerea.ppertega@udc.es'),
+                                  ],
+                                ),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Close'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: const Text('Contact us'),
                     ),
                   ]),
             ),
