@@ -85,8 +85,21 @@ class ExpenseViewModel extends ChangeNotifier {
     return result;
   }
 
-  Future<Result<void>> _editExpense(Expense expense) async { // TODO
-    return Result.ok(null);
+  Future<Result<void>> _editExpense(Expense expense) async {
+    final result = await _expenseRepository.editExpense(expense);
+
+    switch (result) {
+      case Ok<Expense>():
+        final index =  expenses.indexWhere((e) => e.id == expense.id);
+        if (index == -1) {
+          return Result.error(Exception("Expense to edit not found: ${expense.id}"));
+        }
+        expenses[index] = result.value;
+      case Error<Expense>():
+        errorMessage = "Cannot edit expense ${expense.description}";
+    }
+    notifyListeners();
+    return result;
   }
 
   Future<Result<void>> _deleteExpense(Expense expense) async {
