@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/data/models.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 class ExpenseDetailScreen extends StatelessWidget {
   const ExpenseDetailScreen({
@@ -26,15 +28,34 @@ class ExpenseDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text('Description: ${expense.description}'),
+            const SizedBox(height: 8),
             Text('Amount: ${expense.amount.toStringAsFixed(2)} €'),
             const SizedBox(height: 8),
             Text('Date: ${expense.date}'),
-            const SizedBox(height: 8),
-            Text('Description: ${expense.description}'),
             const Spacer(),
           ],
         ),
       ),
+      bottomNavigationBar: NavigationBar(
+        destinations: const <Widget>[
+          NavigationDestination(
+            icon: FaIcon(FontAwesomeIcons.circleInfo),
+            label: 'Details',
+          ),
+          NavigationDestination(
+            icon: FaIcon(FontAwesomeIcons.userGroup),
+            label: 'Friends',
+          ),
+        ],
+        selectedIndex: 0,
+        onDestinationSelected: (int index) {
+          // TODO
+          // Manage logic for navigation destinations
+        },
+      ),
     );
   }
 }
+
+
