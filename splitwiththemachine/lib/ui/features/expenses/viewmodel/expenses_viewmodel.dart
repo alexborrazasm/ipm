@@ -13,7 +13,7 @@ class ExpenseViewModel extends ChangeNotifier {
         _expenseRepository = expenseRepository {
     loadFriends = Command0(_loadFriends);
     loadExpenses = Command0(_loadExpenses);
-    addFriend = Command1(_addFriend);
+    addExpense = Command1(_addExpense);
     editExpense = Command1(_editExpense);
     deleteExpense = Command1(_deleteExpense);
     addFriendToExpense = Command1(_addFriendToExpense);
@@ -33,7 +33,7 @@ class ExpenseViewModel extends ChangeNotifier {
   final FriendRepository _friendRepository;
   late final Command0 loadFriends;
   late final Command0 loadExpenses;
-  late final Command1<void,Expense> addFriend;
+  late final Command1<void,Expense> addExpense;
   late final Command1<void,Expense> editExpense;
   late final Command1<void,int> deleteExpense;
   late final Command1<void,FriendExpenseArgs> addFriendToExpense;
@@ -72,8 +72,17 @@ class ExpenseViewModel extends ChangeNotifier {
     }
   }
 
-  Future<Result<void>> _addFriend(Expense expense) async { // TODO
-    return Result.ok(null);
+  Future<Result<void>> _addExpense(Expense expense) async {
+    final result = await _expenseRepository.addExpense(expense);
+
+    switch (result) {
+      case Ok<Expense>():
+        expenses.add(result.value);
+      case Error<Expense>():
+        errorMessage = "Cannot add expense $expense.";   // TODO
+    }
+    notifyListeners();
+    return result;
   }
 
   Future<Result<void>> _editExpense(Expense expense) async { // TODO
