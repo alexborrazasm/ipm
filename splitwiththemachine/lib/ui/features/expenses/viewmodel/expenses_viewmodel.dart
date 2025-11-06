@@ -35,7 +35,7 @@ class ExpenseViewModel extends ChangeNotifier {
   late final Command0 loadExpenses;
   late final Command1<void,Expense> addExpense;
   late final Command1<void,Expense> editExpense;
-  late final Command1<void,int> deleteExpense;
+  late final Command1<void,Expense> deleteExpense;
   late final Command1<void,FriendExpenseArgs> addFriendToExpense;
   late final Command1<void,FriendExpenseArgs> deleteFriendFromExpense;
   late final Command1<void,CreditArgs> addCreditToFriend;
@@ -79,7 +79,7 @@ class ExpenseViewModel extends ChangeNotifier {
       case Ok<Expense>():
         expenses.add(result.value);
       case Error<Expense>():
-        errorMessage = "Cannot add expense $expense.";   // TODO
+        errorMessage = "Cannot add expense ${expense.description}";
     }
     notifyListeners();
     return result;
@@ -89,8 +89,17 @@ class ExpenseViewModel extends ChangeNotifier {
     return Result.ok(null);
   }
 
-  Future<Result<void>> _deleteExpense(int expenseId) async { // TODO
-    return Result.ok(null);
+  Future<Result<void>> _deleteExpense(Expense expense) async {
+    final result = await _expenseRepository.deleteExpense(expense.id!);
+
+    switch (result) {
+      case Ok<void>():
+        expenses.remove(expense);
+      case Error<void>():
+        errorMessage = "Cannot remove expense ${expense.description}";
+    }
+    notifyListeners();
+    return result;
   }
 
   Future<Result<void>> _addFriendToExpense(FriendExpenseArgs args) async { // TODO
@@ -109,24 +118,24 @@ class ExpenseViewModel extends ChangeNotifier {
 
 // Args for adding/removing a friends from an expense using Command1
 class FriendExpenseArgs {
-  final int expenseId;
-  final int friendId;
+  final Expense expense;
+  final Friend friend;
 
   const FriendExpenseArgs({
-    required this.expenseId,
-    required this.friendId,
+    required this.expense,
+    required this.friend,
   });
 }
 
 // Args for adding credit to a friend in an expense using Command1
 class CreditArgs {
-  final int expenseId;
-  final int friendId;
+  final Expense expense;
+  final Friend friend;
   final double amount;
 
   const CreditArgs({
-    required this.expenseId,
-    required this.friendId,
+    required this.expense,
+    required this.friend,
     required this.amount
   });
 }

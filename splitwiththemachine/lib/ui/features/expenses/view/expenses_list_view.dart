@@ -73,6 +73,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                               (context, index) {
                             return ExpenseRow(
                               expense: widget.viewModel.expenses[index],
+                              viewModel: widget.viewModel
                             );
                           },
                           childCount: widget.viewModel.expenses.length,
@@ -113,49 +114,92 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 }
 
 class ExpenseRow extends StatelessWidget {
-  const ExpenseRow({super.key, required this.expense});
+  const ExpenseRow({
+    super.key,
+    required this.expense,
+    required this.viewModel,
+  });
 
   final Expense expense;
+  final ExpenseViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-      child: Material(
-        color: Theme.of(context).colorScheme.surfaceContainer, // Card background
-        elevation: 2,
-        borderRadius: BorderRadius.circular(12),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
+    return Dismissible(
+      key: ValueKey("expense-${expense.id}"),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.red,
           borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ExpenseDetailScreen(expense: expense),
+        ),
+        child: const Icon(Icons.delete, color: Colors.white, size: 28),
+      ),
+      confirmDismiss: (direction) async {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Delete expense'),
+            content: const Text('Are you sure you want to delete this expense?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
               ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              key: ValueKey("expense-${expense.id}"),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: FaIcon(
-                    FontAwesomeIcons.creditCard,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 20,
-                  ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        );
+        return confirmed ?? false;
+      },
+      onDismissed: (direction) async {
+        await viewModel.deleteExpense.execute(expense);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Expense "${expense.description}" deleted')),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+        child: Material(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          elevation: 2,
+          borderRadius: BorderRadius.circular(12),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ExpenseDetailScreen(expense: expense),
                 ),
-                Expanded(
-                  child: Text(
-                    expense.description,
-                    style: Theme.of(context).textTheme.bodyLarge,
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: FaIcon(
+                      FontAwesomeIcons.creditCard,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 24,
+                    ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Text(
+                      expense.description,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
