@@ -59,7 +59,7 @@ class AddExpenseScreen extends StatelessWidget {
               onPressed: () async {
                 final String description = descriptionController.text;
                 final double amount = double.tryParse(amountController.text) ?? 0.0;
-                final DateTime dateText = DateTime.parse(dateController.text);
+                final DateTime date = DateTime.parse(dateController.text);
 
                 if (description.isEmpty || amount <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -71,12 +71,10 @@ class AddExpenseScreen extends StatelessWidget {
                 }
 
                 try {
-
-
                   final expense = Expense(
                     description: description,
                     amount: amount,
-                    date: dateText,
+                    date: date,
                   );
 
                   await viewModel.addExpense.execute(expense);
