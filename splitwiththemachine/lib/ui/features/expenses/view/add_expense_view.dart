@@ -3,6 +3,7 @@ import '../viewmodel/expenses_viewmodel.dart';
 import 'package:flutter/services.dart';
 import 'package:splitwiththemachine/data/models.dart';
 import 'package:intl/intl.dart';
+import '../widgets/expense_calendar.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({
@@ -40,16 +41,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     super.dispose();
   }
 
-  Future<void> _pickDate(BuildContext context) async {
-
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      helpText: 'Select expense date',
-      cancelText: 'Cancel',
-      confirmText: 'OK',
+  Future<void> _openCalendar() async {
+    final picked = await Navigator.push<DateTime>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ExpenseCalendar(initialDate: selectedDate),
+      ),
     );
 
     if (picked != null) {
@@ -62,12 +59,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -75,15 +71,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           children: [
             TextField(
               controller: descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Description',
-              ),
+              decoration: const InputDecoration(labelText: 'Description'),
             ),
             TextField(
               controller: amountController,
-              decoration: const InputDecoration(
-                labelText: 'Amount',
-              ),
+              decoration: const InputDecoration(labelText: 'Amount'),
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
@@ -96,20 +88,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 labelText: 'Date',
                 suffixIcon: const Icon(Icons.calendar_today),
               ),
-              onTap: () => _pickDate(context),
+              onTap: _openCalendar,
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () async {
                 final description = descriptionController.text;
                 final amount = double.tryParse(amountController.text) ?? 0.0;
-                final date = selectedDate;
 
                 if (description.isEmpty || amount <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please fill in all fields correctly.'),
-                    ),
+                    const SnackBar(content: Text('Please fill in all fields correctly.')),
                   );
                   return;
                 }
@@ -118,7 +107,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   final expense = Expense(
                     description: description,
                     amount: amount,
-                    date: date,
+                    date: selectedDate,
                   );
 
                   await widget.viewModel.addExpense.execute(expense);

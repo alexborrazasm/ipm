@@ -5,18 +5,25 @@ import 'package:intl/intl.dart';
 class ExpenseCalendar extends StatefulWidget {
   const ExpenseCalendar({
     super.key,
-    required this.onDateSelected,
+    required this.initialDate,
   });
 
-  final ValueChanged<DateTime> onDateSelected;
+  final DateTime initialDate;
 
   @override
   State<ExpenseCalendar> createState() => _ExpenseCalendarState();
 }
 
 class _ExpenseCalendarState extends State<ExpenseCalendar> {
-  DateTime _focusedDay = DateTime.now();
-  DateTime _selectedDay = DateTime.now();
+  late DateTime _focusedDay;
+  late DateTime _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusedDay = widget.initialDate;
+    _selectedDay = widget.initialDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,15 +68,16 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
             style: const TextStyle(fontSize: 18),
           ),
           const Spacer(),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.check),
-            label: const Text("Confirm Date"),
-            onPressed: () {
-              widget.onDateSelected(_selectedDay);
-              Navigator.pop(context);
-            },
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.check),
+              label: const Text("Confirm Date"),
+              onPressed: () {
+                Navigator.pop(context, _selectedDay);
+              },
+            ),
           ),
-          const SizedBox(height: 24),
         ],
       ),
     );
