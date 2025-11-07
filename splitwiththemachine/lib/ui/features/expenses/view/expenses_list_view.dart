@@ -177,7 +177,10 @@ class ExpenseRow extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => ExpenseDetailScreen(expense: expense),
+                  builder: (_) => ExpenseDetailScreen(
+                    expense: expense,
+                    viewModel: viewModel,
+                  ),
                 ),
               );
             },
