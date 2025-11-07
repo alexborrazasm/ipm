@@ -127,50 +127,51 @@ class ExpenseRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: ValueKey("expense-${expense.id}"),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Icon(Icons.delete, color: Colors.white, size: 28),
-      ),
-      confirmDismiss: (direction) async {
-        final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Delete expense'),
-            content: const Text('Are you sure you want to delete this expense?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Delete', style: TextStyle(color: Colors.red)),
-              ),
-            ],
+        key: ValueKey("expense-${expense.id}"),
+        direction: DismissDirection.endToStart,
+        background: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(12),
           ),
-        );
-        return confirmed ?? false;
-      },
-      onDismissed: (direction) async {
-        await viewModel.deleteExpense.execute(expense);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Expense "${expense.description}" deleted')),
-        );
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-        child: Material(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          child: const Icon(Icons.delete, color: Colors.white, size: 28),
+        ),
+        confirmDismiss: (direction) async {
+          final confirmed = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Delete expense'),
+              content: const Text('Are you sure you want to delete this expense?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          );
+          return confirmed ?? false;
+        },
+        onDismissed: (direction) async {
+          await viewModel.deleteExpense.execute(expense);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Expense "${expense.description}" deleted')),
+          );
+        },
+        child: Card(
           elevation: 2,
-          borderRadius: BorderRadius.circular(12),
-          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
             onTap: () {
@@ -184,30 +185,16 @@ class ExpenseRow extends StatelessWidget {
                 ),
               );
             },
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: FaIcon(
-                      FontAwesomeIcons.creditCard,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 24,
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      expense.description,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ),
-                ],
+            child: ListTile(
+              leading: FaIcon(
+                FontAwesomeIcons.creditCard,
+                color: Theme.of(context).colorScheme.primary,
               ),
+              title: Text(expense.description),
+              subtitle: Text('Balance: ${expense.creditBalance} €'),
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }

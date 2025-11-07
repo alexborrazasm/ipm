@@ -92,7 +92,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
         return Card(
           child: ListTile(
             title: Text(friend.name),
-            subtitle: Text('Credit: ${friend.debitBalance} €'),
+            subtitle: Text('Credit: ${friend.creditBalance} €'),
             leading: const Icon(Icons.person),
           ),
         );
