@@ -76,8 +76,9 @@ class ExpenseFriendsSection extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: ListTile(
               title: Text(friend.name),
-              subtitle: Text("Credit: ${friend.creditBalance} € "
-                  "| Debit: ${friend.debitBalance} €"),
+              subtitle: Text(
+                  "Credit: ${friend.creditBalance?.toStringAsFixed(2)} € "
+                  "| Debit: ${friend.debitBalance?.toStringAsFixed(2)} €"),
               leading: const CircleAvatar(
                 child: Icon(Icons.person),
               ),
@@ -106,7 +107,7 @@ class ExpenseDetailScreen extends StatefulWidget {
 }
 
 class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 0; // Navigation bar index
 
   @override
   Widget build(BuildContext context) {
@@ -114,14 +115,14 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
     final pages = [
       Scaffold(
         body: ExpenseDetailsSection(expense: expense),
-        floatingActionButton: _AddFriendButton(
-            onPressed: () => print('Add friend TODO')
+        floatingActionButton: _EditExpenseButton(
+            onPressed: () => print('Edit expense TODO')
         ),
       ),
       Scaffold(
         body: ExpenseFriendsSection(expense: expense),
-        floatingActionButton: _EditExpenseButton(
-            onPressed: () => print('Edit TODO')
+        floatingActionButton: _AddFriendButton(
+            onPressed: () => print('Add friend TODO')
         ),
       )
     ];

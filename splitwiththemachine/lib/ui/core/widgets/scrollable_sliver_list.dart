@@ -25,17 +25,17 @@ class ScrollableSliverList extends StatelessWidget {
         if (header != null)
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.only(
+                top: 12,
+                left: 12,
+                right: 12,
+                bottom: 0,
+              ),
               child: header!,
             ),
           ),
         SliverPadding(
-          padding: const EdgeInsets.only(
-            top: 0,
-            left: 12,
-            right: 12,
-            bottom: 8,
-          ),
+          padding: const EdgeInsets.all(12),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
               itemBuilder,
