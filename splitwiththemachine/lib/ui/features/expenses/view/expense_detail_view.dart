@@ -1,14 +1,101 @@
 import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/data/models.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
+import 'package:splitwiththemachine/ui/core/widgets/centered_message.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
+import 'package:splitwiththemachine/ui/core/widgets/scrollable_sliver_list.dart';
 import '../viewmodel/expenses_viewmodel.dart';
-import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+// -----------------------------
+//  SHARED COMPONENTS
+// -----------------------------
+class ExpenseDetailsSection extends StatelessWidget {
+  const ExpenseDetailsSection({
+    super.key,
+    required this.expense,
+  });
+
+  final Expense expense;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _DetailRow(
+            icon: FontAwesomeIcons.fileLines,
+            label: 'Description',
+            value: expense.description,
+          ),
+          const SizedBox(height: 12),
+          _DetailRow(
+            icon: FontAwesomeIcons.moneyBill,
+            label: 'Amount',
+            value: '${expense.amount.toStringAsFixed(2)} €',
+          ),
+          const SizedBox(height: 12),
+          _DetailRow(
+            icon: FontAwesomeIcons.moneyBillTransfer,
+            label: 'Amount',
+            value: '${expense.creditBalance?.toStringAsFixed(2)} €',
+          ),
+          const SizedBox(height: 12),
+          _DetailRow(
+            icon: FontAwesomeIcons.calendar,
+            label: 'Date',
+            value: expense.getDateString(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ExpenseFriendsSection extends StatelessWidget {
+  const ExpenseFriendsSection({
+    super.key,
+    required this.expense,
+  });
+
+  final Expense expense;
+
+  @override
+  Widget build(BuildContext context) {
+    return expense.friends.isEmpty ?
+    const Padding(
+      padding: EdgeInsets.all(32.0),
+      child: CenteredMessage(message: "No friends added"),
+    ) : ScrollableSliverList(
+        itemCount: expense.friends.length,
+        itemBuilder: (context, index) {
+          final friend = expense.friends[index];
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: ListTile(
+              title: Text(friend.name),
+              subtitle: Text("Credit: ${friend.creditBalance} € "
+                  "| Debit: ${friend.debitBalance} €"),
+              leading: const CircleAvatar(
+                child: Icon(Icons.person),
+              ),
+            ),
+          );
+        }
+    );
+  }
+}
+
+// -----------------------------
+//  MOBILE VERSION
+// -----------------------------
 class ExpenseDetailScreen extends StatefulWidget {
   const ExpenseDetailScreen({
     super.key,
     required this.expense,
-    required this.viewModel
+    required this.viewModel,
   });
 
   final Expense expense;
@@ -23,24 +110,27 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.read<ExpenseViewModel>(); // TODO
     final expense = widget.expense;
-
-    // Two possible screens for navigation
     final pages = [
-      _buildDetails(expense),
-      _buildFriends(expense),
+      Scaffold(
+        body: ExpenseDetailsSection(expense: expense),
+        floatingActionButton: _AddFriendButton(
+            onPressed: () => print('Add friend TODO')
+        ),
+      ),
+      Scaffold(
+        body: ExpenseFriendsSection(expense: expense),
+        floatingActionButton: _EditExpenseButton(
+            onPressed: () => print('Edit TODO')
+        ),
+      )
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(expense.description),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        centerTitle: true,
-      ),
+      appBar: GenericAppBar(title: expense.description),
       body: pages[_selectedIndex],
       bottomNavigationBar: NavigationBar(
-        destinations: const <Widget>[
+        destinations: const [
           NavigationDestination(
             icon: FaIcon(FontAwesomeIcons.circleInfo),
             label: 'Details',
@@ -59,44 +149,145 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
       ),
     );
   }
+}
 
-  // ---- UI sections ----
-  Widget _buildDetails(Expense expense) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Description: ${expense.description}'),
-          const SizedBox(height: 8),
-          Text('Amount: ${expense.amount.toStringAsFixed(2)} €'),
-          const SizedBox(height: 8),
-          Text('Date: ${expense.getDateString()}'),
-          const Spacer(),
-        ],
+// -----------------------------
+//  TABLET / BIG SCREEN VERSION
+// -----------------------------
+class ExpenseDetailBigScreen extends StatefulWidget {
+  const ExpenseDetailBigScreen({
+    super.key,
+    required this.expense,
+    required this.viewModel,
+  });
+
+  final Expense expense;
+  final ExpenseViewModel viewModel;
+
+  @override
+  State<ExpenseDetailBigScreen> createState() => _ExpenseDetailBigScreenState();
+}
+
+class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: GenericAppBar(title: widget.expense.description),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const FaIcon(FontAwesomeIcons.circleInfo, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Details',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
+            ),
+            const Divider(height: 24),
+            ExpenseDetailsSection(expense: widget.expense),
+            Row(
+              children: [
+                const FaIcon(FontAwesomeIcons.userGroup, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Friends',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
+            ),
+            const Divider(height: 24),
+            Expanded(child: ExpenseFriendsSection(expense: widget.expense)),
+          ],
+        ),
       ),
+      floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _EditExpenseButton(onPressed: () => print('Edit TODO')),
+            const SizedBox(height: 16),
+            _AddFriendButton(onPressed: () => print('Add friend TODO')),
+          ]
+        )
     );
   }
+}
 
-  Widget _buildFriends(Expense expense) {
-    if (expense.friends.isEmpty) {
-      return const Center(
-        child: Text('No friends added'),
-      );
-    }
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: expense.friends.length,
-      itemBuilder: (context, index) {
-        final friend = expense.friends[index];
-        return Card(
-          child: ListTile(
-            title: Text(friend.name),
-            subtitle: Text('Credit: ${friend.creditBalance} €'),
-            leading: const Icon(Icons.person),
+// -----------------------------
+//  AUX CLASSES
+// -----------------------------
+class _DetailRow extends StatelessWidget {
+  const _DetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FaIcon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ],
+    );
+  }
+}
+
+// Private reusable buttons for this screen
+class _EditExpenseButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _EditExpenseButton({required this.onPressed, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GenericFloatingButton(
+      tooltip: "Edit expense",
+      icon: Icons.edit,
+      onPressed: onPressed,
+    );
+  }
+}
+
+class _AddFriendButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _AddFriendButton({required this.onPressed, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GenericFloatingButton(
+      tooltip: "Add friend",
+      icon: Icons.person_add,
+      onPressed: onPressed,
     );
   }
 }

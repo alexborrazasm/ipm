@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -28,11 +29,7 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Select a Date"),
-        centerTitle: true,
-      ),
+      appBar: GenericAppBar(title: "Select a date"),
       body: Column(
         children: [
           TableCalendar(

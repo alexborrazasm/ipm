@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
+import 'package:splitwiththemachine/ui/core/widgets/centered_message.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
+import 'package:splitwiththemachine/ui/core/widgets/scrollable_sliver_list.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:splitwiththemachine/ui/core/widgets/info_bar.dart';
 import 'package:splitwiththemachine/data/models.dart';
-import 'expense_detail_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ExpenseListScreen extends StatefulWidget {
@@ -10,10 +13,14 @@ class ExpenseListScreen extends StatefulWidget {
     super.key,
     required this.title,
     required this.viewModel,
+    this.onExpenseSelected,
   });
 
   final String title;
   final ExpenseViewModel viewModel;
+
+  // Optional callback for when an expense is tapped (for tablet layout)
+  final void Function(Expense expense)? onExpenseSelected;
 
   @override
   State<ExpenseListScreen> createState() => _ExpenseListScreenState();
@@ -23,10 +30,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-        centerTitle: true,
+      appBar: GenericAppBar(
+        title: widget.title,
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -62,59 +67,41 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
               if (!widget.viewModel.loadExpenses.running)
                 widget.viewModel.expenses.isEmpty
-                    ? const Center(child: Text("No expenses"))
-                    : CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 20,
-                          left: 12,
-                          right: 12,
-                        ),
-                        child: TextField(
-                          onChanged: (value) {
-                            widget.viewModel.search(value);
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Search expenses',
-                            prefixIcon: const Icon(Icons.search),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(35),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                            contentPadding:
-                              const EdgeInsets.symmetric(vertical: 10),
-
-                          ),
-                        ),
-                      )
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.only(
-                        top: 8,
-                        left: 12,
-                        right: 12,
-                        bottom: 8,
+                    ? const CenteredMessage(message: "No expenses")
+                    : ScrollableSliverList(
+                  header: TextField(
+                    onChanged: (value) => widget.viewModel.search(value),
+                    decoration: InputDecoration(
+                      hintText: 'Search expenses',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(35),
+                        borderSide: BorderSide.none,
                       ),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                            return ExpenseRow(
-                              expense: filteredExpenses[index],
-                              viewModel: widget.viewModel
-                            );
-                          },
-                          childCount: filteredExpenses.length,
-                        ),
-                      ),
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
                     ),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 200),
-                    ),
-                  ],
+                  ),
+                  itemCount: filteredExpenses.length,
+                  itemBuilder: (context, index) {
+                    final expense = widget.viewModel.expenses[index];
+                    return ExpenseRow(
+                      expense: filteredExpenses[index],
+                      viewModel: widget.viewModel,
+                      onTap: () {
+                        if (widget.onExpenseSelected != null) {
+                          widget.onExpenseSelected!(expense);
+                        } else {
+                          Navigator.pushNamed(
+                            context,
+                            '/expense_detail',
+                            arguments: expense,
+                          );
+                        }
+                      },
+                    );
+                  },
                 ),
 
               if (widget.viewModel.loadExpenses.error)
@@ -133,13 +120,12 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Add an expense',
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        child: const Icon(Icons.add),
+      floatingActionButton: GenericFloatingButton(
+          tooltip: "Add an expense",
           onPressed: () {
             Navigator.pushNamed(context, '/add_expense');
           },
+          icon: Icons.add
       )
     );
   }
@@ -150,10 +136,12 @@ class ExpenseRow extends StatelessWidget {
     super.key,
     required this.expense,
     required this.viewModel,
+    required this.onTap,
   });
 
   final Expense expense;
   final ExpenseViewModel viewModel;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -205,17 +193,7 @@ class ExpenseRow extends StatelessWidget {
           ),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ExpenseDetailScreen(
-                    expense: expense,
-                    viewModel: viewModel,
-                  ),
-                ),
-              );
-            },
+            onTap: onTap,
             child: ListTile(
               leading: FaIcon(
                 FontAwesomeIcons.creditCard,

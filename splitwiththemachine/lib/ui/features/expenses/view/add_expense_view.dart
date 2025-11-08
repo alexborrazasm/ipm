@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:flutter/services.dart';
 import 'package:splitwiththemachine/data/models.dart';
@@ -60,11 +61,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
+      appBar: GenericAppBar(title: widget.title),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
