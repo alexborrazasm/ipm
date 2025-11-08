@@ -50,13 +50,14 @@ class ExpenseViewModel extends ChangeNotifier {
   Expense? _selectedExpense;
   Expense? get selectedExpense => _selectedExpense;
 
-  void selectExpense(Expense? expense) {
-    _selectedExpense = expense;
-    notifyListeners();
-  }
 
   void search(String query) {
     _searchQuery = query;
+    notifyListeners();
+  }
+
+  void selectExpense(Expense? expense) {
+    _selectedExpense = expense;
     notifyListeners();
   }
 
@@ -133,7 +134,7 @@ class ExpenseViewModel extends ChangeNotifier {
 
   Future<Result<void>> _addFriendToExpense(FriendExpenseArgs args) async { // TODO
     final result = await _expenseRepository.addFriendToExpense(
-      args.expense.id!, args.friend.id!
+        args.expense.id!, args.friend.id!
     );
 
     switch (result) {
@@ -150,7 +151,7 @@ class ExpenseViewModel extends ChangeNotifier {
         }
       case Error<List<Friend>>():
         errorMessage = "Cannot add ${args.friend.name} to "
-                       "${args.expense.description}";
+            "${args.expense.description}";
     }
     notifyListeners();
     return result;

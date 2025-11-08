@@ -62,6 +62,7 @@ class _ExpenseHomeScreenState extends State<ExpenseHomeScreen> {
             title: widget.title,
             viewModel: widget.viewModel,
             onExpenseSelected: (expense) {
+              widget.viewModel.search("");
               Navigator.push(
                 context,
                 MaterialPageRoute(
