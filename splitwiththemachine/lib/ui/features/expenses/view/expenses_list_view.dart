@@ -51,6 +51,10 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           widget.viewModel.loadExpenses,
         ]),
         builder: (context, child) {
+          final filteredExpenses = widget.viewModel.expenses
+              .where((expense) =>
+          expense.description.toLowerCase().contains(
+              widget.viewModel.searchQuery.toLowerCase())).toList();
           return Stack(
             children: [
               if (widget.viewModel.loadExpenses.running)
@@ -61,6 +65,33 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                     ? const Center(child: Text("No expenses"))
                     : CustomScrollView(
                   slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 20,
+                          left: 12,
+                          right: 12,
+                        ),
+                        child: TextField(
+                          onChanged: (value) {
+                            widget.viewModel.search(value);
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Search expenses',
+                            prefixIcon: const Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(35),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            contentPadding:
+                              const EdgeInsets.symmetric(vertical: 10),
+
+                          ),
+                        ),
+                      )
+                    ),
                     SliverPadding(
                       padding: const EdgeInsets.only(
                         top: 8,
@@ -72,11 +103,11 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                         delegate: SliverChildBuilderDelegate(
                               (context, index) {
                             return ExpenseRow(
-                              expense: widget.viewModel.expenses[index],
+                              expense: filteredExpenses[index],
                               viewModel: widget.viewModel
                             );
                           },
-                          childCount: widget.viewModel.expenses.length,
+                          childCount: filteredExpenses.length,
                         ),
                       ),
                     ),

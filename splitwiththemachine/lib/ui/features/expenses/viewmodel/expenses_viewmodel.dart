@@ -44,6 +44,14 @@ class ExpenseViewModel extends ChangeNotifier {
   List<Friend> friends = [];
   String? errorMessage;
 
+  String _searchQuery = "";
+  String get searchQuery => _searchQuery;
+
+  void search(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
   Future<Result<void>> _loadFriends() async {
     final result = await _friendRepository.fetchFriends();
     switch (result) {
