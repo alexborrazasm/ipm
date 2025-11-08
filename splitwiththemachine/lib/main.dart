@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'data/services.dart';
 import 'data/repositories.dart';
 import 'ui/core/themes/app_theme.dart';
-import 'ui/features/expenses/view/expenses_list_view.dart';
+import 'ui/features/expenses/view/expense_home_view.dart';
 import 'ui/features/expenses/view/add_expense_view.dart';
 import 'ui/features/help_feedback/view/help_feedback_view.dart';
 import 'ui/features/expenses/viewmodel/expenses_viewmodel.dart';
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
           darkTheme: AppTheme.dark,
           initialRoute: '/expenses',
           routes: {
-            '/expenses': (context) => ExpenseListScreen(
+            '/expenses': (context) => ExpenseHomeScreen(
               title: 'Expenses',
               viewModel: context.read<ExpenseViewModel>(),
             ),

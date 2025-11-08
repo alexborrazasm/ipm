@@ -182,6 +182,7 @@ class ExpenseRow extends StatelessWidget {
         },
         onDismissed: (direction) async {
           await viewModel.deleteExpense.execute(expense);
+          viewModel.selectExpense(null);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Expense "${expense.description}" deleted')),
           );

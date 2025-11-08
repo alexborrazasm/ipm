@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 
 class HelpAndFeedbackScreen extends StatelessWidget {
   const HelpAndFeedbackScreen({
@@ -11,10 +12,7 @@ class HelpAndFeedbackScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(title),
-          centerTitle: true),
+      appBar: GenericAppBar(title: title),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

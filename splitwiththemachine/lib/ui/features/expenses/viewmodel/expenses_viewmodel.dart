@@ -47,6 +47,14 @@ class ExpenseViewModel extends ChangeNotifier {
   String _searchQuery = "";
   String get searchQuery => _searchQuery;
 
+  Expense? _selectedExpense;
+  Expense? get selectedExpense => _selectedExpense;
+
+  void selectExpense(Expense? expense) {
+    _selectedExpense = expense;
+    notifyListeners();
+  }
+
   void search(String query) {
     _searchQuery = query;
     notifyListeners();
