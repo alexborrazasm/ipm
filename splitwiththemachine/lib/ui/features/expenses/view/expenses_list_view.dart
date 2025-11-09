@@ -44,6 +44,23 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
     });
   }
 
+  // TODO could be used library
+  String stripAccents(String text) {
+    return text
+        .toLowerCase()
+        .replaceAll(RegExp(r'[áàäâã]'), 'a')
+        .replaceAll(RegExp(r'[éèëê]'), 'e')
+        .replaceAll(RegExp(r'[íìïî]'), 'i')
+        .replaceAll(RegExp(r'[óòöôõ]'), 'o')
+        .replaceAll(RegExp(r'[úùüû]'), 'u')
+        .replaceAll('ñ', 'n');
+  }
+
+  bool matchSearch(String source, String query) =>
+      query.trim().isEmpty ||
+          stripAccents(source.toLowerCase()).contains(stripAccents(query.toLowerCase()));
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,17 +92,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           builder: (context, child) {
             // Normalize function to ignore accents
             final filteredExpenses = widget.viewModel.expenses
-                .where((expense) =>
-                expense.description.toLowerCase()
-                    .replaceAll("á","a").replaceAll("é","e")
-                    .replaceAll("í","i").replaceAll("ó","o")
-                    .replaceAll("ú","u").replaceAll("ñ","n")
-                    .contains(widget.viewModel.searchQuery.toLowerCase()
-                    .replaceAll("á","a").replaceAll("é","e")
-                    .replaceAll("í","i").replaceAll("ó","o")
-                    .replaceAll("ú","u").replaceAll("ñ","n")
-                )
-            ).toList();
+                .where((expense) => matchSearch(expense.description, widget.viewModel.searchQuery))
+                .toList();
             return Stack(
               children: [
                 if (widget.viewModel.loadExpenses.running)
