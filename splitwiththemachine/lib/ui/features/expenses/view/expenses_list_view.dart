@@ -60,7 +60,6 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
       query.trim().isEmpty ||
           stripAccents(source.toLowerCase()).contains(stripAccents(query.toLowerCase()));
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

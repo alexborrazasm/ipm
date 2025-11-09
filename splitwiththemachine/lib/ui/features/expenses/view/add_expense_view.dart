@@ -81,6 +81,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             TextField(
               controller: dateController,
               readOnly: true,
+              enableInteractiveSelection: false,
               decoration: InputDecoration(
                 labelText: 'Date',
                 suffixIcon: const Icon(Icons.calendar_today),
