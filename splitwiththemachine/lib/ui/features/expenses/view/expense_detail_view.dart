@@ -6,6 +6,7 @@ import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart
 import 'package:splitwiththemachine/ui/core/widgets/scrollable_sliver_list.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:splitwiththemachine/ui/features/expenses/view/edit_expense_view.dart';
 
 // -----------------------------
 //  SHARED COMPONENTS
@@ -39,7 +40,7 @@ class ExpenseDetailsSection extends StatelessWidget {
           const SizedBox(height: 12),
           _DetailRow(
             icon: FontAwesomeIcons.moneyBillTransfer,
-            label: 'Amount',
+            label: 'Balance',
             value: '${expense.creditBalance?.toStringAsFixed(2)} €',
           ),
           const SizedBox(height: 12),
@@ -108,23 +109,45 @@ class ExpenseDetailScreen extends StatefulWidget {
 
 class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
   int _selectedIndex = 0; // Navigation bar index
+  late Expense expense;
+
+  @override
+  void initState() {
+    super.initState();
+    expense = widget.expense; // Creamos una referencia local que podemos reemplazar
+  }
 
   @override
   Widget build(BuildContext context) {
-    final expense = widget.expense;
     final pages = [
       Scaffold(
         body: ExpenseDetailsSection(expense: expense),
         floatingActionButton: _EditExpenseButton(
-            onPressed: () => print('Edit expense TODO')
+          onPressed: () async {
+            final updated = await Navigator.push<Expense>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ExpenseEditScreen(
+                  expense: expense,
+                  viewModel: widget.viewModel,
+                ),
+              ),
+            );
+
+            if (updated != null) {
+              setState(() {
+                expense = updated;
+              });
+            }
+          },
         ),
       ),
       Scaffold(
         body: ExpenseFriendsSection(expense: expense),
         floatingActionButton: _AddFriendButton(
-            onPressed: () => print('Add friend TODO')
+          onPressed: () => print('Add friend TODO'),
         ),
-      )
+      ),
     ];
 
     return Scaffold(
