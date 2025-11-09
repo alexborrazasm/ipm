@@ -63,10 +63,9 @@ class _ExpenseEditScreenState extends State<ExpenseEditScreen> {
     }
   }
 
-  void _saveExpense() {
+  void _saveExpense() async {
     final description = descriptionController.text;
     final amount = double.tryParse(amountController.text) ?? 0.0;
-
     if (description.isEmpty || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields correctly.')),
@@ -83,11 +82,17 @@ class _ExpenseEditScreenState extends State<ExpenseEditScreen> {
       creditBalance: widget.expense.creditBalance,
     );
 
-    //TODO The ViewModel logic still needs to be implemented for this to work.
+    try {
+      await widget.viewModel.editExpense.execute(updatedExpense);
 
-
-    Navigator.pop(context, updatedExpense);
+      Navigator.pop(context, updatedExpense);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating expense: $e')),
+      );
+    }
   }
+
 
   Widget _buildDetailRow({required IconData icon, required Widget child}) {
     return Padding(

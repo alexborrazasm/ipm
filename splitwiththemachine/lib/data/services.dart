@@ -114,7 +114,7 @@ class SplitWithMeAPIService implements SplitWithMeService {
 
   @override
   Future<Expense> editExpense(Expense expense) async {
-    var uri = _buildUri("expenses/${expense.id}/");
+    var uri = _buildUri("expenses/${expense.id}");
     final Map<String, dynamic> payload = {
       "description": expense.description,
       "amount": expense.amount,

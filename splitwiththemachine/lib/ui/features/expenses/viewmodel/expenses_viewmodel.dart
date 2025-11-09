@@ -104,7 +104,6 @@ class ExpenseViewModel extends ChangeNotifier {
 
   Future<Result<void>> _editExpense(Expense expense) async {
     final result = await _expenseRepository.editExpense(expense);
-
     switch (result) {
       case Ok<Expense>():
         final index =  expenses.indexWhere((e) => e.id == expense.id);
