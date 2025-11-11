@@ -159,8 +159,8 @@ class SplitWithMeAPIService implements SplitWithMeService {
   @override
   Future<List<Friend>> addFriendToExpense(int expenseId, int friendId) async {
     var uri = _buildUri(
-        "expenses/$expenseId/friends/",
-        {'friendId': friendId.toString()}
+        "expenses/$expenseId/friends",
+        {'friend_id': friendId.toString()}
     );
     try {
       var response = await http.post(uri);

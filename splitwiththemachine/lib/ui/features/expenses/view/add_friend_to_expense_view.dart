@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/data/models.dart';
 import 'package:splitwiththemachine/ui/core/widgets/centered_message.dart';
@@ -17,18 +19,22 @@ class AddFriendToExpenseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final availableFriends = viewModel.friends
+        .where((f) => !expense.friends.any((e) => e.id == f.id))
+        .toList();
+
     return Scaffold(
       appBar: GenericAppBar(
         title: 'Add Friend',
       ),
-      body: viewModel.friends.isEmpty ?
+      body: availableFriends.isEmpty ?
       const Padding(
         padding: EdgeInsets.all(32.0),
         child: CenteredMessage(message: "No friends"),
       ) : ScrollableSliverList(
-          itemCount: viewModel.friends.length,
+          itemCount: availableFriends.length,
           itemBuilder: (context, index) {
-            final friend = viewModel.friends[index];
+            final friend = availableFriends[index];
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: InkWell(
