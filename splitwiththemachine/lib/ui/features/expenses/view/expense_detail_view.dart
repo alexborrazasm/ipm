@@ -8,138 +8,265 @@ import '../viewmodel/expenses_viewmodel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:splitwiththemachine/ui/features/expenses/view/edit_expense_view.dart';
 import 'package:splitwiththemachine/ui/features/expenses/view/add_friend_to_expense_view.dart';
+import 'package:flutter/services.dart';
+  // -----------------------------
+  //  SHARED COMPONENTS
+  // -----------------------------
+  class ExpenseDetailsSection extends StatelessWidget {
+    const ExpenseDetailsSection({
+      super.key,
+      required this.expense,
+      required this.viewModel,
 
-// -----------------------------
-//  SHARED COMPONENTS
-// -----------------------------
-class ExpenseDetailsSection extends StatelessWidget {
-  const ExpenseDetailsSection({
-    super.key,
-    required this.expense,
-  });
+    });
 
-  final Expense expense;
+    final Expense expense;
+    final ExpenseViewModel viewModel;
 
-  @override
-  Widget build(BuildContext context) {
-    return Align (
-        alignment: const Alignment(0.0, -0.7),
-        child: Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _DetailRow(
-                  icon: FontAwesomeIcons.fileLines,
-                  label: 'Description',
-                  value: expense.description,
-                ),
-                const SizedBox(height: 12),
-                _DetailRow(
-                  icon: FontAwesomeIcons.moneyBill,
-                  label: 'Amount',
-                  value: '${expense.amount.toStringAsFixed(2)} €',
-                ),
-                const SizedBox(height: 12),
-                _DetailRow(
-                  icon: FontAwesomeIcons.scaleBalanced,
-                  label: 'Balance',
-                  value: '${expense.creditBalance?.toStringAsFixed(2)} €',
-                ),
-                const SizedBox(height: 12),
-                _DetailRow(
-                  icon: FontAwesomeIcons.calendar,
-                  label: 'Date',
-                  value: expense.getDateString(),
-                ),
-              ],
-          ),)
-      )
-    );
+    @override
+    Widget build(BuildContext context) {
+      return Align (
+          alignment: const Alignment(0.0, -0.7),
+          child: Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _DetailRow(
+                    icon: FontAwesomeIcons.fileLines,
+                    label: 'Description',
+                    value: expense.description,
+                  ),
+                  const SizedBox(height: 12),
+                  _DetailRow(
+                    icon: FontAwesomeIcons.moneyBill,
+                    label: 'Amount',
+                    value: '${expense.amount.toStringAsFixed(2)} €',
+                  ),
+                  const SizedBox(height: 12),
+                  _DetailRow(
+                    icon: FontAwesomeIcons.scaleBalanced,
+                    label: 'Balance',
+                    value: '${expense.creditBalance?.toStringAsFixed(2)} €',
+                  ),
+                  const SizedBox(height: 12),
+                  _DetailRow(
+                    icon: FontAwesomeIcons.calendar,
+                    label: 'Date',
+                    value: expense.getDateString(),
+                  ),
+                ],
+            ),)
+        )
+      );
+    }
   }
-}
 
-class ExpenseFriendsSection extends StatelessWidget {
-  const ExpenseFriendsSection({
-    super.key,
-    required this.expense,
-  });
+  class ExpenseFriendsSection extends StatelessWidget {
+    const ExpenseFriendsSection({
+      super.key,
+      required this.expense,
+      required this.viewModel,
+    });
 
-  final Expense expense;
+    final Expense expense;
+    final ExpenseViewModel viewModel;
 
-  @override
-  Widget build(BuildContext context) {
-    return expense.friends.isEmpty ?
-    const Padding(
-      padding: EdgeInsets.all(32.0),
-      child: CenteredMessage(message: "No friends added"),
-    ) : ScrollableSliverList(
-        itemCount: expense.friends.length,
-        itemBuilder: (context, index) {
-          final friend = expense.friends[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: ListTile(
-              title: Text(friend.name),
-              subtitle: Text(
-                  "Credit: ${friend.creditBalance?.toStringAsFixed(2)} € "
-                  "| Debit: ${friend.debitBalance?.toStringAsFixed(2)} €"),
-              leading: const CircleAvatar(
-                child: Icon(Icons.person),
+    @override
+    Widget build(BuildContext context) {
+      return expense.friends.isEmpty ?
+      const Padding(
+        padding: EdgeInsets.all(32.0),
+        child: CenteredMessage(message: "No friends added"),
+      ) : ScrollableSliverList(
+          itemCount: expense.friends.length,
+          itemBuilder: (context, index) {
+            final friend = expense.friends[index];
+
+            return Dismissible(
+                key: ValueKey("friend-${friend.id ?? index}"),
+              direction: DismissDirection.horizontal,
+              background: Container(
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 28),
               ),
-            ),
-          );
-        }
-    );
-  }
-}
+              secondaryBackground: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.delete, color: Colors.white, size: 28),
+              ),
+              confirmDismiss: (direction) async {
+                if (direction == DismissDirection.startToEnd) {
+                  final controller = TextEditingController();
+                  final amount = await showDialog<double>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Add Credit'),
+                      content: TextField(
+                        controller: controller,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                        ],
+                        decoration: const InputDecoration(
+                          labelText: 'Enter amount',
+                          hintText: 'example 10.50',
+                          suffixText: '\$',
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            final value = double.tryParse(controller.text);
+                            Navigator.pop(context, value);
+                          },
+                          child: const Text('Add'),
+                        ),
+                      ],
+                    ),
+                  );
 
-// -----------------------------
-//  MOBILE VERSION
-// -----------------------------
-class ExpenseDetailScreen extends StatefulWidget {
-  const ExpenseDetailScreen({
-    super.key,
-    required this.expense,
-    required this.viewModel,
-  });
 
-  final Expense expense;
-  final ExpenseViewModel viewModel;
+                  if (amount != null && amount > 0) {
 
-  @override
-  State<ExpenseDetailScreen> createState() => _ExpenseDetailScreenState();
-}
+                    final args = CreditArgs(
+                      expense: expense,
+                      friend: friend,
+                      amount: double.parse(amount.toStringAsFixed(2)),
+                    );
 
-class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
-  int _selectedIndex = 0; // Navigation bar index
-  late Expense expense;
+                    await viewModel.addCreditToFriend.execute(args);
 
-  @override
-  void initState() {
-    super.initState();
-    expense = widget.expense; // Local reference that can be replaced
-  }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Added  \$ ${args.amount.toStringAsFixed(2)} to ${friend.name}'),
+                      ),
+                    );
+                  }
+                  return false;
+                } else if (direction == DismissDirection.endToStart) {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Remove Friend'),
+                      content: Text('Are you sure you want to remove ${friend.name} from this expense?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text(
+                            'Remove',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
 
-  @override
-  Widget build(BuildContext context) {
-    final pages = [
-      Scaffold(
-        body: ExpenseDetailsSection(expense: expense),
-        floatingActionButton: _EditExpenseButton(
-          onPressed: () async {
-            final updated = await Navigator.push<Expense>(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ExpenseEditScreen(
+                  return confirmed ?? false;
+                }
+                return false;
+              },
+
+              onDismissed: (direction) async {
+                final args = FriendExpenseArgs(
                   expense: expense,
-                  viewModel: widget.viewModel,
+                  friend: expense.friends[index],
+                );
+
+                if (direction == DismissDirection.endToStart){
+                  await viewModel.deleteFriendFromExpense.execute(args);
+                  viewModel.selectExpense(null);
+                  final removedFriend = friend;
+                  expense.friends.remove(removedFriend);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('The friend "${removedFriend.name}" was removed from the expense')),
+                  );
+                }
+
+
+              },
+              child: Card(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: ListTile(
+                  title: Text(friend.name),
+                  subtitle: Text(
+                    "Credit: ${friend.creditBalance?.toStringAsFixed(2) ?? '-'} € \n"
+                        "Debit: ${friend.debitBalance?.toStringAsFixed(2) ?? '-'} €",
+                  ),
+                  leading: const CircleAvatar(
+                    child: Icon(Icons.person),
+                  ),
                 ),
               ),
             );
+          },
+      );
+    }
+    }
+  // -----------------------------
+  //  MOBILE VERSION
+  // -----------------------------
+  class ExpenseDetailScreen extends StatefulWidget {
+    const ExpenseDetailScreen({
+      super.key,
+      required this.expense,
+      required this.viewModel,
+    });
+
+    final Expense expense;
+    final ExpenseViewModel viewModel;
+
+    @override
+    State<ExpenseDetailScreen> createState() => _ExpenseDetailScreenState();
+  }
+
+  class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
+    int _selectedIndex = 0; // Navigation bar index
+    late Expense expense;
+
+    @override
+    void initState() {
+      super.initState();
+      expense = widget.expense; // Local reference that can be replaced
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      final pages = [
+        Scaffold(
+          body: ExpenseDetailsSection(expense: expense, viewModel: widget.viewModel),
+          floatingActionButton: _EditExpenseButton(
+            onPressed: () async {
+              final updated = await Navigator.push<Expense>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ExpenseEditScreen(
+                    expense: expense,
+                    viewModel: widget.viewModel,
+                  ),
+                ),
+              );
 
             if (updated != null) {
               setState(() {
@@ -150,7 +277,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
         ),
       ),
       Scaffold(
-        body: ExpenseFriendsSection(expense: expense),
+        body: ExpenseFriendsSection(expense: expense, viewModel: widget.viewModel),
         floatingActionButton: _AddFriendButton(
           onPressed: () {
             Navigator.push(
@@ -167,47 +294,47 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
       ),
     ];
 
-    return Scaffold(
-      appBar: GenericAppBar(title: expense.description),
-      body: pages[_selectedIndex],
-      bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(
-            icon: FaIcon(FontAwesomeIcons.circleInfo),
-            label: 'Details',
-          ),
-          NavigationDestination(
-            icon: FaIcon(FontAwesomeIcons.userGroup),
-            label: 'Friends',
-          ),
-        ],
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-      ),
-    );
+      return Scaffold(
+        appBar: GenericAppBar(title: expense.description),
+        body: pages[_selectedIndex],
+        bottomNavigationBar: NavigationBar(
+          destinations: const [
+            NavigationDestination(
+              icon: FaIcon(FontAwesomeIcons.circleInfo),
+              label: 'Details',
+            ),
+            NavigationDestination(
+              icon: FaIcon(FontAwesomeIcons.userGroup),
+              label: 'Friends',
+            ),
+          ],
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        ),
+      );
+    }
   }
-}
 
-// -----------------------------
-//  TABLET / BIG SCREEN VERSION
-// -----------------------------
-class ExpenseDetailBigScreen extends StatefulWidget {
-  const ExpenseDetailBigScreen({
-    super.key,
-    required this.expense,
-    required this.viewModel,
-  });
+  // -----------------------------
+  //  TABLET / BIG SCREEN VERSION
+  // -----------------------------
+  class ExpenseDetailBigScreen extends StatefulWidget {
+    const ExpenseDetailBigScreen({
+      super.key,
+      required this.expense,
+      required this.viewModel,
+    });
 
-  final Expense expense;
-  final ExpenseViewModel viewModel;
+    final Expense expense;
+    final ExpenseViewModel viewModel;
 
-  @override
-  State<ExpenseDetailBigScreen> createState() => _ExpenseDetailBigScreenState();
-}
+    @override
+    State<ExpenseDetailBigScreen> createState() => _ExpenseDetailBigScreenState();
+  }
 
 class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
   @override
@@ -230,7 +357,7 @@ class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
               ],
             ),
             const Divider(height: 24),
-            ExpenseDetailsSection(expense: widget.expense),
+            ExpenseDetailsSection(expense: widget.expense, viewModel: widget.viewModel),
             Row(
               children: [
                 const FaIcon(FontAwesomeIcons.userGroup, size: 20),
@@ -242,7 +369,7 @@ class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
               ],
             ),
             const Divider(height: 24),
-            Expanded(child: ExpenseFriendsSection(expense: widget.expense)),
+            Expanded(child: ExpenseFriendsSection(expense: widget.expense, viewModel: widget.viewModel)),
           ],
         ),
       ),
@@ -268,19 +395,19 @@ class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
   }
 }
 
-// -----------------------------
-//  AUX CLASSES
-// -----------------------------
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+  // -----------------------------
+  //  AUX CLASSES
+  // -----------------------------
+  class _DetailRow extends StatelessWidget {
+    const _DetailRow({
+      required this.icon,
+      required this.label,
+      required this.value,
+    });
 
-  final IconData icon;
-  final String label;
-  final String value;
+    final IconData icon;
+    final String label;
+    final String value;
 
   @override
   Widget build(BuildContext context) {
@@ -312,33 +439,33 @@ class _DetailRow extends StatelessWidget {
   }
 }
 
-// Private reusable buttons for this screen
-class _EditExpenseButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  // Private reusable buttons for this screen
+  class _EditExpenseButton extends StatelessWidget {
+    final VoidCallback onPressed;
 
-  const _EditExpenseButton({required this.onPressed, super.key});
+    const _EditExpenseButton({required this.onPressed, super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return GenericFloatingButton(
-      tooltip: "Edit expense",
-      icon: Icons.edit,
-      onPressed: onPressed,
-    );
+    @override
+    Widget build(BuildContext context) {
+      return GenericFloatingButton(
+        tooltip: "Edit expense",
+        icon: Icons.edit,
+        onPressed: onPressed,
+      );
+    }
   }
-}
 
-class _AddFriendButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  class _AddFriendButton extends StatelessWidget {
+    final VoidCallback onPressed;
 
-  const _AddFriendButton({required this.onPressed, super.key});
+    const _AddFriendButton({required this.onPressed, super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return GenericFloatingButton(
-      tooltip: "Add friend",
-      icon: Icons.person_add,
-      onPressed: onPressed,
-    );
+    @override
+    Widget build(BuildContext context) {
+      return GenericFloatingButton(
+        tooltip: "Add friend",
+        icon: Icons.person_add,
+        onPressed: onPressed,
+      );
+    }
   }
-}
