@@ -31,14 +31,25 @@ class AddFriendToExpenseScreen extends StatelessWidget {
             final friend = viewModel.friends[index];
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: ListTile(
-                title: Text(friend.name),
-                leading: const CircleAvatar(
-                  child: Icon(Icons.person),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  Navigator.pop(context);
+                  FriendExpenseArgs args = FriendExpenseArgs(
+                    expense: expense,
+                    friend: friend,
+                  );
+                  viewModel.addFriendToExpense.execute(args);
+                },
+                child: ListTile(
+                  title: Text(friend.name),
+                  leading: const CircleAvatar(
+                    child: Icon(Icons.person),
+                  ),
                 ),
               ),
             );
-          }
+          },
       )
     );
   }
