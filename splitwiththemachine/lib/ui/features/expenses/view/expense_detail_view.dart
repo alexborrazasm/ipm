@@ -21,36 +21,42 @@ class ExpenseDetailsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _DetailRow(
-            icon: FontAwesomeIcons.fileLines,
-            label: 'Description',
-            value: expense.description,
-          ),
-          const SizedBox(height: 12),
-          _DetailRow(
-            icon: FontAwesomeIcons.moneyBill,
-            label: 'Amount',
-            value: '${expense.amount.toStringAsFixed(2)} €',
-          ),
-          const SizedBox(height: 12),
-          _DetailRow(
-            icon: FontAwesomeIcons.moneyBillTransfer,
-            label: 'Balance',
-            value: '${expense.creditBalance?.toStringAsFixed(2)} €',
-          ),
-          const SizedBox(height: 12),
-          _DetailRow(
-            icon: FontAwesomeIcons.calendar,
-            label: 'Date',
-            value: expense.getDateString(),
-          ),
-        ],
-      ),
+    return Align (
+        alignment: const Alignment(0.0, -0.7),
+        child: Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _DetailRow(
+                  icon: FontAwesomeIcons.fileLines,
+                  label: 'Description',
+                  value: expense.description,
+                ),
+                const SizedBox(height: 12),
+                _DetailRow(
+                  icon: FontAwesomeIcons.moneyBill,
+                  label: 'Amount',
+                  value: '${expense.amount.toStringAsFixed(2)} €',
+                ),
+                const SizedBox(height: 12),
+                _DetailRow(
+                  icon: FontAwesomeIcons.scaleBalanced,
+                  label: 'Balance',
+                  value: '${expense.creditBalance?.toStringAsFixed(2)} €',
+                ),
+                const SizedBox(height: 12),
+                _DetailRow(
+                  icon: FontAwesomeIcons.calendar,
+                  label: 'Date',
+                  value: expense.getDateString(),
+                ),
+              ],
+          ),)
+      )
     );
   }
 }
@@ -114,7 +120,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
   @override
   void initState() {
     super.initState();
-    expense = widget.expense; // Creamos una referencia local que podemos reemplazar
+    expense = widget.expense; // Local reference that can be replaced
   }
 
   @override
