@@ -7,6 +7,7 @@ import 'package:splitwiththemachine/ui/core/widgets/scrollable_sliver_list.dart'
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:splitwiththemachine/ui/features/expenses/view/edit_expense_view.dart';
+import 'package:splitwiththemachine/ui/features/expenses/view/add_friend_to_expense_view.dart';
 
 // -----------------------------
 //  SHARED COMPONENTS
@@ -151,7 +152,17 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
       Scaffold(
         body: ExpenseFriendsSection(expense: expense),
         floatingActionButton: _AddFriendButton(
-          onPressed: () => print('Add friend TODO'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:(_) => AddFriendToExpenseScreen(
+                  viewModel: widget.viewModel,
+                  expense: expense,
+                ),
+              )
+            );
+          },
         ),
       ),
     ];
@@ -240,7 +251,17 @@ class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
           children: [
             _EditExpenseButton(onPressed: () => print('Edit TODO')),
             const SizedBox(height: 16),
-            _AddFriendButton(onPressed: () => print('Add friend TODO')),
+            _AddFriendButton(onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:(_) => AddFriendToExpenseScreen(
+                    viewModel: widget.viewModel,
+                    expense: widget.expense,
+                  ),
+                )
+              );
+            }),
           ]
         )
     );
