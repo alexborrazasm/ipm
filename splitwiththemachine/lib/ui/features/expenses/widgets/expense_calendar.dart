@@ -51,11 +51,16 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
             ),
             calendarStyle: CalendarStyle(
               todayDecoration: BoxDecoration(
-                color: Colors.blue.shade300,
-                shape: BoxShape.circle,
+                border: Border(
+                  bottom: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2,
+                  )
+                ),
+                shape: BoxShape.rectangle,
               ),
-              selectedDecoration: const BoxDecoration(
-                color: Colors.blue,
+              selectedDecoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.inversePrimary,
                 shape: BoxShape.circle,
               ),
             ),
@@ -71,7 +76,7 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
             child: ElevatedButton.icon(
               icon: const Icon(Icons.check),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
               ),
               label: const Text("Confirm Date"),
               onPressed: () {
