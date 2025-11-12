@@ -51,7 +51,7 @@ class ExpenseViewModel extends ChangeNotifier {
   Expense? get selectedExpense => _selectedExpense;
 
 
-  void search(String query) {
+  void search(String query) async {
     _searchQuery = query;
     notifyListeners();
   }
