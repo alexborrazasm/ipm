@@ -9,6 +9,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:splitwiththemachine/ui/features/expenses/view/edit_expense_view.dart';
 import 'package:splitwiththemachine/ui/features/expenses/view/add_friend_to_expense_view.dart';
 import 'package:flutter/services.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
+
   // -----------------------------
   //  SHARED COMPONENTS
   // -----------------------------
@@ -153,11 +155,7 @@ import 'package:flutter/services.dart';
 
                     await viewModel.addCreditToFriend.execute(args);
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Added  \$ ${args.amount.toStringAsFixed(2)} to ${friend.name}'),
-                      ),
-                    );
+                    GenericSnackBar.show(context, 'Added  \$ ${args.amount.toStringAsFixed(2)} to ${friend.name}');
                   }
                   return false;
                 } else if (direction == DismissDirection.endToStart) {
@@ -337,6 +335,14 @@ import 'package:flutter/services.dart';
   }
 
 class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
+  late Expense expense;
+
+  @override
+  void initState() {
+    super.initState();
+    expense = widget.expense; // Local reference that can be replaced
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -376,7 +382,24 @@ class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
       floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _EditExpenseButton(onPressed: () => print('Edit TODO')),
+            _EditExpenseButton(
+              onPressed: () async {
+                final updated = await Navigator.push<Expense>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ExpenseEditScreen(
+                    expense: expense,
+                    viewModel: widget.viewModel,
+                  ),
+                ),
+                );
+                if (updated != null) {
+                  setState(() {
+                    expense = updated;
+                  });
+                }
+              }
+            ),
             const SizedBox(height: 16),
             _AddFriendButton(onPressed: () {
               Navigator.push(

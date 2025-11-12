@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:splitwiththemachine/data/models.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_sized_box.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
@@ -93,7 +94,6 @@ class _ExpenseEditScreenState extends State<ExpenseEditScreen> {
     }
   }
 
-
   Widget _buildDetailRow({required IconData icon, required Widget child}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -112,72 +112,50 @@ class _ExpenseEditScreenState extends State<ExpenseEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GenericAppBar(title: 'Edit Expense'),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildDetailRow(
-              icon: FontAwesomeIcons.fileLines,
-              child: TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-              ),
-            ),
-            _buildDetailRow(
-              icon: FontAwesomeIcons.moneyBill,
-              child: TextField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-                ],
-                decoration: const InputDecoration(labelText: 'Amount'),
-              ),
-            ),
-            _buildDetailRow(
-              icon: FontAwesomeIcons.calendar,
-              child: TextField(
-                controller: dateController,
-                readOnly: true,
-                enableInteractiveSelection: false,
-                decoration: InputDecoration(
-                  labelText: 'Date',
-                  suffixIcon: const Icon(Icons.calendar_today),
+      body: GenericSizedBox(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildDetailRow(
+                  icon: FontAwesomeIcons.fileLines,
+                  child: TextField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                  ),
                 ),
-                onTap: _openCalendar,
-              ),
+                _buildDetailRow(
+                  icon: FontAwesomeIcons.moneyBill,
+                  child: TextField(
+                    controller: amountController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                    ],
+                    decoration: const InputDecoration(labelText: 'Amount'),
+                  ),
+                ),
+                _buildDetailRow(
+                  icon: FontAwesomeIcons.calendar,
+                  child: TextField(
+                    controller: dateController,
+                    readOnly: true,
+                    enableInteractiveSelection: false,
+                    decoration: InputDecoration(
+                      labelText: 'Date',
+                      suffixIcon: const Icon(Icons.calendar_today),
+                    ),
+                    onTap: _openCalendar,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
       floatingActionButton: GenericFloatingButton(
         tooltip: 'Save',
         icon: Icons.save,
         onPressed: _saveExpense,
-      ),
-      bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(
-            icon: FaIcon(FontAwesomeIcons.circleInfo, color: Colors.grey),
-            label: 'Details',
-          ),
-          NavigationDestination(
-            icon: FaIcon(FontAwesomeIcons.userGroup, color: Colors.grey),
-            label: 'Friends',
-          ),
-        ],
-        selectedIndex: 0,
-        onDestinationSelected: (_) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('You must exit edit mode to switch tabs'),
-              duration: Duration(seconds: 1),
-            ),
-          );
-        },
-
       ),
     );
   }

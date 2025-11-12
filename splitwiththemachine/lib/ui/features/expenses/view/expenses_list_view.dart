@@ -7,6 +7,7 @@ import '../viewmodel/expenses_viewmodel.dart';
 import 'package:splitwiththemachine/ui/core/widgets/info_bar.dart';
 import 'package:splitwiththemachine/data/models.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
 import '../widgets/generic_search.dart';
 
 class ExpenseListScreen extends StatefulWidget {
@@ -19,6 +20,8 @@ class ExpenseListScreen extends StatefulWidget {
 
   final String title;
   final ExpenseViewModel viewModel;
+
+  // Callback for when an expense is tapped
   final void Function(Expense expense) onExpenseSelected;
 
   @override
@@ -26,6 +29,39 @@ class ExpenseListScreen extends StatefulWidget {
 }
 
 class _ExpenseListScreenState extends State<ExpenseListScreen> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _searchController =
+        TextEditingController(text: widget.viewModel.searchQuery);
+
+    widget.viewModel.addListener(() {
+      final newValue = widget.viewModel.searchQuery;
+      if (_searchController.text != newValue) {
+        _searchController.text = newValue;
+      }
+    });
+  }
+
+  // TODO could be used library
+  String stripAccents(String text) {
+    return text
+        .toLowerCase()
+        .replaceAll(RegExp(r'[áàäâã]'), 'a')
+        .replaceAll(RegExp(r'[éèëê]'), 'e')
+        .replaceAll(RegExp(r'[íìïî]'), 'i')
+        .replaceAll(RegExp(r'[óòöôõ]'), 'o')
+        .replaceAll(RegExp(r'[úùüû]'), 'u')
+        .replaceAll('ñ', 'n');
+  }
+
+  bool matchSearch(String source, String query) =>
+      query.trim().isEmpty ||
+          stripAccents(source.toLowerCase()).contains(stripAccents(query.toLowerCase()));
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,9 +205,7 @@ class ExpenseRow extends StatelessWidget {
       onDismissed: (direction) async {
         await viewModel.deleteExpense.execute(expense);
         viewModel.selectExpense(null);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Expense "${expense.description}" deleted')),
-        );
+        GenericSnackBar.show(context, 'Expense "${expense.description}" deleted');
       },
       child: Card(
         elevation: 2,
