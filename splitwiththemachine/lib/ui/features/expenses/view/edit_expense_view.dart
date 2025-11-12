@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:splitwiththemachine/data/models.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_sized_box.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
@@ -68,9 +69,7 @@ class _ExpenseEditScreenState extends State<ExpenseEditScreen> {
     final description = descriptionController.text;
     final amount = double.tryParse(amountController.text) ?? 0.0;
     if (description.isEmpty || amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields correctly.')),
-      );
+      GenericSnackBar.show(context, 'Please fill in all fields correctly.');
       return;
     }
 
