@@ -50,6 +50,9 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
               titleCentered: true,
             ),
             calendarStyle: CalendarStyle(
+              todayTextStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
               todayDecoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
