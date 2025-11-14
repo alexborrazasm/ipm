@@ -170,7 +170,15 @@ class ExpenseRow extends StatelessWidget {
                 child: const Text('Cancel'),
               ),
               TextButton(
-                onPressed: () => Navigator.pop(context, true),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                  viewModel.deleteExpense.execute(expense);
+                  viewModel.selectExpense(null);
+                  GenericSnackBar.show( // TODO manage error observing
+                    context,
+                    'Expense "${expense.description}" deleted'
+                  );
+                },
                 child: const Text(
                   'Delete',
                   style: TextStyle(color: Colors.red),
@@ -179,12 +187,7 @@ class ExpenseRow extends StatelessWidget {
             ],
           ),
         );
-        return confirmed ?? false;
-      },
-      onDismissed: (direction) async {
-        await viewModel.deleteExpense.execute(expense);
-        viewModel.selectExpense(null);
-        GenericSnackBar.show(context, 'Expense "${expense.description}" deleted');
+        return false;
       },
       child: Card(
         elevation: 2,

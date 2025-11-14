@@ -18,7 +18,7 @@ abstract class SplitWithMeService {
 }
 
 class SplitWithMeAPIService implements SplitWithMeService {
-  final serverURL = Platform.isAndroid ? "10.0.2.2" : "127.0.0.1";
+  final serverURL = Platform.isAndroid ? "10.252.148.149" : "127.0.0.1";
   final serverPort = "8000";
   final Map<String, String> _headers = {
     'Content-Type': 'application/json; charset=UTF-8',

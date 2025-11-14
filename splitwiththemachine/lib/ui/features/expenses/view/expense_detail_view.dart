@@ -231,15 +231,19 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
           Scaffold(
             body: CustomScrollView(
               slivers: [
-                if (hasFriends)
+                if (hasFriends) ...[
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: ExpenseFriendsSection(viewModel: widget.viewModel),
                     ),
-                  )
-                else
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: 200),
+                  ),
+                ] else
                   SliverFillRemaining(
+                    hasScrollBody: false,
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: ExpenseFriendsSection(viewModel: widget.viewModel),
@@ -344,15 +348,19 @@ class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
                     ),
                   ),
                 ),
-                if (hasFriends)
+                if (hasFriends) ...[
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                       child: ExpenseFriendsSection(viewModel: widget.viewModel),
                     ),
-                  )
-                else
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: 200),
+                  ),
+                ] else
                   SliverFillRemaining(
+                    hasScrollBody: false,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                       child: ExpenseFriendsSection(viewModel: widget.viewModel),

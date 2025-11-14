@@ -75,7 +75,6 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
               "Selected: ${DateFormat('EEEE, MMMM d').format(_selectedDay)}",
               style: const TextStyle(fontSize: 18),
             ),
-            const Spacer(),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
