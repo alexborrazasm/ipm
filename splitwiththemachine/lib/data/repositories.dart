@@ -61,8 +61,7 @@ class ExpenseRepository {
   Future<Result<List<Friend>>> deleteFriendFromExpense(int expenseId,
       int friendId) async {
     try {
-      await _service.deleteFriendFromExpense(expenseId, friendId);
-      var data = await _service.addFriendToExpense(expenseId, friendId);
+      var data = await _service.deleteFriendFromExpense(expenseId, friendId);
       return Result.ok(data);
     } on Exception catch (e) {
       return Result.error(e);
@@ -73,8 +72,7 @@ class ExpenseRepository {
   Future<Result<List<Friend>>> addCreditToFriend(int expenseId, int friendId,
       double amount) async {
     try {
-      await _service.addCreditToFriend(expenseId, friendId, amount);
-      var data = await _service.addFriendToExpense(expenseId, friendId);
+      var data = await _service.addCreditToFriend(expenseId, friendId, amount);
       return Result.ok(data);
     } on Exception catch (e) {
       return Result.error(e);

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../viewmodel/expenses_viewmodel.dart';
-import 'package:splitwiththemachine/data/models.dart';
 import 'expense_detail_view.dart';
 import 'expenses_list_view.dart';
 import 'expense_empty_view.dart';
@@ -39,17 +38,14 @@ class _ExpenseHomeScreenState extends State<ExpenseHomeScreen> {
                       child: ExpenseListScreen(
                         title: widget.title,
                         viewModel: viewModel,
-                        onExpenseSelected: viewModel.selectExpense,
+                        mobile: false,
                       ),
                     ),
 
                     Expanded(
                       flex: 3,
                       child: viewModel.selectedExpense != null
-                          ? ExpenseDetailBigScreen(
-                        expense: viewModel.selectedExpense!,
-                        viewModel: viewModel,
-                      )
+                          ? ExpenseDetailBigScreen(viewModel: viewModel)
                           : const ExpenseEmptyView(title: "Expense details"),
                     ),
                   ],
@@ -61,18 +57,7 @@ class _ExpenseHomeScreenState extends State<ExpenseHomeScreen> {
           return ExpenseListScreen(
             title: widget.title,
             viewModel: widget.viewModel,
-            onExpenseSelected: (expense) {
-              widget.viewModel.search("");
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ExpenseDetailScreen(
-                    expense: expense,
-                    viewModel: widget.viewModel,
-                  ),
-                ),
-              );
-            },
+            mobile: true,
           );
         },
       ),

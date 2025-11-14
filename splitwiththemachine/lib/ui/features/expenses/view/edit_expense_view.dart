@@ -10,32 +10,35 @@ import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart
 import '../widgets/expense_calendar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ExpenseEditScreen extends StatefulWidget {
-  final Expense expense;
-  final ExpenseViewModel viewModel;
-
-  const ExpenseEditScreen({
+class EditExpenseScreen extends StatefulWidget {
+  const EditExpenseScreen({
     super.key,
-    required this.expense,
     required this.viewModel,
   });
+  final ExpenseViewModel viewModel;
 
   @override
-  State<ExpenseEditScreen> createState() => _ExpenseEditScreenState();
+  State<EditExpenseScreen> createState() => _EditExpenseScreenState();
 }
 
-class _ExpenseEditScreenState extends State<ExpenseEditScreen> {
+class _EditExpenseScreenState extends State<EditExpenseScreen> {
   late DateTime selectedDate;
   late TextEditingController descriptionController;
   late TextEditingController amountController;
   late TextEditingController dateController;
+  late Expense expense;
 
   @override
   void initState() {
     super.initState();
-    selectedDate = widget.expense.date;
-    descriptionController = TextEditingController(text: widget.expense.description);
-    amountController = TextEditingController(text: widget.expense.amount.toStringAsFixed(2));
+    expense = widget.viewModel.selectedExpense!;
+    selectedDate = expense.date;
+    descriptionController = TextEditingController(
+        text: expense.description
+    );
+    amountController = TextEditingController(
+        text: expense.amount.toStringAsFixed(2)
+    );
     dateController = TextEditingController(
       text: DateFormat('EEEE, MMMM d').format(selectedDate),
     );
@@ -65,7 +68,7 @@ class _ExpenseEditScreenState extends State<ExpenseEditScreen> {
     }
   }
 
-  void _saveExpense() async {
+  void _saveExpense() {
     final description = descriptionController.text;
     final amount = double.tryParse(amountController.text) ?? 0.0;
     if (description.isEmpty || amount <= 0) {
@@ -74,23 +77,19 @@ class _ExpenseEditScreenState extends State<ExpenseEditScreen> {
     }
 
     final updatedExpense = Expense(
-      id: widget.expense.id,
+      id: expense.id,
       description: description,
       amount: amount,
       date: selectedDate,
-      friends: widget.expense.friends,
-      creditBalance: widget.expense.creditBalance,
+      friends: expense.friends,
+      creditBalance: expense.creditBalance,
     );
 
-    try {
-      await widget.viewModel.editExpense.execute(updatedExpense);
-
-      Navigator.pop(context, updatedExpense);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating expense: $e')),
-      );
+    if (updatedExpense != expense) {
+      widget.viewModel.editExpense.execute(updatedExpense);
     }
+
+    Navigator.pop(context);
   }
 
   Widget _buildDetailRow({required IconData icon, required Widget child}) {

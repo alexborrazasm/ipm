@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:splitwiththemachine/ui/core/widgets/centered_message.dart';
 
 /// Custom scrollable sliver list with optional header (e.g. search bar).
 class ScrollableSliverList extends StatelessWidget {
@@ -7,6 +8,7 @@ class ScrollableSliverList extends StatelessWidget {
     required this.itemCount,
     required this.itemBuilder,
     this.header,
+    this.emptyListMsg = "",
   });
 
   /// Number of items to render.
@@ -17,6 +19,9 @@ class ScrollableSliverList extends StatelessWidget {
 
   /// Optional header widget (e.g. a search bar).
   final Widget? header;
+
+  /// Optional message to show on empty list
+  final String emptyListMsg;
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +39,23 @@ class ScrollableSliverList extends StatelessWidget {
               child: header!,
             ),
           ),
-        SliverPadding(
-          padding: const EdgeInsets.all(12),
-          sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-              itemBuilder,
-              childCount: itemCount,
+
+        if (itemCount == 0)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: CenteredMessage(message: emptyListMsg),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.all(12),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                itemBuilder,
+                childCount: itemCount,
+              ),
             ),
           ),
-        ),
+
         const SliverToBoxAdapter(
           child: SizedBox(height: 200),
         ),

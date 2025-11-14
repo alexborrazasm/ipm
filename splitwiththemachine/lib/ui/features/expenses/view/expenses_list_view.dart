@@ -9,20 +9,20 @@ import 'package:splitwiththemachine/data/models.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
 import '../widgets/generic_search.dart';
+import 'expense_detail_view.dart';
 
 class ExpenseListScreen extends StatefulWidget {
   const ExpenseListScreen({
     super.key,
     required this.title,
     required this.viewModel,
-    required this.onExpenseSelected,
+    required this.mobile
   });
 
   final String title;
   final ExpenseViewModel viewModel;
 
-  // Callback for when an expense is tapped
-  final void Function(Expense expense) onExpenseSelected;
+  final bool mobile;
 
   @override
   State<ExpenseListScreen> createState() => _ExpenseListScreenState();
@@ -30,37 +30,6 @@ class ExpenseListScreen extends StatefulWidget {
 
 class _ExpenseListScreenState extends State<ExpenseListScreen> {
   late final TextEditingController _searchController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _searchController =
-        TextEditingController(text: widget.viewModel.searchQuery);
-
-    widget.viewModel.addListener(() {
-      final newValue = widget.viewModel.searchQuery;
-      if (_searchController.text != newValue) {
-        _searchController.text = newValue;
-      }
-    });
-  }
-
-  // TODO could be used library
-  String stripAccents(String text) {
-    return text
-        .toLowerCase()
-        .replaceAll(RegExp(r'[áàäâã]'), 'a')
-        .replaceAll(RegExp(r'[éèëê]'), 'e')
-        .replaceAll(RegExp(r'[íìïî]'), 'i')
-        .replaceAll(RegExp(r'[óòöôõ]'), 'o')
-        .replaceAll(RegExp(r'[úùüû]'), 'u')
-        .replaceAll('ñ', 'n');
-  }
-
-  bool matchSearch(String source, String query) =>
-      query.trim().isEmpty ||
-          stripAccents(source.toLowerCase()).contains(stripAccents(query.toLowerCase()));
 
   @override
   Widget build(BuildContext context) {
@@ -89,10 +58,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           widget.viewModel.loadExpenses,
         ]),
         builder: (context, child) {
-          final filteredExpenses = widget.viewModel.expenses
-              .where((expense) => GenericSearch.matchSearch(
-              expense.description, widget.viewModel.searchQuery))
-              .toList();
+          final filteredExpenses = widget.viewModel.filteredExpenses;
 
           return Stack(
             children: [
@@ -103,10 +69,11 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                 widget.viewModel.expenses.isEmpty
                     ? const CenteredMessage(message: "No expenses")
                     : ScrollableSliverList(
+                  emptyListMsg: "No expenses found",
                   header: GenericSearch(
                     viewModel: widget.viewModel,
-                    getSearchQuery: (vm) => vm.searchQuery,
-                    onSearchChanged: (vm, value) => vm.search(value),
+                    getSearchQuery: (vm) => vm.searchQueryExpenses,
+                    onSearchChanged: (vm, value) => vm.searchExpenses(value),
                     hintText: 'Search expenses',
                   ),
                   itemCount: filteredExpenses.length,
@@ -115,10 +82,22 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                     return ExpenseRow(
                       expense: expense,
                       viewModel: widget.viewModel,
-                      isSelected:
-                      expense == widget.viewModel.selectedExpense,
+                      isSelected: !widget.mobile &&
+                          expense == widget.viewModel.selectedExpense,
                       onTap: () {
-                        widget.onExpenseSelected(expense);
+                        widget.viewModel.selectExpense(expense);
+                        widget.viewModel.selectExpenseTab(0);
+                        if (widget.mobile) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ExpenseDetailScreen(
+                                  viewModel: widget.viewModel,
+                              ),
+                            ),
+                          );
+                        }
+                        widget.viewModel.searchExpenses("");
                       },
                     );
                   },
@@ -212,8 +191,8 @@ class ExpenseRow extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        color:
-        isSelected ? Theme.of(context).colorScheme.primary.withAlpha(50) : null,
+        color: isSelected ? Theme.of(context).colorScheme.primary.withAlpha(50)
+            : null,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: onTap,

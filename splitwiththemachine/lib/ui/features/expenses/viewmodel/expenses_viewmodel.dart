@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/data/models.dart';
 import 'package:splitwiththemachine/data/repositories.dart';
+import 'package:splitwiththemachine/ui/core/utils/search_utils.dart';
 import 'package:splitwiththemachine/utils/result.dart';
 import 'package:splitwiththemachine/utils/command.dart';
 
@@ -44,23 +45,60 @@ class ExpenseViewModel extends ChangeNotifier {
   List<Friend> friends = [];
   String? errorMessage;
 
-  String _searchQuery = "";
-  String get searchQuery => _searchQuery;
+  // --- Search states
+  String _searchQueryExpenses = "";
+  String get searchQueryExpenses => _searchQueryExpenses;
 
+  String _searchQueryFriends = "";
+  String get searchQueryFriends => _searchQueryFriends;
+
+  // --- Selected states
   Expense? _selectedExpense;
+  int _selectedExpenseTab = 0;
+
   Expense? get selectedExpense => _selectedExpense;
+  int get selectedExpenseTab => _selectedExpenseTab;
 
-
-  void search(String query) async {
-    _searchQuery = query;
-    notifyListeners();
-  }
-
+  // --- Setters ---
   void selectExpense(Expense? expense) {
     _selectedExpense = expense;
     notifyListeners();
   }
 
+  void selectExpenseTab(int index) {
+    _selectedExpenseTab = index;
+    notifyListeners();
+  }
+
+  void searchExpenses(String query) {
+    _searchQueryExpenses = query;
+    notifyListeners();
+  }
+
+  void searchFriends(String query) {
+    _searchQueryFriends = query;
+    notifyListeners();
+  }
+
+  // --- Filtering logic ---
+  List<Expense> get filteredExpenses {
+    return expenses
+        .where((expense) => SearchUtils.match(
+        expense.description, _searchQueryExpenses))
+        .toList();
+  }
+
+  List<Friend> get filteredFriendsInExpense {
+    final expense = _selectedExpense;
+    if (expense == null) return [];
+
+    return friends
+        .where((f) => !expense.friends.any((e) => e.id == f.id))
+        .where((f) => SearchUtils.match(f.name, _searchQueryFriends))
+        .toList();
+  }
+
+  // --- Repository calls ---
   Future<Result<void>> _loadFriends() async {
     final result = await _friendRepository.fetchFriends();
     switch (result) {
@@ -111,6 +149,7 @@ class ExpenseViewModel extends ChangeNotifier {
           return Result.error(Exception("Expense to edit not found: ${expense.id}"));
         }
         expenses[index] = result.value;
+        selectExpense(result.value); // Tigger ui update
       case Error<Expense>():
         errorMessage = "Cannot edit expense ${expense.description}";
     }
@@ -128,6 +167,7 @@ class ExpenseViewModel extends ChangeNotifier {
         errorMessage = "Cannot remove expense ${expense.description}";
     }
     notifyListeners();
+    selectExpense(null); // Tigger ui update
     return result;
   }
 
@@ -147,6 +187,7 @@ class ExpenseViewModel extends ChangeNotifier {
             friends: result.value,
           );
           expenses[index] = updated;
+          selectExpense(updated); // Tigger ui update
         }
       case Error<List<Friend>>():
         errorMessage = "Cannot add ${args.friend.name} to "
@@ -172,6 +213,7 @@ class ExpenseViewModel extends ChangeNotifier {
             friends: result.value,
           );
           expenses[index] = updated;
+          selectExpense(updated); // Tigger ui update
         }
       case Error<List<Friend>>():
         errorMessage = "Cannot add ${args.friend.name} to "
@@ -198,6 +240,7 @@ class ExpenseViewModel extends ChangeNotifier {
             creditBalance: (old.creditBalance ?? 0) + args.amount,
           );
           expenses[index] = updated;
+          selectExpense(updated); // Tigger ui update
         }
       case Error<List<Friend>>():
         errorMessage = "Cannot add ${args.friend.name} to "
@@ -220,7 +263,7 @@ class FriendExpenseArgs {
   });
 }
 
-// Args for adding credit to a friend in an expense using Command1
+// --- Args for adding credit to a friend in an expense using Command1
 class CreditArgs {
   final Expense expense;
   final Friend friend;
