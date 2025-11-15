@@ -190,7 +190,7 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
 }
 
 // -----------------------------
-//  MOBILE VERSION
+//  SCREEN
 // -----------------------------
 class ExpenseDetailScreen extends StatefulWidget {
   const ExpenseDetailScreen({
@@ -205,100 +205,6 @@ class ExpenseDetailScreen extends StatefulWidget {
 }
 
 class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
-
-  @override
-  Widget build(BuildContext context) {
-    final Expense expense = widget.viewModel.selectedExpense!;
-    final hasFriends = expense.friends.isNotEmpty;
-
-    return AnimatedBuilder(
-      animation: widget.viewModel,
-      builder: (context, _) {
-        final pages = [
-          Scaffold(
-            body: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(12),
-              child: ExpenseDetailsSection(
-                expense: widget.viewModel.selectedExpense!,
-                viewModel: widget.viewModel,
-              ),
-            ),
-            floatingActionButton: _EditExpenseButton(
-              viewModel: widget.viewModel,
-            ),
-          ),
-          Scaffold(
-            body: CustomScrollView(
-              slivers: [
-                if (hasFriends) ...[
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: ExpenseFriendsSection(viewModel: widget.viewModel),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: SizedBox(height: 200),
-                  ),
-                ] else
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: ExpenseFriendsSection(viewModel: widget.viewModel),
-                    ),
-                  ),
-              ],
-            ),
-            floatingActionButton: _AddFriendButton(
-              viewModel: widget.viewModel,
-            ),
-          ),
-        ];
-
-        return Scaffold(
-          appBar: GenericAppBar(
-            title: widget.viewModel.selectedExpense!.description,
-          ),
-          body: pages[widget.viewModel.selectedExpenseTab],
-          bottomNavigationBar: NavigationBar(
-            destinations: const [
-              NavigationDestination(
-                icon: FaIcon(FontAwesomeIcons.circleInfo),
-                label: 'Details',
-              ),
-              NavigationDestination(
-                icon: FaIcon(FontAwesomeIcons.userGroup),
-                label: 'Friends',
-              ),
-            ],
-            selectedIndex: widget.viewModel.selectedExpenseTab,
-            onDestinationSelected: (int index) =>
-                widget.viewModel.selectExpenseTab(index),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// -----------------------------
-//  TABLET / BIG SCREEN VERSION
-// -----------------------------
-class ExpenseDetailBigScreen extends StatefulWidget {
-  const ExpenseDetailBigScreen({
-    super.key,
-    required this.viewModel,
-  });
-
-  final ExpenseViewModel viewModel;
-
-  @override
-  State<ExpenseDetailBigScreen> createState() => _ExpenseDetailBigScreenState();
-}
-
-class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -311,62 +217,65 @@ class _ExpenseDetailBigScreenState extends State<ExpenseDetailBigScreen> {
           appBar: GenericAppBar(title: expense.description),
           body: Padding(
             padding: const EdgeInsets.all(8),
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Row(
-                      children: [
-                        const FaIcon(FontAwesomeIcons.circleInfo, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Details',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: ExpenseDetailsSection(
-                      expense: expense,
-                      viewModel: widget.viewModel),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Row(
-                      children: [
-                        const FaIcon(FontAwesomeIcons.userGroup, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Friends',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (hasFriends) ...[
+            child: StretchingOverscrollIndicator(
+              axisDirection: AxisDirection.down,
+              child: CustomScrollView(
+                slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: ExpenseFriendsSection(viewModel: widget.viewModel),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Row(
+                        children: [
+                          const FaIcon(FontAwesomeIcons.circleInfo, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Details',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: SizedBox(height: 200),
+                    child: ExpenseDetailsSection(
+                        expense: expense,
+                        viewModel: widget.viewModel),
                   ),
-                ] else
-                  SliverFillRemaining(
-                    hasScrollBody: false,
+                  SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: ExpenseFriendsSection(viewModel: widget.viewModel),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Row(
+                        children: [
+                          const FaIcon(FontAwesomeIcons.userGroup, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Friends',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-              ],
+                  if (hasFriends) ...[
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: ExpenseFriendsSection(viewModel: widget.viewModel),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: SizedBox(height: 200),
+                    ),
+                  ] else
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: ExpenseFriendsSection(viewModel: widget.viewModel),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
           floatingActionButton: Column(

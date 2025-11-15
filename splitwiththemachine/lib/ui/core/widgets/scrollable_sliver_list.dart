@@ -25,41 +25,45 @@ class ScrollableSliverList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        if (header != null)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: 12,
-                left: 12,
-                right: 12,
-                bottom: 0,
-              ),
-              child: header!,
-            ),
-          ),
-
-        if (itemCount == 0)
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: CenteredMessage(message: emptyListMsg),
-          )
-        else
-          SliverPadding(
-            padding: const EdgeInsets.all(12),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                itemBuilder,
-                childCount: itemCount,
+    return StretchingOverscrollIndicator(
+        axisDirection: AxisDirection.down,
+        child:
+        CustomScrollView(
+        slivers: [
+          if (header != null)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 12,
+                  left: 12,
+                  right: 12,
+                  bottom: 0,
+                ),
+                child: header!,
               ),
             ),
-          ),
 
-        const SliverToBoxAdapter(
-          child: SizedBox(height: 200),
-        ),
-      ],
+          if (itemCount == 0)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: CenteredMessage(message: emptyListMsg),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.all(12),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  itemBuilder,
+                  childCount: itemCount,
+                ),
+              ),
+            ),
+
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 200),
+          ),
+        ],
+      )
     );
   }
 }

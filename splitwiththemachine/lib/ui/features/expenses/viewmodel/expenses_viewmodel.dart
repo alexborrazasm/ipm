@@ -54,19 +54,12 @@ class ExpenseViewModel extends ChangeNotifier {
 
   // --- Selected states
   Expense? _selectedExpense;
-  int _selectedExpenseTab = 0;
 
   Expense? get selectedExpense => _selectedExpense;
-  int get selectedExpenseTab => _selectedExpenseTab;
 
   // --- Setters ---
   void selectExpense(Expense? expense) {
     _selectedExpense = expense;
-    notifyListeners();
-  }
-
-  void selectExpenseTab(int index) {
-    _selectedExpenseTab = index;
     notifyListeners();
   }
 

@@ -86,7 +86,6 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                           expense == widget.viewModel.selectedExpense,
                       onTap: () {
                         widget.viewModel.selectExpense(expense);
-                        widget.viewModel.selectExpenseTab(0);
                         if (widget.mobile) {
                           Navigator.push(
                               context,

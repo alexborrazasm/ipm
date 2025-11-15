@@ -45,7 +45,7 @@ class _ExpenseHomeScreenState extends State<ExpenseHomeScreen> {
                     Expanded(
                       flex: 3,
                       child: viewModel.selectedExpense != null
-                          ? ExpenseDetailBigScreen(viewModel: viewModel)
+                          ? ExpenseDetailScreen(viewModel: viewModel)
                           : const ExpenseEmptyView(title: "Expense details"),
                     ),
                   ],
