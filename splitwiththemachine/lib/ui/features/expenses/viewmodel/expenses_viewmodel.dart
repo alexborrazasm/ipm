@@ -126,12 +126,12 @@ class ExpenseViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<Expense>():
-        infoMessage = "Expense ${expense.description} added";
+        infoMessage = "Expense '${expense.description}' added";
         expenses.add(result.value);
         notifyListeners();
         return Result.ok(null);
       case Error<Expense>():
-        errorMessage = "Cannot add expense ${expense.description}";
+        errorMessage = "Cannot add expense '${expense.description}'";
         notifyListeners();
         return Result.error(result.error);
     }
@@ -141,17 +141,17 @@ class ExpenseViewModel extends ChangeNotifier {
     final result = await _expenseRepository.editExpense(expense);
     switch (result) {
       case Ok<Expense>():
-        infoMessage = "Expense ${expense.description} edited";
+        infoMessage = "Expense '${expense.description}' edited";
         final index =  expenses.indexWhere((e) => e.id == expense.id);
         if (index == -1) {
-          return Result.error(Exception("Expense to edit not found: ${expense.id}"));
+          return Result.error(Exception("Expense to edit not found: '${expense.id}'"));
         }
         expenses[index] = result.value;
         selectExpense(result.value); // Tigger ui update
         notifyListeners();
         return Result.ok(null);
       case Error<Expense>():
-        errorMessage = "Cannot edit expense ${expense.description}";
+        errorMessage = "Cannot edit expense '${expense.description}'";
         notifyListeners();
         return Result.error(result.error);
     }
@@ -161,12 +161,12 @@ class ExpenseViewModel extends ChangeNotifier {
     final result = await _expenseRepository.deleteExpense(expense.id!);
     switch (result) {
       case Ok<void>():
-        infoMessage = "Expense ${expense.description} deleted";
+        infoMessage = "Expense '${expense.description}' deleted";
         expenses.remove(expense);
         notifyListeners();
         return Result.ok(null);
       case Error<void>():
-        errorMessage = "Cannot remove expense ${expense.description}";
+        errorMessage = "Cannot remove expense '${expense.description}'";
         notifyListeners();
         return Result.error(result.error);
     }
@@ -178,7 +178,7 @@ class ExpenseViewModel extends ChangeNotifier {
     );
     switch (result) {
       case Ok<List<Friend>>():
-        infoMessage = "Friend ${args.friend.name} added";
+        infoMessage = "Friend '${args.friend.name}' added to '${args.expense.description}'";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];
@@ -193,7 +193,7 @@ class ExpenseViewModel extends ChangeNotifier {
         }
         return Result.ok(null);
       case Error<List<Friend>>():
-        errorMessage = "Cannot add ${args.friend.name} to "
+        errorMessage = "Cannot add '${args.friend.name}' to "
             "${args.expense.description}";
         notifyListeners();
         return Result.error(result.error);
@@ -208,7 +208,7 @@ class ExpenseViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<List<Friend>>():
-        infoMessage = "Friend ${args.friend.name} deleted";
+        infoMessage = "Friend '${args.friend.name}' deleted from '${args.expense.description}'";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];
@@ -223,7 +223,7 @@ class ExpenseViewModel extends ChangeNotifier {
         }
         return Result.ok(null);
       case Error<List<Friend>>():
-        errorMessage = "Cannot add ${args.friend.name} to "
+        errorMessage = "Cannot add '${args.friend.name}' to "
             "${args.expense.description}";
         notifyListeners();
         return Result.error(result.error);
@@ -237,7 +237,7 @@ class ExpenseViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<List<Friend>>():
-        infoMessage = "Added ${args.amount} credit to ${args.friend.name}";
+        infoMessage = "Added ${args.amount}\$ credit to '${args.friend.name}'";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];
@@ -254,7 +254,7 @@ class ExpenseViewModel extends ChangeNotifier {
         return Result.ok(null);
       case Error<List<Friend>>():
         errorMessage = "Cannot add ${args.friend.name} to "
-            "${args.expense.description}";
+            "'${args.expense.description}'";
         notifyListeners();
         return Result.error(result.error);
     }
