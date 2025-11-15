@@ -141,40 +141,44 @@ class ExpenseViewModel extends ChangeNotifier {
     final result = await _expenseRepository.editExpense(expense);
     switch (result) {
       case Ok<Expense>():
+        infoMessage = "Expense ${expense.description} edited";
         final index =  expenses.indexWhere((e) => e.id == expense.id);
         if (index == -1) {
           return Result.error(Exception("Expense to edit not found: ${expense.id}"));
         }
         expenses[index] = result.value;
         selectExpense(result.value); // Tigger ui update
+        notifyListeners();
+        return Result.ok(null);
       case Error<Expense>():
         errorMessage = "Cannot edit expense ${expense.description}";
+        notifyListeners();
+        return Result.error(result.error);
     }
-    notifyListeners();
-    return result;
   }
 
   Future<Result<void>> _deleteExpense(Expense expense) async {
     final result = await _expenseRepository.deleteExpense(expense.id!);
-
     switch (result) {
       case Ok<void>():
+        infoMessage = "Expense ${expense.description} deleted";
         expenses.remove(expense);
+        notifyListeners();
+        return Result.ok(null);
       case Error<void>():
         errorMessage = "Cannot remove expense ${expense.description}";
+        notifyListeners();
+        return Result.error(result.error);
     }
-    notifyListeners();
-    selectExpense(null); // Tigger ui update
-    return result;
   }
 
   Future<Result<void>> _addFriendToExpense(FriendExpenseArgs args) async { // TODO
     final result = await _expenseRepository.addFriendToExpense(
         args.expense.id!, args.friend.id!
     );
-
     switch (result) {
       case Ok<List<Friend>>():
+        infoMessage = "Friend ${args.friend.name} added";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];
@@ -185,13 +189,16 @@ class ExpenseViewModel extends ChangeNotifier {
           );
           expenses[index] = updated;
           selectExpense(updated); // Tigger ui update
+          notifyListeners();
         }
+        return Result.ok(null);
       case Error<List<Friend>>():
         errorMessage = "Cannot add ${args.friend.name} to "
             "${args.expense.description}";
+        notifyListeners();
+        return Result.error(result.error);
+
     }
-    notifyListeners();
-    return result;
   }
 
   Future<Result<void>> _deleteFriendFromExpense(FriendExpenseArgs args) async { // TODO
@@ -201,6 +208,7 @@ class ExpenseViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<List<Friend>>():
+        infoMessage = "Friend ${args.friend.name} deleted";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];
@@ -211,13 +219,15 @@ class ExpenseViewModel extends ChangeNotifier {
           );
           expenses[index] = updated;
           selectExpense(updated); // Tigger ui update
+          notifyListeners();
         }
+        return Result.ok(null);
       case Error<List<Friend>>():
         errorMessage = "Cannot add ${args.friend.name} to "
             "${args.expense.description}";
+        notifyListeners();
+        return Result.error(result.error);
     }
-    notifyListeners();
-    return result;
   }
 
   Future<Result<void>> _addCreditToFriend(CreditArgs args) async { // TODO
@@ -227,6 +237,7 @@ class ExpenseViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<List<Friend>>():
+        infoMessage = "Added ${args.amount} credit to ${args.friend.name}";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];
@@ -238,13 +249,15 @@ class ExpenseViewModel extends ChangeNotifier {
           );
           expenses[index] = updated;
           selectExpense(updated); // Tigger ui update
+          notifyListeners();
         }
+        return Result.ok(null);
       case Error<List<Friend>>():
         errorMessage = "Cannot add ${args.friend.name} to "
             "${args.expense.description}";
+        notifyListeners();
+        return Result.error(result.error);
     }
-    notifyListeners();
-    return result;
   }
 
 }
