@@ -130,7 +130,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                     ],
-                    decoration: const InputDecoration(labelText: 'Amount'),
+                    decoration: const InputDecoration(labelText: 'Amount (\$)'),
                   ),
                 ),
                 _buildDetailRow(

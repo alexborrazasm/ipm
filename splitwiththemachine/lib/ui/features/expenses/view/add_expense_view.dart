@@ -98,7 +98,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                     ],
-                    decoration: const InputDecoration(labelText: 'Amount'),
+                    decoration: const InputDecoration(labelText: 'Amount (\$)'),
                   ),
                 ),
                 _buildIconField(

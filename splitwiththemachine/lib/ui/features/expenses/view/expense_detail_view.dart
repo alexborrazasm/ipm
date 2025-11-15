@@ -42,13 +42,13 @@ class ExpenseDetailsSection extends StatelessWidget {
               _DetailRow(
                 icon: FontAwesomeIcons.moneyBill,
                 label: 'Amount',
-                value: '${expense.amount.toStringAsFixed(2)} €',
+                value: '\$${expense.amount.toStringAsFixed(2)}',
               ),
               const SizedBox(height: 12),
               _DetailRow(
                 icon: FontAwesomeIcons.scaleBalanced,
                 label: 'Balance',
-                value: '${expense.creditBalance?.toStringAsFixed(2)} €',
+                value: '\$${expense.creditBalance?.toStringAsFixed(2)}',
               ),
               const SizedBox(height: 12),
               _DetailRow(
@@ -104,8 +104,8 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
                   leading: const CircleAvatar(child: Icon(Icons.person)),
                   title: Text(friend.name),
                   subtitle: Text(
-                    "Credit: ${friend.creditBalance?.toStringAsFixed(2) ?? '-'} €\n"
-                    "Debit: ${friend.debitBalance?.toStringAsFixed(2) ?? '-'} €",
+                    "Credit: \$${friend.creditBalance?.toStringAsFixed(2) ?? '-'}\n"
+                    "Debit: \$${friend.debitBalance?.toStringAsFixed(2) ?? '-'} ",
                   ),
                 ),
               ),
@@ -164,7 +164,7 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
 
       widget.viewModel.addCreditToFriend.execute(args);
       GenericSnackBar.show(context,
-          'Added ${args.amount.toStringAsFixed(2)} € to ${friend.name}'
+          'Added \$${args.amount.toStringAsFixed(2)} to ${friend.name}'
       );
     }
     return false;
@@ -410,7 +410,7 @@ class _AmountDialog extends StatelessWidget {
         decoration: const InputDecoration(
           labelText: 'Enter amount',
           hintText: 'example 10.50',
-          suffixText: '€',
+          suffixText: '\$',
         ),
       ),
       actions: [
