@@ -381,23 +381,46 @@ class _AddFriendButton extends StatelessWidget {
   }
 }
 
-class _AmountDialog extends StatelessWidget {
+class _AmountDialog extends StatefulWidget {
   final TextEditingController controller;
 
   const _AmountDialog({required this.controller});
+
+  @override
+  State<_AmountDialog> createState() => _AmountDialogState();
+}
+
+class _AmountDialogState extends State<_AmountDialog> {
+  bool isValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_validate);
+  }
+
+  void _validate() {
+    final text = widget.controller.text;
+    final parsed = double.tryParse(text);
+
+    setState(() {
+      isValid = text.isNotEmpty && parsed != null && parsed > 0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Add Credit'),
       content: TextField(
-        controller: controller,
+        controller: widget.controller,
         keyboardType: const TextInputType.numberWithOptions(
-            decimal: true, signed: true
+          decimal: true,
+          signed: true,
         ),
         inputFormatters: [
           FilteringTextInputFormatter.allow(
-              RegExp(r'^-?\d*\.?\d{0,2}$')
+            RegExp(r'^-?\d*\.?\d{0,2}$'),
           ),
         ],
         decoration: const InputDecoration(
@@ -412,10 +435,12 @@ class _AmountDialog extends StatelessWidget {
           child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed: () {
-            final value = double.tryParse(controller.text);
+          onPressed: isValid
+              ? () {
+            final value = double.tryParse(widget.controller.text);
             Navigator.pop(context, value);
-          },
+          }
+              : null,
           child: const Text('Add'),
         ),
       ],
