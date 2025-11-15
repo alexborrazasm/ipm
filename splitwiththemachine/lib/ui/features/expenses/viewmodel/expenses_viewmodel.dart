@@ -248,7 +248,7 @@ class ExpenseViewModel extends ChangeNotifier {
             creditBalance: (old.creditBalance ?? 0) + args.amount,
           );
           expenses[index] = updated;
-          selectExpense(updated); // Tigger ui update
+          selectExpense(updated); // Tiggger ui update
           notifyListeners();
         }
         return Result.ok(null);
