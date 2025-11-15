@@ -237,7 +237,7 @@ class ExpenseViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<List<Friend>>():
-        infoMessage = "Added \$${args.amount} credit to '${args.friend.name}'";
+        infoMessage = "Added \$ ${args.amount} credit to '${args.friend.name}'";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];

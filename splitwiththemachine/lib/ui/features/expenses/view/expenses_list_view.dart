@@ -204,7 +204,7 @@ class ExpenseRow extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
             title: Text(expense.description),
-            subtitle: Text('Balance: \$${expense.creditBalance}'),
+            subtitle: Text('Balance: \$ ${expense.creditBalance}'),
           ),
         ),
       ),
