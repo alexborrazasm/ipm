@@ -43,6 +43,7 @@ class AppTheme {
       seedColor: Colors.blue,
       brightness: Brightness.dark,
       error: Color(0xff8f0e27),
+      onError: Colors.white,
     ),
     useMaterial3: true,
     extensions: <ThemeExtension<dynamic>>[

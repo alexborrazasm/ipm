@@ -1,10 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import 'package:splitwiththemachine/ui/core/widgets/centered_message.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
 import 'package:splitwiththemachine/ui/core/widgets/scrollable_sliver_list.dart';
 import '../viewmodel/expenses_viewmodel.dart';
-import 'package:splitwiththemachine/ui/core/widgets/info_bar.dart';
 import 'package:splitwiththemachine/data/models.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
@@ -56,16 +57,106 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         listenable: Listenable.merge([
           widget.viewModel,
           widget.viewModel.loadExpenses,
+          widget.viewModel.loadFriends,
+          widget.viewModel.addExpense,
+          widget.viewModel.deleteExpense,
+          widget.viewModel.editExpense,
+          widget.viewModel.addFriendToExpense,
+          widget.viewModel.deleteFriendFromExpense,
+          widget.viewModel.addCreditToFriend,
         ]),
         builder: (context, child) {
           final filteredExpenses = widget.viewModel.filteredExpenses;
 
+          if (widget.viewModel.loadExpenses.error ||
+              widget.viewModel.loadFriends.error
+          ) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ErrorSnackBar.show(
+                context,
+                widget.viewModel.errorMessage!,
+                actionLabel: "Retry",
+                onAction: () {
+                  if (widget.viewModel.loadExpenses.error) {
+                    widget.viewModel.loadExpenses.clearResult();
+                    widget.viewModel.loadExpenses.execute();
+                  }
+                  if (widget.viewModel.loadFriends.error) {
+                    widget.viewModel.loadFriends.clearResult();
+                    widget.viewModel.loadFriends.execute();
+                  }
+                  ErrorSnackBar.hide();
+                },
+              );
+            });
+          }
+
+          if (widget.viewModel.addExpense.error ||
+              widget.viewModel.deleteExpense.error ||
+              widget.viewModel.editExpense.error ||
+              widget.viewModel.addFriendToExpense.error ||
+              widget.viewModel.deleteFriendFromExpense.error ||
+              widget.viewModel.addCreditToFriend.error
+          ) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ErrorSnackBar.show(
+                context,
+                widget.viewModel.errorMessage!,
+                actionLabel: "Dismiss",
+                onAction: () {
+                  widget.viewModel.addExpense.error
+                      ? widget.viewModel.addExpense.clearResult()
+                      : widget.viewModel.deleteExpense.error
+                      ? widget.viewModel.deleteExpense.clearResult()
+                      : widget.viewModel.editExpense.error
+                      ? widget.viewModel.editExpense.clearResult()
+                      : widget.viewModel.addFriendToExpense.error
+                      ? widget.viewModel.addFriendToExpense.clearResult()
+                      : widget.viewModel.deleteFriendFromExpense.error
+                      ? widget.viewModel.deleteFriendFromExpense.clearResult()
+                      : widget.viewModel.addCreditToFriend.error
+                      ? widget.viewModel.addCreditToFriend.clearResult()
+                      : null;
+                  ErrorSnackBar.hide();
+                },
+              );
+            });
+          }
+
+          if (widget.viewModel.addExpense.completed ||
+              widget.viewModel.deleteExpense.completed ||
+              widget.viewModel.editExpense.completed ||
+              widget.viewModel.addFriendToExpense.completed ||
+              widget.viewModel.deleteFriendFromExpense.completed ||
+              widget.viewModel.addCreditToFriend.completed
+          ) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              GenericSnackBar.show(
+                context,
+                widget.viewModel.infoMessage!,
+              );
+              widget.viewModel.addExpense.completed
+              ? widget.viewModel.addExpense.clearResult()
+              : widget.viewModel.deleteExpense.completed
+              ? widget.viewModel.deleteExpense.clearResult()
+              : widget.viewModel.editExpense.completed
+              ? widget.viewModel.editExpense.clearResult()
+              : widget.viewModel.addFriendToExpense.completed
+              ? widget.viewModel.addFriendToExpense.clearResult()
+              : widget.viewModel.deleteFriendFromExpense.completed
+              ? widget.viewModel.deleteFriendFromExpense.clearResult()
+              : widget.viewModel.addCreditToFriend.completed
+              ? widget.viewModel.addCreditToFriend.clearResult()
+              : null;
+            });
+          }
+
           return Stack(
             children: [
-              if (widget.viewModel.loadExpenses.running)
+              if (widget.viewModel.loadExpenses.running ||
+                  widget.viewModel.loadFriends.running) ...[
                 const Center(child: CircularProgressIndicator()),
-
-              if (!widget.viewModel.loadExpenses.running)
+              ] else ...[
                 widget.viewModel.expenses.isEmpty
                     ? const CenteredMessage(message: "No expenses")
                     : ScrollableSliverList(
@@ -102,18 +193,31 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                   },
                 ),
 
-              if (widget.viewModel.loadExpenses.error)
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: InfoBar(
-                    message: widget.viewModel.errorMessage!,
-                    onPressed: () {
-                      widget.viewModel.loadExpenses.clearResult();
-                      widget.viewModel.loadExpenses.execute();
-                    },
-                    isError: true,
-                  ),
-                ),
+                if (widget.viewModel.addExpense.running ||
+                    widget.viewModel.deleteExpense.running)
+                  const Center(child: CircularProgressIndicator()),
+
+                //if (widget.viewModel.loadExpenses.error ||
+                //    widget.viewModel.loadFriends.error)
+                //  Align(
+                //    alignment: Alignment.topCenter,
+                //    child: InfoBar(
+                //      message: widget.viewModel.errorMessage!,
+                //      onPressed: () {
+                //        if (widget.viewModel.loadExpenses.error) {
+                //          widget.viewModel.loadExpenses.clearResult();
+                //          widget.viewModel.loadExpenses.execute();
+                //        }
+                //        if (widget.viewModel.loadFriends.error) {
+                //          widget.viewModel.loadFriends.clearResult();
+                //          widget.viewModel.loadFriends.execute();
+                //        }
+                //      },
+                //      isError: true,
+                //      btnText: "Retry",
+                //    ),
+                //  ),
+              ],
             ],
           );
         },
@@ -173,10 +277,6 @@ class ExpenseRow extends StatelessWidget {
                   Navigator.pop(context, true);
                   viewModel.deleteExpense.execute(expense);
                   viewModel.selectExpense(null);
-                  GenericSnackBar.show( // TODO manage error observing
-                    context,
-                    'Expense "${expense.description}" deleted'
-                  );
                 },
                 child: Text(
                   'Delete',

@@ -131,7 +131,7 @@ class ExpenseViewModel extends ChangeNotifier {
         notifyListeners();
         return Result.ok(null);
       case Error<Expense>():
-        errorMessage = "Cannot add expense '${expense.description}'";
+        errorMessage = "Expense '${expense.description}' is already added";
         notifyListeners();
         return Result.error(result.error);
     }
@@ -172,13 +172,13 @@ class ExpenseViewModel extends ChangeNotifier {
     }
   }
 
-  Future<Result<void>> _addFriendToExpense(FriendExpenseArgs args) async { // TODO
+  Future<Result<void>> _addFriendToExpense(FriendExpenseArgs args) async {
     final result = await _expenseRepository.addFriendToExpense(
         args.expense.id!, args.friend.id!
     );
     switch (result) {
       case Ok<List<Friend>>():
-        infoMessage = "Friend '${args.friend.name}' added to '${args.expense.description}'";
+        infoMessage = "'${args.friend.name}' added to '${args.expense.description}'";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];
@@ -208,7 +208,7 @@ class ExpenseViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<List<Friend>>():
-        infoMessage = "Friend '${args.friend.name}' deleted from '${args.expense.description}'";
+        infoMessage = "'${args.friend.name}' deleted from '${args.expense.description}'";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];
@@ -223,14 +223,14 @@ class ExpenseViewModel extends ChangeNotifier {
         }
         return Result.ok(null);
       case Error<List<Friend>>():
-        errorMessage = "Cannot add '${args.friend.name}' to "
+        errorMessage = "Cannot delete '${args.friend.name}' from "
             "${args.expense.description}";
         notifyListeners();
         return Result.error(result.error);
     }
   }
 
-  Future<Result<void>> _addCreditToFriend(CreditArgs args) async { // TODO
+  Future<Result<void>> _addCreditToFriend(CreditArgs args) async {
     final result = await _expenseRepository.addCreditToFriend(
         args.expense.id!, args.friend.id!, args.amount
     );

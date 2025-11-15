@@ -161,7 +161,6 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
         friend: friend,
         amount: double.parse(amount.toStringAsFixed(2)),
       );
-
       widget.viewModel.addCreditToFriend.execute(args);
       GenericSnackBar.show(context,
           'Added \$ ${args.amount.toStringAsFixed(2)} to ${friend.name}'
@@ -179,12 +178,6 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
     if (confirmed ?? false) {
       final args = FriendExpenseArgs(expense: expense, friend: friend);
       widget.viewModel.deleteFriendFromExpense.execute(args);
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              'The friend "${friend.name}" was removed from the expense'
-          )
-      ));
     }
     return false;
   }
@@ -307,34 +300,34 @@ class _DetailRow extends StatelessWidget {
   final String label;
   final String value;
 
-@override
-Widget build(BuildContext context) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      FaIcon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
-      const SizedBox(width: 12),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FaIcon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 }
 
 // Private reusable buttons for this screen

@@ -128,20 +128,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       return;
                     }
 
-                    try {
-                      final expense = Expense(
-                        description: description,
-                        amount: amount,
-                        date: selectedDate,
-                      );
+                    final expense = Expense(
+                      description: description,
+                      amount: amount,
+                      date: selectedDate,
+                    );
 
-                      await widget.viewModel.addExpense.execute(expense);
-                      Navigator.pop(context);
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $e')),
-                      );
-                    }
+                    widget.viewModel.addExpense.execute(expense);
+                    Navigator.pop(context);
                   },
                   child: const Text('Save'),
                 ),
