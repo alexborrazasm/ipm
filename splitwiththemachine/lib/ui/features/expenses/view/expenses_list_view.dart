@@ -152,10 +152,10 @@ class ExpenseRow extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: Theme.of(context).colorScheme.error,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Icon(Icons.delete, color: Colors.white, size: 28),
+        child: const Icon(Icons.delete, size: 28),
       ),
       confirmDismiss: (direction) async {
         final confirmed = await showDialog<bool>(
@@ -178,9 +178,9 @@ class ExpenseRow extends StatelessWidget {
                     'Expense "${expense.description}" deleted'
                   );
                 },
-                child: const Text(
+                child: Text(
                   'Delete',
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             ],

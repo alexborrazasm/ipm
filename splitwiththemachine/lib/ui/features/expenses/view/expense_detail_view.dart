@@ -3,6 +3,7 @@ import 'package:splitwiththemachine/data/models.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import 'package:splitwiththemachine/ui/core/widgets/centered_message.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
+import '../../../core/themes/app_theme.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:splitwiththemachine/ui/features/expenses/view/edit_expense_view.dart';
@@ -93,8 +94,8 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
             return Dismissible(
               key: ValueKey("friend-${friend.id}"),
               direction: DismissDirection.horizontal,
-              background: _buildAddBackground(),
-              secondaryBackground: _buildRemoveBackground(),
+              background: _buildAddBackground(context),
+              secondaryBackground: _buildRemoveBackground(context),
               confirmDismiss: (direction) =>
                   _handleDismiss(context, direction, friend),
               child: Card(
@@ -116,24 +117,24 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
   }
 
   // Helper widgets and methods for clarity
-  Widget _buildAddBackground() => Container(
+  Widget _buildAddBackground(BuildContext context) => Container(
     alignment: Alignment.centerLeft,
     padding: const EdgeInsets.symmetric(horizontal: 20),
     decoration: BoxDecoration(
-      color: Colors.green,
+      color: Theme.of(context).extension<CustomColors>()!.addCredit,
       borderRadius: BorderRadius.circular(12),
     ),
-    child: const Icon(Icons.add, color: Colors.white, size: 28),
+    child: Icon(Icons.add, size: 28),
   );
 
-  Widget _buildRemoveBackground() => Container(
+  Widget _buildRemoveBackground(BuildContext context) => Container(
     alignment: Alignment.centerRight,
     padding: const EdgeInsets.symmetric(horizontal: 20),
     decoration: BoxDecoration(
-      color: Colors.red,
+      color: Theme.of(context).colorScheme.error,
       borderRadius: BorderRadius.circular(12),
     ),
-    child: const Icon(Icons.delete, color: Colors.white, size: 28),
+    child: Icon(Icons.delete, size: 28),
   );
 
   Future<bool> _handleDismiss(
@@ -437,8 +438,8 @@ class _RemoveFriendDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Remove Friend'),
-      content: Text('Are you sure you want to remove $friendName from this expense?'),
+      title: const Text('Delete friend'),
+      content: Text('Are you sure you want to delete $friendName from this expense?'),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
@@ -446,7 +447,7 @@ class _RemoveFriendDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Remove', style: TextStyle(color: Colors.red)),
+          child: Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
         ),
       ],
     );

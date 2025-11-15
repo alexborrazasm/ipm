@@ -17,7 +17,6 @@ class GenericFloatingButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       tooltip: tooltip,
-      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       onPressed: onPressed,
       child: Icon(icon),
     );
