@@ -43,6 +43,7 @@ class ExpenseViewModel extends ChangeNotifier {
 
   List<Expense> expenses = [];
   List<Friend> friends = [];
+  String? infoMessage;
   String? errorMessage;
 
   // --- Search states
@@ -125,12 +126,15 @@ class ExpenseViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<Expense>():
+        infoMessage = "Expense ${expense.description} added";
         expenses.add(result.value);
+        notifyListeners();
+        return Result.ok(null);
       case Error<Expense>():
         errorMessage = "Cannot add expense ${expense.description}";
+        notifyListeners();
+        return Result.error(result.error);
     }
-    notifyListeners();
-    return result;
   }
 
   Future<Result<void>> _editExpense(Expense expense) async {
