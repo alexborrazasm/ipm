@@ -149,10 +149,63 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
   }
 
   Future<bool> _addCredit(BuildContext context, Friend friend) async {
-    final controller = TextEditingController();
     final amount = await showDialog<double>(
       context: context,
-      builder: (_) => _AmountDialog(controller: controller),
+      builder: (context) {
+        final controller = TextEditingController();
+        bool isValid = false;
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            void validate() {
+              final text = controller.text;
+              final parsed = double.tryParse(text);
+
+              setModalState(() {
+                isValid = text.isNotEmpty && parsed != null && parsed != 0;
+              });
+            }
+
+            controller.addListener(validate);
+
+            return AlertDialog(
+              title: const Text('Add Credit'),
+              content: TextField(
+                controller: controller,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'^-?\d*\.?\d{0,2}$'),
+                  ),
+                ],
+                decoration: const InputDecoration(
+                  labelText: 'Enter amount',
+                  hintText: 'example 10.50',
+                  suffixText: '\$',
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: isValid
+                      ? () {
+                    final value = double.tryParse(controller.text);
+                    Navigator.pop(context, value);
+                  }
+                      : null,
+                  child: const Text('Add'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
 
     if (amount != null) {
@@ -162,12 +215,16 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
         amount: double.parse(amount.toStringAsFixed(2)),
       );
       widget.viewModel.addCreditToFriend.execute(args);
-      GenericSnackBar.show(context,
-          'Added \$ ${args.amount.toStringAsFixed(2)} to ${friend.name}'
+
+      GenericSnackBar.show(
+        context,
+        'Added \$ ${args.amount.toStringAsFixed(2)} to ${friend.name}',
       );
     }
+
     return false;
   }
+
 
   Future<bool> _removeFriend(BuildContext context, Friend friend) async {
     final confirmed = await showDialog<bool>(
@@ -377,73 +434,6 @@ class _AddFriendButton extends StatelessWidget {
           viewModel.searchFriends(""); // Clean search
         });
       },
-    );
-  }
-}
-
-class _AmountDialog extends StatefulWidget {
-  final TextEditingController controller;
-
-  const _AmountDialog({required this.controller});
-
-  @override
-  State<_AmountDialog> createState() => _AmountDialogState();
-}
-
-class _AmountDialogState extends State<_AmountDialog> {
-  bool isValid = false;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.addListener(_validate);
-  }
-
-  void _validate() {
-    final text = widget.controller.text;
-    final parsed = double.tryParse(text);
-
-    setState(() {
-      isValid = text.isNotEmpty && parsed != null && parsed > 0;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Add Credit'),
-      content: TextField(
-        controller: widget.controller,
-        keyboardType: const TextInputType.numberWithOptions(
-          decimal: true,
-          signed: true,
-        ),
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(
-            RegExp(r'^-?\d*\.?\d{0,2}$'),
-          ),
-        ],
-        decoration: const InputDecoration(
-          labelText: 'Enter amount',
-          hintText: 'example 10.50',
-          suffixText: '\$',
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: isValid
-              ? () {
-            final value = double.tryParse(widget.controller.text);
-            Navigator.pop(context, value);
-          }
-              : null,
-          child: const Text('Add'),
-        ),
-      ],
     );
   }
 }
