@@ -38,7 +38,6 @@
 ## Mobile Flowchart
 ```mermaid
 flowchart LR
-
     A[Loading Screen] -->|Internet OK| B[View Expenses]
     A -->|No Internet| C[No Internet Screen]
 
@@ -47,30 +46,25 @@ flowchart LR
 
     D -->|Search| F[Search Expense]
     D -->|Add| G[Add Expense]
-    D -->|About| H[About Screen]
+    D -->|Help and Feedback| H[Help and Feedback Screen]
     D -->|View expense| I[Expense Details info]
     D -->|Delete| J[Delete Expense]
 
     I -->|Go back| D
     I -->|Delete| J
     I -->|Edit| L[Edit Expense]
-    I -->|View expense friends| K[Expense Details friends]
+    I -->|Add friend to expense| M[Add Friend Expense]
+    I -->|Add credit to friend| N[Add Credit Friend]
+    I -->|Remove friend from expense| O[Remove Expense Friend]
 
-    K -->|View expense info| I
-    K --> |View About| H
+    O --> |Confirm| I
+    O --> |Back| I
 
-    K -->|Add friend to expense| M[Add Friend Expense]
-    K -->|Add credit to expense| N[Add Credit Expense]
-    K -->|Remove friend from expense| O[Remove Expense Friend]
+    N -->|Confirm| I
+    N -->|Back| I
 
-    O --> |Confirm| K
-    O --> |Back| K
-
-    N -->|Confirm| K
-    N -->|Back| K
-
-    M --> |Save| K
-    M --> |Cancel| K
+    M --> |Save| I
+    M --> |Cancel| I
     
     L -->|Save| I
     L -->|Cancel| I
@@ -82,14 +76,12 @@ flowchart LR
     G -->|Cancel| D
 
     H -->|Close| D
-    H --> |Go back| K
 
     F -->|View| D
 
     E -->|Add Expense| D
 
     C -->|Retry| A
-
 ```
 
 
@@ -105,7 +97,7 @@ flowchart LR
 
     D -->|Search| F[Search Expense]
     D -->|Add| G[Add Expense]
-    D -->|About| H[About Screen]
+    D -->|Help| H[Help and Feedback Screen]
     D -->|View expense| I[Expense Details]
     D -->|Delete| J[Delete Expense]
 
@@ -114,8 +106,8 @@ flowchart LR
     I -->|Delete| J
     I -->|Edit| L[Edit Expense]
     I -->|Add friend to expense| M[Add Friend Expense]
-    I -->|Add credit to expense| N[Add Credit Expense]
-    I -->|Remove friend expense| O[Remove Expense Friend]
+    I -->|Add credit to friend| N[Add Credit Friend]
+    I -->|Remove friend| O[Remove Expense Friend]
 
     O -->|Confirm| I
     O -->|Back| I

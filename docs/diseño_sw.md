@@ -35,7 +35,7 @@ E
 end
 ```
 
-## Class Diagram: View: ExpensesScreen
+## Class Diagram: View: ExpenseListScreen
 ```mermaid
 
 classDiagram
@@ -47,13 +47,13 @@ class MyApp:::group1 {
   +build(context: BuildContext) Widget
 }
 
-class ExpensesScreen:::group2 {
+class ExpenseListScreen:::group2 {
   +title: String
   +viewModel: ExpensesViewModel
-  +createState() State<ExpensesScreen>
+  +createState() State<ExpenseListScreen>
 }
 
-class _ExpensesScreenState:::group2 {
+class _ExpenseListScreenState:::group2 {
   +build(context: BuildContext) Widget
 }
 
@@ -104,10 +104,10 @@ class ExpenseViewModel { }
 class Expense:::group5 {
   +id: int?
   +description: String
-  +date: String
+  +date: DateTime
   +amount: double
-  +numFriends: int
-  +creditBalance: double
+  +numFriends: int?
+  +creditBalance: double?
   +friends: List<Friend>
   +Expense.fromJson(Map)
   +toString() String
@@ -124,26 +124,26 @@ classDef group7 fill:#015c7d,stroke:#000,color:#000;
 %%=========================
 %% Relationships
 %%=========================
-MyApp --> ExpensesScreen : creates
-_ExpensesScreenState ..> ExpenseViewModel : observes
-ExpensesScreen --> ExpenseViewModel : uses
-_ExpensesScreenState --> ExpensesScreen : state of
-_ExpensesScreenState --> InfoBar : displays messages on
-_ExpensesScreenState --> ExpenseRow : creates
+MyApp --> ExpenseListScreen : creates
+_ExpenseListScreenState ..> ExpenseViewModel : observes
+ExpenseListScreen --> ExpenseViewModel : uses
+_ExpenseListScreenState --> ExpenseListScreen : state of
+_ExpenseListScreenState --> InfoBar : displays messages on
+_ExpenseListScreenState --> ExpenseRow : creates
 ExpenseViewModel --> Expense : manages
 ExpenseRow --> Expense : displays
-_ExpensesScreenState ..> ExpenseDetailsScreen : navigates to
-_ExpensesScreenState ..> ExpenseAddScreen : navigates to
-_ExpensesScreenState ..> AppHelpScreen : navigates to
+_ExpenseListScreenState ..> ExpenseDetailsScreen : navigates to
+_ExpenseListScreenState ..> ExpenseAddScreen : navigates to
+_ExpenseListScreenState ..> AppHelpScreen : navigates to
 ExpenseAddScreen --> ExpenseViewModel : uses
 ExpenseDetailsScreen --> ExpenseViewModel : uses
 RemoveDialog --> ExpenseViewModel : interacts with
 _RemoveDialogState --> RemoveDialog: state of
-_ExpensesScreenState ..> RemoveDialog : opens
+_ExpenseListScreenState ..> RemoveDialog : opens
 ```
 
 > [!NOTE] Note
-Shows only the details of the `ExpensesScreen` to keep things simple.
+Shows only the details of the `ExpenseListScreen` to keep things simple.
 
 ## Class Diagram: View: ExpenseDetailsScreen
 ```mermaid
@@ -179,10 +179,10 @@ class InfoBar:::group2 {
   +build(context: BuildContext) Widget
 }
 
-class ExpensesScreen:::group4 {
+class ExpenseListScreen:::group4 {
   +title: String
   +viewModel: ExpenseViewModel
-  +createState() State<ExpensesScreen>
+  +createState() State<ExpenseListScreen>
 }
 
 class ExpenseEditScreen:::group6 {
@@ -225,10 +225,10 @@ class ExpenseViewModel { }
 class Expense:::group5 {
   +id: int?
   +description: String
-  +date: String
+  +date: DateTime
   +amount: double
-  +numFriends: int
-  +creditBalance: double
+  +numFriends: int?
+  +creditBalance: double?
   +friends: List<Friend>
   +Expense.fromJson(Map)
   +toString() String
@@ -253,10 +253,10 @@ _ExpenseDetailsScreenState --> InfoBar : displays messages on
 _ExpenseDetailsScreenState --> ExpenseDetails : creates
 ExpenseViewModel --> Expense : manages
 ExpenseDetails --> Expense : displays
-_ExpenseDetailsScreenState ..> ExpensesScreen : navigates to
+_ExpenseDetailsScreenState ..> ExpenseListScreen : navigates to
 _ExpenseDetailsScreenState ..> ExpenseEditScreen : navigates to
 _ExpenseDetailsScreenState ..> AddFriendToExpenseScreen : navigates to
-ExpensesScreen --> ExpenseViewModel : uses
+ExpenseListScreen --> ExpenseViewModel : uses
 ExpenseEditScreen --> ExpenseViewModel : uses
 AddFriendToExpenseScreen --> ExpenseViewModel : uses
 RemoveDialog --> ExpenseViewModel : interacts with
@@ -282,27 +282,28 @@ class ExpenseViewModel:::group3 {
   -_expenseRepository: ExpenseRepository
   -_friendRepository: FriendRepository
 
-  +expenses: List<Friend>
+  +expenses: List<Expense>
   +friends: List<Friend>
+  +infoMessage: String?
   +errorMessage: String?
 
   +loadExpenses: Command0
   +loadFriends: Command0
   +addExpense: Command1<void, Expense>
-  +removeExpense: Command1<void, int>
+  +deleteExpense: Command1<void, Expense>
   +editExpense: Command1<void, Expense>
   +addFriendToExpense: Command1<void, FriendExpenseArgs>
   +deleteFriendFromExpense: Command1<void, FriendExpenseArgs>
   +addCreditToFriend: Command1<void, CreditArgs>
 
-  +_loadFriends() Future<Result<void>>
-  +_loadExpenses() Future<Result<void>>
-  +_addExpense(expense: Expense) Future<Result<void>>
-  +_removeExpense(id: int) Future<Result<void>>
-  +_editExpense(expense: Expense) Future<Result<void>>
-  +_addFriendToExpense(args: FriendExpenseArgs) Future<Result<void>>
-  +_deleteFriendFromExpense(args: FriendExpenseArgs) Future<Result<void>>
-  +_addCreditToFriend(args: CreditArgs) Future<Result<void>>
+  -_loadFriends() Future<Result<void>>
+  -_loadExpenses() Future<Result<void>>
+  -_addExpense(expense: Expense) Future<Result<void>>
+  -_deleteExpense(id: int) Future<Result<void>>
+  -_editExpense(expense: Expense) Future<Result<void>>
+  -_addFriendToExpense(args: FriendExpenseArgs) Future<Result<void>>
+  -_deleteFriendFromExpense(args: FriendExpenseArgs) Future<Result<void>>
+  -_addCreditToFriend(args: CreditArgs) Future<Result<void>>
 }
 
 %%=========================
@@ -323,6 +324,8 @@ class SplitWithMeService:::group2 {
 class SplitWithMeAPIService:::group2 {
   +serverURL: String
   +serverPort: String
+
+  _fetchFriendsByExpense(expenseId: int) Future
 }
 
 %%=========================
@@ -349,7 +352,7 @@ class ExpenseRepository:::group1 {
   +fetchExpenses() Future
   +addExpense(expense: Expense) Future
   +editExpense(expense: Expense) Future
-  +removeExpense(id: int) Future
+  +deleteExpense(id: int) Future
   +addFriendToExpense(args: FriendExpenseArgs) Future
   +deleteFriendFromExpense(args: FriendExpenseArgs) Future
   +addCreditToFriend(args: CreditArgs) Future
@@ -371,13 +374,15 @@ class Friend:::group5 {
 class Expense:::group5 {
   +id: int?
   +description: String
-  +date: String
+  +date: DateTime
   +amount: double
-  +numFriends: int
-  +creditBalance: double
+  +numFriends: int?
+  +creditBalance: double?
   +friends: List<Friend>
   +Expense.fromJson(Map)
+  +getDateString() String
   +toString() String
+  +copyWith(expense: Expense) Expense
 }
 
 class ServerException:::group5 {
@@ -441,7 +446,7 @@ ExpenseViewModel ..> CreditArgs : uses
 sequenceDiagram
     autonumber
     participant User
-    participant ExpensesScreen
+    participant ExpenseListScreen
     participant ExpenseViewModel
     participant Command0
     participant ExpenseRepository
@@ -450,16 +455,16 @@ sequenceDiagram
     participant ExpenseList as List<Expense>
     participant FriendList as List<Friend>
 
-    Note over ExpensesScreen: App starts or user opens ExpensesScreen
+    Note over ExpenseListScreen: App starts or user opens ExpenseListScreen
 
-    User ->> ExpensesScreen: View appears
+    User ->> ExpenseListScreen: View appears
 
     %% ---- LOAD EXPENSES ----
-    ExpensesScreen -) ExpenseViewModel: loadExpenses.execute()
+    ExpenseListScreen -) ExpenseViewModel: loadExpenses.execute()
     ExpenseViewModel ->> Command0: set running = true
     Note over Command0: Command0 notifies listeners (running = true)
-    Command0 ->> ExpensesScreen: notifies listeners (running = true)
-    ExpensesScreen ->> ExpensesScreen: show CircularProgressIndicator()
+    Command0 ->> ExpenseListScreen: notifies listeners (running = true)
+    ExpenseListScreen ->> ExpenseListScreen: show CircularProgressIndicator()
 
     Note over ExpenseViewModel: _loadExpenses() is invoked
     ExpenseViewModel -) ExpenseRepository: fetchExpenses()
@@ -475,8 +480,8 @@ sequenceDiagram
     end
 
     ExpenseViewModel ->> Command0: set running = false
-    Command0 ->> ExpensesScreen: notifies listeners (running = false)
-    ExpensesScreen ->> ExpensesScreen: hide CircularProgressIndicator()
+    Command0 ->> ExpenseListScreen: notifies listeners (running = false)
+    ExpenseListScreen ->> ExpenseListScreen: hide CircularProgressIndicator()
 
     %% ---- LOAD FRIENDS (initial) ----
     Note over ExpenseViewModel,FriendRepository: Friends are loaded once at startup and kept in memory
@@ -494,12 +499,11 @@ sequenceDiagram
 
     %% ---- FINAL STATE ----
     alt success
-        ExpensesScreen ->> ExpensesScreen: rebuild UI with friends + expenses
+        ExpenseListScreen ->> ExpenseListScreen: rebuild UI with friends + expenses
     else error
-        ExpensesScreen ->> ExpensesScreen: display InfoBar with errorMessage
+        ExpenseListScreen ->> ExpenseListScreen: display InfoBar with errorMessage
     end
 
-    Note over ExpensesScreen: UI shows final state (lists or error)
-
-
+    Note over ExpenseListScreen: UI shows final state (lists or error)
 ```
+
