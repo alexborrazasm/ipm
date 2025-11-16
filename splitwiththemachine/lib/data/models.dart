@@ -81,7 +81,24 @@ class Friend {
 
 }
 
+enum ServerErrorType {
+  noConnection,
+  timeout,
+  unauthorized,
+  notFound,
+  validation,
+  unknown,
+}
+
 class ServerException implements Exception {
-  String errorMessage;
-  ServerException(this.errorMessage);
+  final String message;
+  final ServerErrorType type;
+
+  ServerException({
+    required this.message,
+    this.type = ServerErrorType.unknown,
+  });
+
+  @override
+  String toString() => "[ServerException][$type] $message";
 }

@@ -129,8 +129,10 @@ class ExpenseViewModel extends ChangeNotifier {
         friends = result.value;
         notifyListeners();
         return Result.ok(null);
-      case Error<List<Friend>>():
-        errorMessage = "Cannot retrieve the list of friends";
+      case Error<List<Friend>>(error: var e):
+        errorMessage = _mapServerError(e,
+          msg: "Cannot retrieve the list of friends",
+        );
         notifyListeners();
         return Result.error(result.error);
     }
@@ -143,8 +145,10 @@ class ExpenseViewModel extends ChangeNotifier {
         expenses = result.value;
         notifyListeners();
         return Result.ok(null);
-      case Error<List<Expense>>():
-        errorMessage = "Cannot retrieve the list of expenses";
+      case Error<List<Expense>>(error: var e):
+        errorMessage = _mapServerError(e,
+          msg: "Cannot retrieve the list of expenses",
+        );
         notifyListeners();
         return Result.error(result.error);
     }
@@ -159,8 +163,10 @@ class ExpenseViewModel extends ChangeNotifier {
         expenses.add(result.value);
         notifyListeners();
         return Result.ok(null);
-      case Error<Expense>():
-        errorMessage = "Expense '${expense.description}' is already added";
+      case Error<Expense>(error: var e):
+        errorMessage = _mapServerError(e,
+          msg: "Expense '${expense.description}' is already added"
+        );
         notifyListeners();
         return Result.error(result.error);
     }
@@ -181,8 +187,10 @@ class ExpenseViewModel extends ChangeNotifier {
         }
         notifyListeners();
         return Result.ok(null);
-      case Error<Expense>():
-        errorMessage = "Cannot edit expense '${expense.description}'";
+      case Error<Expense>(error: var e):
+        errorMessage = _mapServerError(e,
+          msg: "Cannot edit expense '${expense.description}'",
+        );
         notifyListeners();
         return Result.error(result.error);
     }
@@ -196,8 +204,10 @@ class ExpenseViewModel extends ChangeNotifier {
         expenses.remove(expense);
         notifyListeners();
         return Result.ok(null);
-      case Error<void>():
-        errorMessage = "Cannot remove expense '${expense.description}'";
+      case Error<void>(error: var e):
+        errorMessage = _mapServerError(e,
+            msg: "Cannot remove expense '${expense.description}'",
+        );
         notifyListeners();
         return Result.error(result.error);
     }
@@ -225,9 +235,10 @@ class ExpenseViewModel extends ChangeNotifier {
           notifyListeners();
         }
         return Result.ok(null);
-      case Error<List<Friend>>():
-        errorMessage = "Cannot add '${args.friend.name}' to "
-            "${args.expense.description}";
+      case Error<List<Friend>>(error: var e):
+         errorMessage = _mapServerError(e,
+           msg: "Cannot add '${args.friend.name}' to ${args.expense.description}"
+         );
         notifyListeners();
         return Result.error(result.error);
 
@@ -258,9 +269,11 @@ class ExpenseViewModel extends ChangeNotifier {
           notifyListeners();
         }
         return Result.ok(null);
-      case Error<List<Friend>>():
-        errorMessage = "Cannot delete '${args.friend.name}' from "
-            "${args.expense.description}";
+      case Error<List<Friend>>(error: var e):
+        errorMessage = _mapServerError(e,
+          msg: "Cannot delete '${args.friend.name}' from "
+            "${args.expense.description}",
+        );
         markDeletingFriendExpense(null);
         notifyListeners();
         return Result.error(result.error);
@@ -293,9 +306,10 @@ class ExpenseViewModel extends ChangeNotifier {
           notifyListeners();
         }
         return Result.ok(null);
-      case Error<List<Friend>>():
-        errorMessage = "Cannot add ${args.friend.name} to "
-            "'${args.expense.description}'";
+      case Error<List<Friend>>(error: var e):
+        errorMessage = _mapServerError(e,
+          msg: "Cannot add ${args.friend.name} to '${args.expense.description}'"
+        );
         markAddingFriendExpense(null);
         notifyListeners();
         return Result.error(result.error);
@@ -303,6 +317,33 @@ class ExpenseViewModel extends ChangeNotifier {
   }
 
 }
+
+/// Maps a caught exception into a user-friendly message.
+/// Useful for centralizing error handling logic.
+///
+/// [exception] - The thrown exception.
+/// [msg] - Message for validation errors (ex: "Cannot add friend").
+///
+/// Returns a human readable string message.
+String _mapServerError(Exception exception, {required String msg}) {
+  // Check if the exception is a known server exception.
+  if (exception is ServerException) {
+    switch (exception.type) {
+      case ServerErrorType.noConnection:
+        return "No internet connection";
+
+      case ServerErrorType.validation:
+        return msg;
+
+      default:
+        return "Unexpected server error";
+    }
+  }
+
+  // Fallback if exception type is unknown.
+  return "Unexpected error";
+}
+
 
 // Args for adding/removing a friends from an expense using Command1
 class FriendExpenseArgs {

@@ -49,10 +49,16 @@ class SplitWithMeAPIService implements SplitWithMeService {
 
         return expensesWithFriends;
       } else {
-        throw ServerException("Invalid data");
+        throw ServerException(
+          message: "Invalid data",
+          type: ServerErrorType.validation,
+        );
       }
     } on http.ClientException {
-      throw ServerException("Service is not available. Try again later.");
+      throw ServerException(
+          message: "Service is not available. Try again later.",
+          type: ServerErrorType.noConnection
+      );
     }
   }
 
@@ -65,10 +71,16 @@ class SplitWithMeAPIService implements SplitWithMeService {
         var data = json.decode(response.body);
         return List<Friend>.from(data.map((item) => Friend.fromJson(item)));
       } else {
-        throw ServerException("Invalid data");
+        throw ServerException(
+          message: "Invalid data",
+          type: ServerErrorType.validation,
+        );
       }
     } on http.ClientException {
-      throw ServerException("Service is not available. Try again later.");
+      throw ServerException(
+          message: "Service is not available. Try again later.",
+          type: ServerErrorType.noConnection
+      );
     }
   }
 
@@ -80,10 +92,16 @@ class SplitWithMeAPIService implements SplitWithMeService {
         var data = json.decode(response.body);
         return List<Friend>.from(data.map((item) => Friend.fromJson(item)));
       } else {
-        throw ServerException("Invalid data");
+        throw ServerException(
+          message: "Invalid data",
+          type: ServerErrorType.validation,
+        );
       }
     } on http.ClientException {
-      throw ServerException("Service is not available. Try again later.");
+      throw ServerException(
+          message: "Service is not available. Try again later.",
+          type: ServerErrorType.noConnection
+      );
     }
   }
 
@@ -105,10 +123,16 @@ class SplitWithMeAPIService implements SplitWithMeService {
         var data = json.decode(response.body);
         return Expense.fromJson(data);
       } else {
-        throw ServerException("Invalid data");
+        throw ServerException(
+          message: "Invalid data",
+          type: ServerErrorType.validation,
+        );
       }
     } on http.ClientException {
-      throw ServerException("Service is not available. Try again later.");
+      throw ServerException(
+          message: "Service is not available. Try again later.",
+          type: ServerErrorType.noConnection
+      );
     }
   }
 
@@ -136,10 +160,16 @@ class SplitWithMeAPIService implements SplitWithMeService {
 
         return expenseWithFriends;
       } else {
-        throw ServerException("Invalid data");
+        throw ServerException(
+          message: "Invalid data",
+          type: ServerErrorType.validation,
+        );
       }
     } on http.ClientException {
-      throw ServerException("Service is not available. Try again later.");
+      throw ServerException(
+          message: "Service is not available. Try again later.",
+          type: ServerErrorType.noConnection
+      );
     }
   }
 
@@ -149,10 +179,16 @@ class SplitWithMeAPIService implements SplitWithMeService {
     try {
       var response = await http.delete(uri);
       if (response.statusCode != 204) {
-        throw ServerException("Invalid data");
+        throw ServerException(
+          message: "Invalid data",
+          type: ServerErrorType.validation,
+        );
       }
     } on http.ClientException {
-      throw ServerException("Service is not available. Try again later.");
+      throw ServerException(
+          message: "Service is not available. Try again later.",
+          type: ServerErrorType.noConnection
+      );
     }
   }
 
@@ -167,10 +203,16 @@ class SplitWithMeAPIService implements SplitWithMeService {
       if (response.statusCode == 201) {
         return _fetchFriendsByExpense(expenseId);
       } else {
-        throw ServerException("Invalid data");
+        throw ServerException(
+          message: "Invalid data",
+          type: ServerErrorType.validation,
+        );
       }
     } on http.ClientException {
-      throw ServerException("Service is not available. Try again later.");
+      throw ServerException(
+          message: "Service is not available. Try again later.",
+          type: ServerErrorType.noConnection
+      );
     }
   }
 
@@ -183,10 +225,16 @@ class SplitWithMeAPIService implements SplitWithMeService {
       if (response.statusCode == 204) {
         return _fetchFriendsByExpense(expenseId);
       } else {
-        throw ServerException("Invalid data");
+        throw ServerException(
+          message: "Invalid data",
+          type: ServerErrorType.validation,
+        );
       }
     } on http.ClientException {
-      throw ServerException("Service is not available. Try again later.");
+      throw ServerException(
+          message: "Service is not available. Try again later.",
+          type: ServerErrorType.noConnection
+      );
     }
   }
 
@@ -201,10 +249,16 @@ class SplitWithMeAPIService implements SplitWithMeService {
       if (response.statusCode == 204) {
         return _fetchFriendsByExpense(expenseId);
       } else {
-        throw ServerException("Invalid data");
+        throw ServerException(
+          message: "Invalid data",
+          type: ServerErrorType.validation,
+        );
       }
     } on http.ClientException {
-      throw ServerException("Service is not available. Try again later.");
+      throw ServerException(
+          message: "Service is not available. Try again later.",
+          type: ServerErrorType.noConnection
+      );
     }
   }
 
