@@ -11,7 +11,7 @@
 ###  **1. Implementación y corrección de la capa Data** (*tarea de la semana pasada*)
 
 **Descripción:**   
-Finalizar la implementación y correción de los Models, Repositories y Services.   
+Finalizar la implementación y corrección de los Models, Repositories y Services.   
 
 **Responsables:**
 - Implementación y corrección de la capa Data: Nerea, Daniel y Alexandre

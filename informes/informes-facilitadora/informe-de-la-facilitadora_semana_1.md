@@ -1,7 +1,7 @@
 # 📋 **INFORME FACILITADORA-ADMINISTRADORA**
 ## SEMANA 1
 
-> A continuación se ofrece el informe de la facilitadorea-administradora de la 
+> A continuación se ofrece el informe de la facilitadora-administradora de la 
 >semana 1 de trabajo 27/10/2025 - 02/11/2025, cuyo papel desempeña: 
 > Nerea Pérez Pértega
 

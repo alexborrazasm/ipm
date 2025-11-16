@@ -9,7 +9,7 @@
 
   - Concepto, herramienta, ...
 
-    Recursos indentificados para su estudio.
+    Recursos identificados para su estudio.
 	
 	
 ## Recursos empleados en la semana 1

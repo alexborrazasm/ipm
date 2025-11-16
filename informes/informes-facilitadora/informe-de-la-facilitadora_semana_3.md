@@ -1,7 +1,7 @@
 # 📋 **INFORME FACILITADORA-ADMINISTRADORA**
 ## SEMANA 3
 
-> A continuación se ofrece el informe de la facilitadorea-administradora de la 
+> A continuación se ofrece el informe de la facilitadora-administradora de la 
 >semana 3 de trabajo 10/11/2025 - 16/11/2025, cuyo papel desempeña: 
 >Nerea Pérez Pértega
 
