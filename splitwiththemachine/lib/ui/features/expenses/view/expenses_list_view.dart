@@ -150,8 +150,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           }
 
           return ScrollableSliverList(
-            emptyListMsg: isLoading ? "Loading..."
-                : widget.viewModel.searchQueryExpenses != ""
+            emptyListMsg: widget.viewModel.searchQueryExpenses != ""
                 ? "No expenses found"
                 : "No expenses",
             header: GenericSearch(
@@ -184,6 +183,10 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                 },
               );
             },
+            loading: isLoading,
+            loadBuilder: (context) {
+              return expenseRowLoadingBuilder(context);
+            }
           );
         },
       ),
@@ -297,4 +300,24 @@ class ExpenseRow extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget expenseRowLoadingBuilder(BuildContext context, {double? height}) {
+  final rowHeight = height ?? 80.0; // approximate ListTile height
+
+  return SizedBox(
+    height: rowHeight,
+    child: Center(
+      child: SizedBox(
+        width: 24,
+        height: 24,
+        child: CircularProgressIndicator(
+          strokeWidth: 2.5,
+          valueColor: AlwaysStoppedAnimation(
+            Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+      ),
+    ),
+  );
 }

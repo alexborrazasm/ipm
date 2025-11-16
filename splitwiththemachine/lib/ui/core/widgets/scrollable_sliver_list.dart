@@ -9,6 +9,8 @@ class ScrollableSliverList extends StatelessWidget {
     required this.itemBuilder,
     this.header,
     this.emptyListMsg = "",
+    this.loading = false,
+    this.loadBuilder,
   });
 
   /// Number of items to render.
@@ -20,8 +22,13 @@ class ScrollableSliverList extends StatelessWidget {
   /// Optional header widget (e.g. a search bar).
   final Widget? header;
 
+  /// Optional builder for loading indicator row
+  final Widget Function(BuildContext context)? loadBuilder;
+
   /// Optional message to show on empty list
   final String emptyListMsg;
+
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -43,19 +50,27 @@ class ScrollableSliverList extends StatelessWidget {
               ),
             ),
 
-          if (itemCount == 0)
+          if (itemCount == 0 && !loading)
             SliverFillRemaining(
               hasScrollBody: false,
               child: CenteredMessage(message: emptyListMsg),
             )
           else
             SliverPadding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   itemBuilder,
                   childCount: itemCount,
                 ),
+              ),
+            ),
+
+          if (loading && loadBuilder != null)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              sliver: SliverToBoxAdapter(
+                child: loadBuilder!(context),
               ),
             ),
 
