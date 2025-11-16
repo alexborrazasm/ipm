@@ -279,8 +279,8 @@ class ExpenseRow extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          color: isSelected ? Theme.of(context).colorScheme.primary.withAlpha(50)
-              : null,
+          color: isSelected ? Theme.of(context).colorScheme.
+            surfaceContainerHighest : null,
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
             onTap: isDisabled ? null : onTap,

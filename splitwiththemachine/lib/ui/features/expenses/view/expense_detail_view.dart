@@ -97,9 +97,10 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
 
         return Column(
           children: friends.map((friend) {
-            final isMarked =
-                widget.viewModel.deletingFriendExpense?.id == friend.id ||
-                    widget.viewModel.addingCreditFriendExpense?.id == friend.id;
+            final isMarked = widget.viewModel.deletingFriend?.id == friend.id &&
+                widget.viewModel.deletingFriendExpense?.id == expense.id ||
+                widget.viewModel.addingCreditFriend?.id == friend.id &&
+                widget.viewModel.addingCreditExpense?.id == expense.id;
 
             return Dismissible(
               key: ValueKey("friend-${friend.id}"),
@@ -242,7 +243,7 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
         amount: double.parse(amount.toStringAsFixed(2)),
       );
       widget.viewModel.addCreditToFriend.execute(args);
-      widget.viewModel.markAddingFriendExpense(friend);
+      widget.viewModel.markAddingFriendExpense(friend, expense);
     }
     return false;
   }
@@ -256,7 +257,7 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
     if (confirmed ?? false) {
       final args = FriendExpenseArgs(expense: expense, friend: friend);
       widget.viewModel.deleteFriendFromExpense.execute(args);
-      widget.viewModel.markDeletingFriendExpense(friend);
+      widget.viewModel.markDeletingFriendExpense(friend, expense);
     }
     return false;
   }

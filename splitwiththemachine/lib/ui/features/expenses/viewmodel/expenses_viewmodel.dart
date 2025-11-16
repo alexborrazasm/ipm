@@ -64,13 +64,17 @@ class ExpenseViewModel extends ChangeNotifier {
   Expense? get deletingExpense => _deletingExpense;
 
   // --- Friend and expenses
-  Friend? _deletingFriendExpense;
+  Friend? _deletingFriend;
+  Expense? _deletingFriendExpense;
 
-  Friend? get deletingFriendExpense => _deletingFriendExpense;
+  Friend? get deletingFriend => _deletingFriend;
+  Expense? get deletingFriendExpense => _deletingFriendExpense;
 
-  Friend? _addingCreditFriendExpense;
+  Friend? _addingCreditFriend;
+  Expense? _addingCreditExpense;
 
-  Friend? get addingCreditFriendExpense => _addingCreditFriendExpense;
+  Friend? get addingCreditFriend => _addingCreditFriend;
+  Expense? get addingCreditExpense => _addingCreditExpense;
 
   // --- Selected date for Add/Edit screens ---
   DateTime _selectedDate = DateTime.now();
@@ -87,13 +91,15 @@ class ExpenseViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void markDeletingFriendExpense(Friend? friend) {
-    _deletingFriendExpense = friend;
+  void markDeletingFriendExpense(Friend? friend, Expense? expense) {
+    _deletingFriend = friend;
+    _deletingFriendExpense = expense;
     notifyListeners();
   }
 
-  void markAddingFriendExpense(Friend? friend) {
-    _addingCreditFriendExpense = friend;
+  void markAddingFriendExpense(Friend? friend, Expense? expense) {
+    _addingCreditFriend = friend;
+    _addingCreditExpense = expense;
     notifyListeners();
   }
 
@@ -275,7 +281,7 @@ class ExpenseViewModel extends ChangeNotifier {
           if (_selectedExpense!.id == updated.id) {
             selectExpense(updated); // Tigger ui update
           }
-          markDeletingFriendExpense(null);
+          markDeletingFriendExpense(null, null);
           notifyListeners();
         }
         return Result.ok(null);
@@ -284,7 +290,7 @@ class ExpenseViewModel extends ChangeNotifier {
           msg: "Cannot delete '${args.friend.name}' from "
             "${args.expense.description}",
         );
-        markDeletingFriendExpense(null);
+        markDeletingFriendExpense(null, null);
         notifyListeners();
         return Result.error(result.error);
     }
@@ -312,7 +318,7 @@ class ExpenseViewModel extends ChangeNotifier {
           if (_selectedExpense!.id == updated.id) {
             selectExpense(updated); // Tigger ui update
           }
-          markAddingFriendExpense(null);
+          markAddingFriendExpense(null, null);
           notifyListeners();
         }
         return Result.ok(null);
@@ -320,7 +326,7 @@ class ExpenseViewModel extends ChangeNotifier {
         errorMessage = _mapServerError(e,
           msg: "Cannot add ${args.friend.name} to '${args.expense.description}'"
         );
-        markAddingFriendExpense(null);
+        markAddingFriendExpense(null, null);
         notifyListeners();
         return Result.error(result.error);
     }
