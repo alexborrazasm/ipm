@@ -191,12 +191,11 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         tooltip: "Add an expense",
         onPressed: () {
           Navigator.pushNamed(context, '/add_expense');
+          widget.viewModel.setSelectedDate(DateTime.now());
         },
         icon: Icons.add,
         viewModel: widget.viewModel,
-        commands: [widget.viewModel.addExpense,
-            widget.viewModel.loadExpenses,
-            widget.viewModel.loadFriends],
+        commands: [widget.viewModel.addExpense],
         heroTag: "animated-1",
       ),
     );

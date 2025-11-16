@@ -417,6 +417,7 @@ class _EditExpenseButton extends StatelessWidget {
       tooltip: "Edit expense",
       icon: Icons.edit,
       onPressed: () {
+        viewModel.setSelectedDate(viewModel.selectedExpense!.date);
         Navigator.push(
           context,
           MaterialPageRoute(
