@@ -271,33 +271,37 @@ class ExpenseRow extends StatelessWidget {
         );
         return false;
       },
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: isSelected ? Theme.of(context).colorScheme.primary.withAlpha(50)
-            : null,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: isDisabled ? null : onTap,
-          child: ListTile(
-            leading: FaIcon(
-              FontAwesomeIcons.creditCard,
-              color: Theme.of(context).colorScheme.primary,
+      child: Tooltip (
+        message: 'Click to view expense\nSlide left to remove',
+        triggerMode: TooltipTriggerMode.longPress,
+        child: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          color: isSelected ? Theme.of(context).colorScheme.primary.withAlpha(50)
+              : null,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: isDisabled ? null : onTap,
+            child: ListTile(
+              leading: FaIcon(
+                FontAwesomeIcons.creditCard,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: Text(expense.description),
+              subtitle: Text('Balance: \$ ${expense.creditBalance}'),
+              trailing: isDisabled
+                  ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+                  : null,
             ),
-            title: Text(expense.description),
-            subtitle: Text('Balance: \$ ${expense.creditBalance}'),
-            trailing: isDisabled
-                ? const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-                : null,
           ),
         ),
-      ),
+      )
     );
   }
 }

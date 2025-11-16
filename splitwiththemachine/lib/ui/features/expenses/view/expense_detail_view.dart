@@ -114,22 +114,26 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
               secondaryBackground: _buildRemoveBackground(context),
               confirmDismiss: (direction) =>
                   _handleDismiss(context, direction, friend),
-              child: Card(
-                margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.person)),
-                  title: Text(friend.name),
-                  subtitle: Text(
-                    "Credit: \$ ${friend.creditBalance?.toStringAsFixed(2) ?? '-'}\n"
-                    "Debit: \$ ${friend.debitBalance?.toStringAsFixed(2) ?? '-'} ",
+              child: Tooltip (
+                message: 'Slide right to add credit\nSlide left to remove',
+                triggerMode: TooltipTriggerMode.longPress,
+                child: Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  child: ListTile(
+                    leading: const CircleAvatar(child: Icon(Icons.person)),
+                    title: Text(friend.name),
+                    subtitle: Text(
+                      "Credit: \$ ${friend.creditBalance?.toStringAsFixed(2) ?? '-'}\n"
+                      "Debit: \$ ${friend.debitBalance?.toStringAsFixed(2) ?? '-'} ",
+                    ),
+                    trailing: isMarked
+                        ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                        : null,
                   ),
-                  trailing: isMarked
-                      ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                      : null,
                 ),
               ),
             );
