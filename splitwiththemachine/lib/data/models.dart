@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Expense {
 
   Expense({
@@ -30,6 +32,11 @@ class Expense {
   String getDateString() {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-"
         "${date.day.toString().padLeft(2, '0')}";
+  }
+
+  String getFormatDate() {
+    final formatted = DateFormat('EEEE, MMMM d, y').format(date);
+    return formatted[0].toUpperCase() + formatted.substring(1);
   }
 
   @override

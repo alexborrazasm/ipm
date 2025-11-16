@@ -72,6 +72,10 @@ class ExpenseViewModel extends ChangeNotifier {
 
   Friend? get addingCreditFriendExpense => _addingCreditFriendExpense;
 
+  // --- Selected date for Add/Edit screens ---
+  DateTime _selectedDate = DateTime.now();
+  DateTime get selectedDate => _selectedDate;
+
   // --- Setters ---
   void selectExpense(Expense? expense) {
     _selectedExpense = expense;
@@ -90,6 +94,12 @@ class ExpenseViewModel extends ChangeNotifier {
 
   void markAddingFriendExpense(Friend? friend) {
     _addingCreditFriendExpense = friend;
+    notifyListeners();
+  }
+
+
+  void setSelectedDate(DateTime date) {
+    _selectedDate = date;
     notifyListeners();
   }
 

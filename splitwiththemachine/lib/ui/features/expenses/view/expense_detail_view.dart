@@ -53,7 +53,7 @@ class ExpenseDetailsSection extends StatelessWidget {
               _DetailRow(
                 icon: FontAwesomeIcons.calendar,
                 label: 'Date',
-                value: expense.getDateString(),
+                value: expense.getFormatDate(),
               ),
             ],
           ),

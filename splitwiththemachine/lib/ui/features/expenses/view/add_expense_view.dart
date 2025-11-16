@@ -24,17 +24,28 @@ class AddExpenseScreen extends StatefulWidget {
 }
 
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
-  DateTime selectedDate = DateTime.now();
-  final descriptionController = TextEditingController();
-  final amountController = TextEditingController();
+  late final TextEditingController descriptionController;
+  late final TextEditingController amountController;
   late final TextEditingController dateController;
 
   @override
   void initState() {
     super.initState();
+    descriptionController = TextEditingController();
+    amountController = TextEditingController();
     dateController = TextEditingController(
-      text: DateFormat('EEEE, MMMM d').format(selectedDate),
+      text: DateFormat('EEEE, MMMM d, y')
+          .format(widget.viewModel.selectedDate),
     );
+
+    // Subscribe to ViewModel changes
+    widget.viewModel.addListener(_updateFromViewModel);
+  }
+
+  void _updateFromViewModel() {
+    // Update date text whenever selectedDate changes in VM
+    dateController.text =
+        DateFormat('EEEE, MMMM d, y').format(widget.viewModel.selectedDate);
   }
 
   @override
@@ -42,6 +53,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     descriptionController.dispose();
     amountController.dispose();
     dateController.dispose();
+    widget.viewModel.removeListener(_updateFromViewModel);
     super.dispose();
   }
 
@@ -49,15 +61,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final picked = await Navigator.push<DateTime>(
       context,
       MaterialPageRoute(
-        builder: (_) => ExpenseCalendar(initialDate: selectedDate),
+        builder: (_) =>
+            ExpenseCalendar(initialDate: widget.viewModel.selectedDate),
       ),
     );
 
     if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-        dateController.text = DateFormat('EEEE, MMMM d').format(picked);
-      });
+      // Notify the ViewModel instead of calling setState
+      widget.viewModel.setSelectedDate(picked);
     }
   }
 
@@ -79,50 +90,50 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Scaffold(
       appBar: GenericAppBar(title: widget.title),
       body: GenericSizedBox(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _buildIconField(
-                  icon: FontAwesomeIcons.fileLines,
-                  field: TextField(
-                    controller: descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description'),
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildIconField(
+                icon: FontAwesomeIcons.fileLines,
+                field: TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
                 ),
-                _buildIconField(
-                  icon: FontAwesomeIcons.moneyBill,
-                  field: TextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-                    ],
-                    decoration: const InputDecoration(labelText: 'Amount (\$)'),
-                  ),
+              ),
+              _buildIconField(
+                icon: FontAwesomeIcons.moneyBill,
+                field: TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  decoration: const InputDecoration(labelText: 'Amount (\$)'),
                 ),
-                _buildIconField(
-                  icon: FontAwesomeIcons.calendar,
-                  field: TextField(
-                    controller: dateController,
-                    readOnly: true,
-                    enableInteractiveSelection: false,
-                    decoration: InputDecoration(
-                      labelText: 'Date',
-                      suffixIcon: const Icon(Icons.calendar_today),
-                    ),
-                    onTap: _openCalendar,
+              ),
+              _buildIconField(
+                icon: FontAwesomeIcons.calendar,
+                field: TextField(
+                  controller: dateController,
+                  readOnly: true,
+                  enableInteractiveSelection: false,
+                  decoration: InputDecoration(
+                    labelText: 'Date',
+                    suffixIcon: const Icon(Icons.calendar_today),
                   ),
+                  onTap: _openCalendar,
                 ),
-                const SizedBox(height: 24),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+            ],
           ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Save',
-        heroTag: "animated-1",
-        onPressed: () async {
+        onPressed: () {
           final description = descriptionController.text;
           final amount = double.tryParse(amountController.text) ?? 0.0;
 
@@ -134,7 +145,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           final expense = Expense(
             description: description,
             amount: amount,
-            date: selectedDate,
+            date: widget.viewModel.selectedDate,
           );
 
           widget.viewModel.addExpense.execute(expense);

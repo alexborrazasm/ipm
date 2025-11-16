@@ -15,13 +15,11 @@ class EditExpenseScreen extends StatefulWidget {
     required this.viewModel,
   });
   final ExpenseViewModel viewModel;
-
   @override
   State<EditExpenseScreen> createState() => _EditExpenseScreenState();
 }
 
 class _EditExpenseScreenState extends State<EditExpenseScreen> {
-  late DateTime selectedDate;
   late TextEditingController descriptionController;
   late TextEditingController amountController;
   late TextEditingController dateController;
@@ -31,7 +29,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   void initState() {
     super.initState();
     expense = widget.viewModel.selectedExpense!;
-    selectedDate = expense.date;
+
     descriptionController = TextEditingController(
         text: expense.description
     );
@@ -39,8 +37,17 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
         text: expense.amount.toStringAsFixed(2)
     );
     dateController = TextEditingController(
-      text: DateFormat('EEEE, MMMM d').format(selectedDate),
+      text: DateFormat('EEEE, MMMM d, y').format(widget.viewModel.selectedDate),
     );
+
+    // Subscribe to ViewModel changes
+    widget.viewModel.addListener(_updateFromViewModel);
+  }
+
+  void _updateFromViewModel() {
+    // Update date text whenever selectedDate changes in VM
+    dateController.text =
+        DateFormat('EEEE, MMMM d, y').format(widget.viewModel.selectedDate);
   }
 
   @override
@@ -48,6 +55,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     descriptionController.dispose();
     amountController.dispose();
     dateController.dispose();
+    widget.viewModel.removeListener(_updateFromViewModel);
     super.dispose();
   }
 
@@ -55,21 +63,20 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     final picked = await Navigator.push<DateTime>(
       context,
       MaterialPageRoute(
-        builder: (_) => ExpenseCalendar(initialDate: selectedDate),
+        builder: (_) => ExpenseCalendar(initialDate: widget.viewModel.selectedDate),
       ),
     );
 
     if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-        dateController.text = DateFormat('EEEE, MMMM d').format(picked);
-      });
+      // Notify the ViewModel instead of calling setState
+      widget.viewModel.setSelectedDate(picked);
     }
   }
 
   void _saveExpense() {
     final description = descriptionController.text;
     final amount = double.tryParse(amountController.text) ?? 0.0;
+
     if (description.isEmpty || amount <= 0) {
       GenericSnackBar.show(context, 'Please fill in all fields correctly.');
       return;
@@ -79,7 +86,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       id: expense.id,
       description: description,
       amount: amount,
-      date: selectedDate,
+      date: widget.viewModel.selectedDate,
       friends: expense.friends,
       creditBalance: expense.creditBalance,
     );
@@ -112,45 +119,45 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     return Scaffold(
       appBar: GenericAppBar(title: 'Edit Expense'),
       body: GenericSizedBox(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _buildDetailRow(
-                  icon: FontAwesomeIcons.fileLines,
-                  child: TextField(
-                    controller: descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description'),
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildDetailRow(
+                icon: FontAwesomeIcons.fileLines,
+                child: TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
                 ),
-                _buildDetailRow(
-                  icon: FontAwesomeIcons.moneyBill,
-                  child: TextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-                    ],
-                    decoration: const InputDecoration(labelText: 'Amount (\$)'),
-                  ),
+              ),
+              _buildDetailRow(
+                icon: FontAwesomeIcons.moneyBill,
+                child: TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  decoration: const InputDecoration(labelText: 'Amount (\$)'),
                 ),
-                _buildDetailRow(
-                  icon: FontAwesomeIcons.calendar,
-                  child: TextField(
-                    controller: dateController,
-                    readOnly: true,
-                    enableInteractiveSelection: false,
-                    decoration: InputDecoration(
-                      labelText: 'Date',
-                      suffixIcon: const Icon(Icons.calendar_today),
-                    ),
-                    onTap: _openCalendar,
+              ),
+              _buildDetailRow(
+                icon: FontAwesomeIcons.calendar,
+                child: TextField(
+                  controller: dateController,
+                  readOnly: true,
+                  enableInteractiveSelection: false,
+                  decoration: InputDecoration(
+                    labelText: 'Date',
+                    suffixIcon: const Icon(Icons.calendar_today),
                   ),
+                  onTap: _openCalendar,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
+      ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Save',
         heroTag: "animated-1",
@@ -159,5 +166,4 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       ),
     );
   }
-
 }
