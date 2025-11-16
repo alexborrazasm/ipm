@@ -12,9 +12,9 @@ stateful), la jerarquía, la navegación, los estados y el renderizado.
 
 - Comprensión del patrón Command, su finalidad dentro de la lógica del proyecto y su correcta aplicación.
 
-- Implmentamos la interfaz de usuario siguiendo el patrón arquitectonico Model_View-ViewModel (MVVM)
+- Implementamos la interfaz de usuario siguiendo el patrón arquitectónico Model-View-ViewModel (MVVM)
 
-- Seleccionamos el patrón arquitectonico Model–View–ViewModel (MVVM) para
+- Seleccionamos el patrón arquitectónico Model–View–ViewModel (MVVM) para
   separar la lógica de negocio y de presentación del código que maneja la
   interfaz de usuario (UI)
 

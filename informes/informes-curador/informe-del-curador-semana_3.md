@@ -11,11 +11,10 @@ widgets, navegación y composición visual.
 - Comprendimos cómo se gestionan los mensajes de estado (información y error) en Flutter 
 mediante SnackBars y componentes personalizados
 
-- Aprendimios el manejo básico de concurrencia en Flutter (asincronía con Future, async/await, 
+- Aprendimos el manejo básico de concurrencia en Flutter (asincronía con Future, async/await, 
 y actualización segura del estado)
 
-- Mejoramos la estructura del proyecto, asegurando coherencia entre vistas, viewmodels y 
-widgets reutilizables
+- Mejoramos la estructura del proyecto, asegurando coherencia entre View-ViewModel-Model
 
 - Generalizamos muchos widgets como expense_calendar, generic_search, generic_snack_bar...)
 
