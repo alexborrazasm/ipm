@@ -58,9 +58,38 @@ class ExpenseViewModel extends ChangeNotifier {
 
   Expense? get selectedExpense => _selectedExpense;
 
+  // --- Expense deleting now
+  Expense? _deletingExpense;
+
+  Expense? get deletingExpense => _deletingExpense;
+
+  // --- Friend and expenses
+  Friend? _deletingFriendExpense;
+
+  Friend? get deletingFriendExpense => _deletingFriendExpense;
+
+  Friend? _addingCreditFriendExpense;
+
+  Friend? get addingCreditFriendExpense => _addingCreditFriendExpense;
+
   // --- Setters ---
   void selectExpense(Expense? expense) {
     _selectedExpense = expense;
+    notifyListeners();
+  }
+
+  void markDeletingExpense(Expense? expense) {
+    _deletingExpense = expense;
+    notifyListeners();
+  }
+
+  void markDeletingFriendExpense(Friend? friend) {
+    _deletingFriendExpense = friend;
+    notifyListeners();
+  }
+
+  void markAddingFriendExpense(Friend? friend) {
+    _addingCreditFriendExpense = friend;
     notifyListeners();
   }
 
@@ -147,7 +176,9 @@ class ExpenseViewModel extends ChangeNotifier {
           return Result.error(Exception("Expense to edit not found: '${expense.id}'"));
         }
         expenses[index] = result.value;
-        selectExpense(result.value); // Tigger ui update
+        if (_selectedExpense!.id == result.value.id) {
+          selectExpense(result.value); // Tigger ui update
+        }
         notifyListeners();
         return Result.ok(null);
       case Error<Expense>():
@@ -188,7 +219,9 @@ class ExpenseViewModel extends ChangeNotifier {
             friends: result.value,
           );
           expenses[index] = updated;
-          selectExpense(updated); // Tigger ui update
+          if (_selectedExpense!.id == updated.id) {
+            selectExpense(updated); // Tigger ui update
+          }
           notifyListeners();
         }
         return Result.ok(null);
@@ -218,13 +251,17 @@ class ExpenseViewModel extends ChangeNotifier {
             friends: result.value,
           );
           expenses[index] = updated;
-          selectExpense(updated); // Tigger ui update
+          if (_selectedExpense!.id == updated.id) {
+            selectExpense(updated); // Tigger ui update
+          }
+          markDeletingFriendExpense(null);
           notifyListeners();
         }
         return Result.ok(null);
       case Error<List<Friend>>():
         errorMessage = "Cannot delete '${args.friend.name}' from "
             "${args.expense.description}";
+        markDeletingFriendExpense(null);
         notifyListeners();
         return Result.error(result.error);
     }
@@ -237,7 +274,8 @@ class ExpenseViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<List<Friend>>():
-        infoMessage = "Added \$ ${args.amount} credit to '${args.friend.name}'";
+        infoMessage = "Added \$ ${args.amount} credit to '${args.friend.name}'"
+            " in '${args.expense.description}'";
         final index = expenses.indexWhere((e) => e.id == args.expense.id);
         if (index != -1) {
           final old = expenses[index];
@@ -248,13 +286,17 @@ class ExpenseViewModel extends ChangeNotifier {
             creditBalance: (old.creditBalance ?? 0) + args.amount,
           );
           expenses[index] = updated;
-          selectExpense(updated); // Tiggger ui update
+          if (_selectedExpense!.id == updated.id) {
+            selectExpense(updated); // Tigger ui update
+          }
+          markAddingFriendExpense(null);
           notifyListeners();
         }
         return Result.ok(null);
       case Error<List<Friend>>():
         errorMessage = "Cannot add ${args.friend.name} to "
             "'${args.expense.description}'";
+        markAddingFriendExpense(null);
         notifyListeners();
         return Result.error(result.error);
     }

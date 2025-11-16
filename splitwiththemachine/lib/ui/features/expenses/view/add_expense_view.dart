@@ -115,34 +115,33 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.inversePrimary
-                  ),
-                  onPressed: () async {
-                    final description = descriptionController.text;
-                    final amount = double.tryParse(amountController.text) ?? 0.0;
-
-                    if (description.isEmpty || amount <= 0) {
-                      GenericSnackBar.show(context, 'Please fill in all fields correctly.');
-                      return;
-                    }
-
-                    final expense = Expense(
-                      description: description,
-                      amount: amount,
-                      date: selectedDate,
-                    );
-
-                    widget.viewModel.addExpense.execute(expense);
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Save'),
-                ),
               ],
             ),
           ),
-      )
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Save',
+        heroTag: "animated-1",
+        onPressed: () async {
+          final description = descriptionController.text;
+          final amount = double.tryParse(amountController.text) ?? 0.0;
+
+          if (description.isEmpty || amount <= 0) {
+            GenericSnackBar.show(context, 'Please fill in all fields correctly.');
+            return;
+          }
+
+          final expense = Expense(
+            description: description,
+            amount: amount,
+            date: selectedDate,
+          );
+
+          widget.viewModel.addExpense.execute(expense);
+          Navigator.pop(context);
+        },
+        child: Icon(Icons.save),
+      ),
     );
   }
 }

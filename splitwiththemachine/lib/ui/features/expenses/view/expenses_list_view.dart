@@ -1,8 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
-import 'package:splitwiththemachine/ui/core/widgets/centered_message.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
 import 'package:splitwiththemachine/ui/core/widgets/scrollable_sliver_list.dart';
 import '../viewmodel/expenses_viewmodel.dart';
@@ -30,7 +27,6 @@ class ExpenseListScreen extends StatefulWidget {
 }
 
 class _ExpenseListScreenState extends State<ExpenseListScreen> {
-  late final TextEditingController _searchController;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +63,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         ]),
         builder: (context, child) {
           final filteredExpenses = widget.viewModel.filteredExpenses;
+          final isLoading = widget.viewModel.loadExpenses.running ||
+              widget.viewModel.loadFriends.running;
 
           if (widget.viewModel.loadExpenses.error ||
               widget.viewModel.loadFriends.error
@@ -151,74 +149,41 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
             });
           }
 
-          return Stack(
-            children: [
-              if (widget.viewModel.loadExpenses.running ||
-                  widget.viewModel.loadFriends.running) ...[
-                const Center(child: CircularProgressIndicator()),
-              ] else ...[
-                widget.viewModel.expenses.isEmpty
-                    ? const CenteredMessage(message: "No expenses")
-                    : ScrollableSliverList(
-                  emptyListMsg: "No expenses found",
-                  header: GenericSearch(
-                    viewModel: widget.viewModel,
-                    getSearchQuery: (vm) => vm.searchQueryExpenses,
-                    onSearchChanged: (vm, value) => vm.searchExpenses(value),
-                    hintText: 'Search expenses',
-                  ),
-                  itemCount: filteredExpenses.length,
-                  itemBuilder: (context, index) {
-                    final expense = filteredExpenses[index];
-                    return ExpenseRow(
-                      expense: expense,
-                      viewModel: widget.viewModel,
-                      isSelected: !widget.mobile &&
-                          expense == widget.viewModel.selectedExpense,
-                      onTap: () {
-                        widget.viewModel.selectExpense(expense);
-                        if (widget.mobile) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ExpenseDetailScreen(
-                                  viewModel: widget.viewModel,
-                              ),
-                            ),
-                          );
-                        }
-                        widget.viewModel.searchExpenses("");
-                      },
+          return ScrollableSliverList(
+            emptyListMsg: isLoading ? "Loading..."
+                : widget.viewModel.searchQueryExpenses != ""
+                ? "No expenses found"
+                : "No expenses",
+            header: GenericSearch(
+              viewModel: widget.viewModel,
+              getSearchQuery: (vm) => vm.searchQueryExpenses,
+              onSearchChanged: (vm, value) => vm.searchExpenses(value),
+              hintText: 'Search expenses',
+            ),
+            itemCount: filteredExpenses.length,
+            itemBuilder: (context, index) {
+              final expense = filteredExpenses[index];
+              return ExpenseRow(
+                expense: expense,
+                viewModel: widget.viewModel,
+                isSelected: !widget.mobile &&
+                    expense == widget.viewModel.selectedExpense,
+                onTap: () {
+                  widget.viewModel.selectExpense(expense);
+                  if (widget.mobile) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ExpenseDetailScreen(
+                            viewModel: widget.viewModel,
+                        ),
+                      ),
                     );
-                  },
-                ),
-
-                if (widget.viewModel.addExpense.running ||
-                    widget.viewModel.deleteExpense.running)
-                  const Center(child: CircularProgressIndicator()),
-
-                //if (widget.viewModel.loadExpenses.error ||
-                //    widget.viewModel.loadFriends.error)
-                //  Align(
-                //    alignment: Alignment.topCenter,
-                //    child: InfoBar(
-                //      message: widget.viewModel.errorMessage!,
-                //      onPressed: () {
-                //        if (widget.viewModel.loadExpenses.error) {
-                //          widget.viewModel.loadExpenses.clearResult();
-                //          widget.viewModel.loadExpenses.execute();
-                //        }
-                //        if (widget.viewModel.loadFriends.error) {
-                //          widget.viewModel.loadFriends.clearResult();
-                //          widget.viewModel.loadFriends.execute();
-                //        }
-                //      },
-                //      isError: true,
-                //      btnText: "Retry",
-                //    ),
-                //  ),
-              ],
-            ],
+                  }
+                  widget.viewModel.searchExpenses("");
+                },
+              );
+            },
           );
         },
       ),
@@ -228,6 +193,11 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           Navigator.pushNamed(context, '/add_expense');
         },
         icon: Icons.add,
+        viewModel: widget.viewModel,
+        commands: [widget.viewModel.addExpense,
+            widget.viewModel.loadExpenses,
+            widget.viewModel.loadFriends],
+        heroTag: "animated-1",
       ),
     );
   }
@@ -249,9 +219,18 @@ class ExpenseRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDeleting = viewModel.deleteExpense.running;
+    final bool isMarked;
+    if (viewModel.deletingExpense != null) {
+      isMarked = viewModel.deletingExpense!.id == expense.id;
+    } else {
+      isMarked = false;
+    }
+    final isDisabled = isDeleting && isMarked;
+
     return Dismissible(
       key: ValueKey("expense-${expense.id}"),
-      direction: DismissDirection.endToStart,
+      direction: isDeleting ? DismissDirection.none : DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -262,7 +241,8 @@ class ExpenseRow extends StatelessWidget {
         child: const Icon(Icons.delete, size: 28),
       ),
       confirmDismiss: (direction) async {
-        final confirmed = await showDialog<bool>(
+        if (isDeleting) return false; // extra safety
+        final _ = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Delete expense'),
@@ -276,6 +256,7 @@ class ExpenseRow extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context, true);
                   viewModel.deleteExpense.execute(expense);
+                  viewModel.markDeletingExpense(expense);
                   viewModel.selectExpense(null);
                 },
                 child: Text(
@@ -297,7 +278,7 @@ class ExpenseRow extends StatelessWidget {
             : null,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: onTap,
+          onTap: isDisabled ? null : onTap,
           child: ListTile(
             leading: FaIcon(
               FontAwesomeIcons.creditCard,
@@ -305,6 +286,13 @@ class ExpenseRow extends StatelessWidget {
             ),
             title: Text(expense.description),
             subtitle: Text('Balance: \$ ${expense.creditBalance}'),
+            trailing: isDisabled
+                ? const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+                : null,
           ),
         ),
       ),

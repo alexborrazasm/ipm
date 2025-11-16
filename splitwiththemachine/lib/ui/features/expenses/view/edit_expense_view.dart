@@ -6,7 +6,6 @@ import 'package:splitwiththemachine/ui/core/widgets/generic_sized_box.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
-import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
 import '../widgets/expense_calendar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -85,7 +84,9 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       creditBalance: expense.creditBalance,
     );
 
-    if (updatedExpense != expense) {
+    if (updatedExpense.description != expense.description ||
+        updatedExpense.amount != expense.amount ||
+        updatedExpense.date != expense.date) {
       widget.viewModel.editExpense.execute(updatedExpense);
     }
 
@@ -150,10 +151,11 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
             ),
           ),
         ),
-      floatingActionButton: GenericFloatingButton(
+      floatingActionButton: FloatingActionButton(
         tooltip: 'Save',
-        icon: Icons.save,
+        heroTag: "animated-1",
         onPressed: _saveExpense,
+        child: Icon(Icons.save),
       ),
     );
   }

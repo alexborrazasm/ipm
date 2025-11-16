@@ -9,7 +9,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:splitwiththemachine/ui/features/expenses/view/edit_expense_view.dart';
 import 'package:splitwiththemachine/ui/features/expenses/view/add_friend_to_expense_view.dart';
 import 'package:flutter/services.dart';
-import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
 
 // -----------------------------
 //  SHARED COMPONENTS
@@ -81,7 +80,11 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: widget.viewModel,
+      animation: Listenable.merge([
+        widget.viewModel,
+        widget.viewModel.addCreditToFriend,
+        widget.viewModel.deleteFriendFromExpense,
+      ]),
       builder: (context, _) {
         final friends = expense.friends;
 
@@ -89,11 +92,24 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
           return const CenteredMessage(message: "No friends added");
         }
 
+        final isAddingCredit = widget.viewModel.addCreditToFriend.running;
+        final isRemovingFriend = widget.viewModel.deleteFriendFromExpense.running;
+
         return Column(
           children: friends.map((friend) {
+            final isMarked =
+                widget.viewModel.deletingFriendExpense?.id == friend.id ||
+                    widget.viewModel.addingCreditFriendExpense?.id == friend.id;
+
             return Dismissible(
               key: ValueKey("friend-${friend.id}"),
-              direction: DismissDirection.horizontal,
+              direction: isMarked || isAddingCredit && isRemovingFriend
+                  ? DismissDirection.none
+                  : isRemovingFriend
+                  ? DismissDirection.startToEnd
+                  : isAddingCredit
+                  ? DismissDirection.endToStart
+                  : DismissDirection.horizontal,
               background: _buildAddBackground(context),
               secondaryBackground: _buildRemoveBackground(context),
               confirmDismiss: (direction) =>
@@ -107,6 +123,13 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
                     "Credit: \$ ${friend.creditBalance?.toStringAsFixed(2) ?? '-'}\n"
                     "Debit: \$ ${friend.debitBalance?.toStringAsFixed(2) ?? '-'} ",
                   ),
+                  trailing: isMarked
+                      ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                      : null,
                 ),
               ),
             );
@@ -215,16 +238,10 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
         amount: double.parse(amount.toStringAsFixed(2)),
       );
       widget.viewModel.addCreditToFriend.execute(args);
-
-      GenericSnackBar.show(
-        context,
-        'Added \$ ${args.amount.toStringAsFixed(2)} to ${friend.name}',
-      );
+      widget.viewModel.markAddingFriendExpense(friend);
     }
-
     return false;
   }
-
 
   Future<bool> _removeFriend(BuildContext context, Friend friend) async {
     final confirmed = await showDialog<bool>(
@@ -235,6 +252,7 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
     if (confirmed ?? false) {
       final args = FriendExpenseArgs(expense: expense, friend: friend);
       widget.viewModel.deleteFriendFromExpense.execute(args);
+      widget.viewModel.markDeletingFriendExpense(friend);
     }
     return false;
   }
@@ -391,7 +409,7 @@ class _DetailRow extends StatelessWidget {
 class _EditExpenseButton extends StatelessWidget {
   final ExpenseViewModel viewModel;
 
-  const _EditExpenseButton({required this.viewModel, super.key});
+  const _EditExpenseButton({required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -408,6 +426,9 @@ class _EditExpenseButton extends StatelessWidget {
           ),
         );
       },
+      viewModel: viewModel,
+      heroTag: "animated-1",
+      commands: [viewModel.editExpense],
     );
   }
 }
@@ -415,7 +436,7 @@ class _EditExpenseButton extends StatelessWidget {
 class _AddFriendButton extends StatelessWidget {
   final ExpenseViewModel viewModel;
 
-  const _AddFriendButton({required this.viewModel, super.key});
+  const _AddFriendButton({required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -434,6 +455,8 @@ class _AddFriendButton extends StatelessWidget {
           viewModel.searchFriends(""); // Clean search
         });
       },
+      viewModel: viewModel,
+      commands: [viewModel.addFriendToExpense],
     );
   }
 }
