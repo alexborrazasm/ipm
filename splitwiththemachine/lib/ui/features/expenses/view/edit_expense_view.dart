@@ -119,42 +119,74 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     return Scaffold(
       appBar: GenericAppBar(title: 'Edit Expense'),
       body: GenericSizedBox(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _buildDetailRow(
-                icon: FontAwesomeIcons.fileLines,
-                child: TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-              ),
-              _buildDetailRow(
-                icon: FontAwesomeIcons.moneyBill,
-                child: TextField(
-                  controller: amountController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-                  ],
-                  decoration: const InputDecoration(labelText: 'Amount (\$)'),
-                ),
-              ),
-              _buildDetailRow(
-                icon: FontAwesomeIcons.calendar,
-                child: TextField(
-                  controller: dateController,
-                  readOnly: true,
-                  enableInteractiveSelection: false,
-                  decoration: InputDecoration(
-                    labelText: 'Date',
-                    suffixIcon: const Icon(Icons.calendar_today),
+        child: StretchingOverscrollIndicator(
+          axisDirection: AxisDirection.down,
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8
+                    ),
+                    child: _buildDetailRow(
+                      icon: FontAwesomeIcons.fileLines,
+                      child: TextField(
+                        controller: descriptionController,
+                        decoration: const InputDecoration(
+                            labelText: 'Description'
+                        ),
+                      ),
+                    ),
                   ),
-                  onTap: _openCalendar,
                 ),
-              ),
-            ],
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8
+                    ),
+                    child: _buildDetailRow(
+                      icon: FontAwesomeIcons.moneyBill,
+                      child: TextField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d*\.?\d{0,2}')
+                          ),
+                        ],
+                        decoration: const InputDecoration(
+                            labelText: 'Amount (\$)'
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8
+                    ),
+                    child: _buildDetailRow(
+                      icon: FontAwesomeIcons.calendar,
+                      child: TextField(
+                        controller: dateController,
+                        readOnly: true,
+                        enableInteractiveSelection: false,
+                        decoration: InputDecoration(
+                          labelText: 'Date',
+                          suffixIcon: const Icon(Icons.calendar_today),
+                        ),
+                        onTap: _openCalendar,
+                      ),
+                    ),
+                  ),
+                ),
+                // Extra spacing at the bottom
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              ]
+
           ),
         ),
       ),

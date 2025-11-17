@@ -32,64 +32,89 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
     return Scaffold(
       appBar: GenericAppBar(title: "Select a date"),
       body: GenericSizedBox(
-        child: Column(
-          children: [
-            TableCalendar(
-              firstDay: DateTime.utc(2000, 1, 1),
-              lastDay: DateTime.utc(2100, 12, 31),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              calendarFormat: CalendarFormat.month,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              },
-              headerStyle: const HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-              ),
-              calendarStyle: CalendarStyle(
-                todayTextStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                todayDecoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 2,
-                    )
+        child: StretchingOverscrollIndicator(
+            axisDirection: AxisDirection.down,
+          child: CustomScrollView(
+            slivers: [
+              // Calendar
+              SliverToBoxAdapter(
+                child: FractionallySizedBox(
+                  widthFactor: 0.9, // 90% of screen width
+                  child: TableCalendar(
+                    firstDay: DateTime.utc(2000, 1, 1),
+                    lastDay: DateTime.utc(2100, 12, 31),
+                    focusedDay: _focusedDay,
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    calendarFormat: CalendarFormat.month,
+                    startingDayOfWeek: StartingDayOfWeek.monday,
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                      });
+                      },
+                    headerStyle: const HeaderStyle(
+                      formatButtonVisible: false,
+                      titleCentered: true,
+                    ),
+                    calendarStyle: CalendarStyle(
+                      todayTextStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      todayDecoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        shape: BoxShape.rectangle,
+                      ),
+                      selectedDecoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                   ),
-                  shape: BoxShape.rectangle,
-                ),
-                selectedDecoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.inversePrimary,
-                  shape: BoxShape.circle,
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              "Selected: ${DateFormat('EEEE, MMMM d').format(_selectedDay)}",
-              style: const TextStyle(fontSize: 18),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.check),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+
+              /// Space after the calendar
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+              /// Selected date text
+              SliverToBoxAdapter(
+                child: Text(
+                  "Selected: ${DateFormat('EEEE, MMMM d').format(_selectedDay)}",
+                  style: const TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
                 ),
-                label: const Text("Confirm Date"),
-                onPressed: () {
-                  Navigator.pop(context, _selectedDay);
-                },
               ),
-            ),
-          ],
-        ),
+
+              /// Button
+              SliverToBoxAdapter(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.check),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                    ),
+                    label: const Text("Confirm Date"),
+                    onPressed: () {
+                      Navigator.pop(context, _selectedDay);
+                    },
+                  ),
+                ),
+              ),
+
+              /// Always leave bottom space so user can scroll comfortably
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 80),
+              ),
+            ],
+          ),
+        )
       )
     );
   }

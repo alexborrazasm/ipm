@@ -90,45 +90,75 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Scaffold(
       appBar: GenericAppBar(title: widget.title),
       body: GenericSizedBox(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _buildIconField(
-                icon: FontAwesomeIcons.fileLines,
-                field: TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-              ),
-              _buildIconField(
-                icon: FontAwesomeIcons.moneyBill,
-                field: TextField(
-                  controller: amountController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d*\.?\d{0,2}')),
-                  ],
-                  decoration: const InputDecoration(labelText: 'Amount (\$)'),
-                ),
-              ),
-              _buildIconField(
-                icon: FontAwesomeIcons.calendar,
-                field: TextField(
-                  controller: dateController,
-                  readOnly: true,
-                  enableInteractiveSelection: false,
-                  decoration: InputDecoration(
-                    labelText: 'Date',
-                    suffixIcon: const Icon(Icons.calendar_today),
+        child: StretchingOverscrollIndicator(
+          axisDirection: AxisDirection.down,
+          child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8
+                    ),
+                    child: _buildIconField(
+                      icon: FontAwesomeIcons.fileLines,
+                      field: TextField(
+                        controller: descriptionController,
+                        decoration: const InputDecoration(
+                            labelText: 'Description'
+                        ),
+                      ),
+                    ),
                   ),
-                  onTap: _openCalendar,
                 ),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8
+                    ),
+                    child: _buildIconField(
+                      icon: FontAwesomeIcons.moneyBill,
+                      field: TextField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d*\.?\d{0,2}')
+                          ),
+                        ],
+                        decoration: const InputDecoration(
+                            labelText: 'Amount (\$)'
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8
+                    ),
+                    child: _buildIconField(
+                      icon: FontAwesomeIcons.calendar,
+                      field: TextField(
+                        controller: dateController,
+                        readOnly: true,
+                        enableInteractiveSelection: false,
+                        decoration: InputDecoration(
+                          labelText: 'Date',
+                          suffixIcon: const Icon(Icons.calendar_today),
+                        ),
+                        onTap: _openCalendar,
+                      ),
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              ]
+
+          )
         ),
       ),
       floatingActionButton: FloatingActionButton(
