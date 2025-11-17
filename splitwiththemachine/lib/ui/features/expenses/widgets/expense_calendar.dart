@@ -91,6 +91,10 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
                 ),
               ),
 
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 20),
+              ),
+
               /// Button
               SliverToBoxAdapter(
                 child: Align(
