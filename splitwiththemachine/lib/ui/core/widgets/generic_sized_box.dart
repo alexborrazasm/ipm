@@ -12,7 +12,7 @@ class GenericSizedBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        width: 600,
+        width: 700,
         child: child,
       ),
     );

@@ -9,6 +9,8 @@ import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import '../widgets/expense_calendar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../widgets/reusable_from_body.dart';
+
 class EditExpenseScreen extends StatefulWidget {
   const EditExpenseScreen({
     super.key,
@@ -100,95 +102,15 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     Navigator.pop(context);
   }
 
-  Widget _buildDetailRow({required IconData icon, required Widget child}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          FaIcon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 12),
-          Expanded(child: child),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GenericAppBar(title: 'Edit Expense'),
-      body: GenericSizedBox(
-        child: StretchingOverscrollIndicator(
-          axisDirection: AxisDirection.down,
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8
-                    ),
-                    child: _buildDetailRow(
-                      icon: FontAwesomeIcons.fileLines,
-                      child: TextField(
-                        controller: descriptionController,
-                        decoration: const InputDecoration(
-                            labelText: 'Description'
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8
-                    ),
-                    child: _buildDetailRow(
-                      icon: FontAwesomeIcons.moneyBill,
-                      child: TextField(
-                        controller: amountController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'^\d*\.?\d{0,2}')
-                          ),
-                        ],
-                        decoration: const InputDecoration(
-                            labelText: 'Amount (\$)'
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8
-                    ),
-                    child: _buildDetailRow(
-                      icon: FontAwesomeIcons.calendar,
-                      child: TextField(
-                        controller: dateController,
-                        readOnly: true,
-                        enableInteractiveSelection: false,
-                        decoration: InputDecoration(
-                          labelText: 'Date',
-                          suffixIcon: const Icon(Icons.calendar_today),
-                        ),
-                        onTap: _openCalendar,
-                      ),
-                    ),
-                  ),
-                ),
-                // Extra spacing at the bottom
-                const SliverToBoxAdapter(child: SizedBox(height: 24)),
-              ]
-
-          ),
-        ),
+      body: ReusableFormBody(
+        descriptionController: descriptionController,
+        amountController: amountController,
+        dateController: dateController,
+        onDateTap: _openCalendar,
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Save',

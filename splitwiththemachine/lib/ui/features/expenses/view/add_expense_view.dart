@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_sized_box.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
+import 'package:splitwiththemachine/ui/features/expenses/widgets/reusable_from_body.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:flutter/services.dart';
 import 'package:splitwiththemachine/data/models.dart';
@@ -72,94 +73,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     }
   }
 
-  Widget _buildIconField({required IconData icon, required TextField field}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          FaIcon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 12),
-          Expanded(child: field),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GenericAppBar(title: widget.title),
-      body: GenericSizedBox(
-        child: StretchingOverscrollIndicator(
-          axisDirection: AxisDirection.down,
-          child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8
-                    ),
-                    child: _buildIconField(
-                      icon: FontAwesomeIcons.fileLines,
-                      field: TextField(
-                        controller: descriptionController,
-                        decoration: const InputDecoration(
-                            labelText: 'Description'
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8
-                    ),
-                    child: _buildIconField(
-                      icon: FontAwesomeIcons.moneyBill,
-                      field: TextField(
-                        controller: amountController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'^\d*\.?\d{0,2}')
-                          ),
-                        ],
-                        decoration: const InputDecoration(
-                            labelText: 'Amount (\$)'
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8
-                    ),
-                    child: _buildIconField(
-                      icon: FontAwesomeIcons.calendar,
-                      field: TextField(
-                        controller: dateController,
-                        readOnly: true,
-                        enableInteractiveSelection: false,
-                        decoration: InputDecoration(
-                          labelText: 'Date',
-                          suffixIcon: const Icon(Icons.calendar_today),
-                        ),
-                        onTap: _openCalendar,
-                      ),
-                    ),
-                  ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 24)),
-              ]
-
-          )
-        ),
+      body: ReusableFormBody(
+        descriptionController: descriptionController,
+        amountController: amountController,
+        dateController: dateController,
+        onDateTap: _openCalendar,
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Save',

@@ -31,13 +31,13 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GenericAppBar(title: "Select a date"),
-      body: GenericSizedBox(
-        child: StretchingOverscrollIndicator(
-            axisDirection: AxisDirection.down,
-          child: CustomScrollView(
-            slivers: [
-              // Calendar
-              SliverToBoxAdapter(
+      body: StretchingOverscrollIndicator(
+        axisDirection: AxisDirection.down,
+        child: CustomScrollView(
+          slivers: [
+            // Calendar
+            SliverToBoxAdapter(
+              child: GenericSizedBox(
                 child: FractionallySizedBox(
                   widthFactor: 0.9, // 90% of screen width
                   child: TableCalendar(
@@ -78,48 +78,48 @@ class _ExpenseCalendarState extends State<ExpenseCalendar> {
                   ),
                 ),
               ),
+            ),
 
-              /// Space after the calendar
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            /// Space after the calendar
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-              /// Selected date text
-              SliverToBoxAdapter(
-                child: Text(
-                  "Selected: ${DateFormat('EEEE, MMMM d').format(_selectedDay)}",
-                  style: const TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
+            /// Selected date text
+            SliverToBoxAdapter(
+              child: Text(
+                "Selected: ${DateFormat('EEEE, MMMM d').format(_selectedDay)}",
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
               ),
+            ),
 
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 20),
-              ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 20),
+            ),
 
-              /// Button
-              SliverToBoxAdapter(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.check),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                    ),
-                    label: const Text("Confirm Date"),
-                    onPressed: () {
-                      Navigator.pop(context, _selectedDay);
-                    },
+            /// Button
+            SliverToBoxAdapter(
+              child: Align(
+                alignment: Alignment.center,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.check),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                   ),
+                  label: const Text("Confirm Date"),
+                  onPressed: () {
+                    Navigator.pop(context, _selectedDay);
+                  },
                 ),
               ),
+            ),
 
-              /// Always leave bottom space so user can scroll comfortably
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 80),
-              ),
-            ],
-          ),
-        )
-      )
+            /// Always leave bottom space so user can scroll comfortably
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 80),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
