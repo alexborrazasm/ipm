@@ -199,7 +199,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         icon: Icons.add,
         viewModel: widget.viewModel,
         commands: [widget.viewModel.addExpense],
-        heroTag: "animated-1",
+        heroTag: widget.mobile ? "animated-1" : null,
       ),
     );
   }
