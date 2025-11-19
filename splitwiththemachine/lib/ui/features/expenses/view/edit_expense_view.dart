@@ -9,7 +9,7 @@ import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import '../widgets/expense_calendar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../widgets/reusable_from_body.dart';
+import '../widgets/reusable_form_body.dart';
 
 class EditExpenseScreen extends StatefulWidget {
   const EditExpenseScreen({

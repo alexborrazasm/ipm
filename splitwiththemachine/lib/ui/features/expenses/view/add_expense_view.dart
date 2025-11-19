@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_sized_box.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
-import 'package:splitwiththemachine/ui/features/expenses/widgets/reusable_from_body.dart';
+import 'package:splitwiththemachine/ui/features/expenses/widgets/reusable_form_body.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:flutter/services.dart';
 import 'package:splitwiththemachine/data/models.dart';
