@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:splitwiththemachine/main.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mockito/mockito.dart';
@@ -21,5 +22,55 @@ void main() {
 
   final mockService = buildMockService();
 
+  group('end-to-end test', () {
+    testWidgets('load the initial expense data', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
 
+      await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(6));
+      expect(find.text("Groceries"), findsOneWidget);
+      expect(find.text("Coffee"), findsOneWidget);
+      expect(find.text("Bus Ticket"), findsOneWidget);
+      expect(find.text("Dinner"), findsOneWidget);
+      expect(find.text("Books"), findsOneWidget);
+      expect(find.text("Gym Membership"), findsOneWidget);
+    });
+
+    testWidgets('load details of a expense', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
+
+    });
+
+    testWidgets('add an expense', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
+
+    });
+
+  });
 }
