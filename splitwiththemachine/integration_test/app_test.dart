@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -36,7 +38,6 @@ void main() {
       ));
 
       await tester.pumpAndSettle();
-      await tester.pumpAndSettle();
 
       expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(6));
       expect(find.text("Groceries"), findsOneWidget);
@@ -45,6 +46,8 @@ void main() {
       expect(find.text("Dinner"), findsOneWidget);
       expect(find.text("Books"), findsOneWidget);
       expect(find.text("Gym Membership"), findsOneWidget);
+      expect(find.text("Balance: \$ 0.00"), findsExactly(5));
+      expect(find.text("Balance: \$ 3.30"), findsOne);
     });
 
     testWidgets('load details of a expense (no friends added)', (
@@ -56,7 +59,6 @@ void main() {
         friendRepository: FriendRepository(service: mockService),
       ));
 
-      await tester.pumpAndSettle();
       await tester.pumpAndSettle();
 
       final expenseRow = find.byKey(ValueKey("expense-2"));
@@ -86,7 +88,6 @@ void main() {
         friendRepository: FriendRepository(service: mockService),
       ));
 
-      await tester.pumpAndSettle();
       await tester.pumpAndSettle();
 
       final expenseRow = find.byKey(ValueKey("expense-5"));
@@ -126,6 +127,50 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pumpAndSettle();
 
+    });
+
+    testWidgets('add friend to expense (expense no friends)', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      final expenseRow = find.byKey(ValueKey("expense-2"));
+      final inkWellExpense = find.descendant(
+          of: expenseRow, matching: find.byType(InkWell)
+      ).first;
+      await tester.tap(inkWellExpense);
+
+      await tester.pumpAndSettle();
+
+      final addFriendFab = find.byTooltip("Add friend");
+      await tester.tap(addFriendFab);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CircleAvatar), findsExactly(6));
+      expect(find.text("Nerea"), findsOneWidget);
+      expect(find.text("Pepe"), findsOneWidget);
+      expect(find.text("Dani"), findsOneWidget);
+      expect(find.text("Alex"), findsOneWidget);
+      expect(find.text("Marcos"), findsOneWidget);
+      expect(find.text("Manolo"), findsOneWidget);
+
+      final friendRow = find.byKey(ValueKey("friend-5"));
+      final inkWellFriend = find.descendant(
+          of: friendRow, matching: find.byType(InkWell)
+      ).first;
+      await tester.tap(inkWellFriend);
+      await tester.pumpAndSettle();
+
+      expect(find.text("'Marcos' added to 'Coffee'"), findsOne);
+      expect(find.text("Marcos"), findsOne);
+      expect(find.textContaining("Credit: \$ 0.00"), findsOne);
+      expect(find.textContaining("Debit: \$ 1.55"), findsOne);
     });
 
   });

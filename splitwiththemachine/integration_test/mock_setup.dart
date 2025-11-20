@@ -72,9 +72,17 @@ MockSplitWithMeService buildMockService() {
   ]);
 
   when(mockService.fetchFriends()).thenAnswer((_) async => [
-    Friend(id: 1, name: "Mock 1", creditBalance: 0, debitBalance: 0),
+    Friend(id: 1, name: "Nerea"),
+    Friend(id: 2, name: "Pepe"),
+    Friend(id: 3, name: "Dani"),
+    Friend(id: 4, name: "Alex"),
+    Friend(id: 5, name: "Marcos"),
+    Friend(id: 6, name: "Manolo"),
   ]);
 
+  when(mockService.addFriendToExpense(2, 5)).thenAnswer((_) async => [
+    Friend(id: 5, name: "Marcos", debitBalance: 1.55, creditBalance: 0),
+  ]);
 
   return mockService;
 }

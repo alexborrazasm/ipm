@@ -44,6 +44,7 @@ class _AddFriendToExpenseScreenState extends State<AddFriendToExpenseScreen> {
               itemBuilder: (context, index) {
                 final friend = availableFriends[index];
                 return Card(
+                  key: ValueKey("friend-${friend.id}"),
                   margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
