@@ -8,34 +8,66 @@ MockSplitWithMeService buildMockService() {
   // Configure mock behavior
   when(mockService.fetchExpenses()).thenAnswer((_) async => [
     Expense(
+      id: 1,
       description: "Groceries",
       date: DateTime(2025, 01, 02),
       amount: 32.45,
+      creditBalance: 0,
     ),
     Expense(
+      id: 2,
       description: "Coffee",
       date: DateTime(2025, 01, 04),
       amount: 3.10,
+      creditBalance: 0,
     ),
     Expense(
+      id: 3,
       description: "Bus Ticket",
       date: DateTime(2025, 01, 06),
       amount: 1.50,
+      creditBalance: 0,
     ),
     Expense(
+      id: 4,
       description: "Dinner",
       date: DateTime(2025, 01, 08),
       amount: 18.99,
+      creditBalance: 0,
     ),
     Expense(
+      id: 5,
       description: "Books",
-      date: DateTime(2025, 01, 10),
-      amount: 54.20,
+      date: DateTime(2024, 03, 02),
+      amount: 120.6,
+      creditBalance: 3.3,
+      friends: [
+        Friend(
+          id: 1,
+          name: "Nerea",
+          creditBalance: 0,
+          debitBalance: 40.2,
+        ),
+        Friend(
+          id: 4,
+          name: "Alex",
+          creditBalance: 1.3,
+          debitBalance: 40.2,
+        ),
+        Friend(
+          id: 3,
+          name: "Dani",
+          creditBalance: 2,
+          debitBalance: 40.2,
+        ),
+      ],
     ),
     Expense(
+      id: 6,
       description: "Gym Membership",
       date: DateTime(2025, 01, 12),
       amount: 29.99,
+      creditBalance: 0,
     ),
   ]);
 

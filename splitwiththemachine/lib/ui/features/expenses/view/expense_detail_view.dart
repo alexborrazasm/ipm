@@ -125,7 +125,7 @@ class _ExpenseFriendsSectionState extends State<ExpenseFriendsSection> {
                     title: Text(friend.name),
                     subtitle: Text(
                       "Credit: \$ ${friend.creditBalance?.toStringAsFixed(2) ?? '-'}\n"
-                      "Debit: \$ ${friend.debitBalance?.toStringAsFixed(2) ?? '-'} ",
+                      "Debit: \$ ${friend.debitBalance?.toStringAsFixed(2) ?? '-'}",
                     ),
                     trailing: isMarked
                         ? const SizedBox(
