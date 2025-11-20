@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 class Expense {
@@ -45,6 +46,31 @@ class Expense {
         "\n Friends: $friends";
   }
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Expense &&
+        other.id == id &&
+        other.description == description &&
+        other.date == date &&
+        other.amount == amount &&
+        other.numFriends == numFriends &&
+        other.creditBalance == creditBalance &&
+        listEquals(other.friends, friends);
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+    description.hashCode ^
+    date.hashCode ^
+    amount.hashCode ^
+    numFriends.hashCode ^
+    creditBalance.hashCode ^
+    friends.hashCode;
+  }
+
   Expense copyWith({
     int? id,
     String? description,
@@ -86,6 +112,24 @@ class Friend {
     return "$id | $name | $creditBalance | $debitBalance";
   }
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Friend &&
+        other.id == id &&
+        other.name == name &&
+        other.creditBalance == creditBalance &&
+        other.debitBalance == debitBalance;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+    name.hashCode ^
+    creditBalance.hashCode ^
+    debitBalance.hashCode;
+  }
 }
 
 enum ServerErrorType {
