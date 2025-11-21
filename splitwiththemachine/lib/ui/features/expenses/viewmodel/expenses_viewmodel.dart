@@ -21,12 +21,12 @@ class ExpenseViewModel extends ChangeNotifier {
     deleteFriendFromExpense = Command1(_deleteFriendFromExpense);
     addCreditToFriend = Command1(_addCreditToFriend);
 
-    if (friends.isEmpty) {
-      loadFriends.execute();
-    }
-
     if (expenses.isEmpty) {
       loadExpenses.execute();
+    }
+
+    if (friends.isEmpty) {
+      loadFriends.execute();
     }
   }
 

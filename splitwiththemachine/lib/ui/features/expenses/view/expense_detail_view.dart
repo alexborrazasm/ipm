@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/data/models.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
 import 'package:splitwiththemachine/ui/core/widgets/centered_message.dart';
-import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_fab.dart';
 import '../../../core/themes/app_theme.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -418,7 +418,7 @@ class _EditExpenseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GenericFloatingButton(
+    return GenericFAB(
       tooltip: "Edit expense",
       icon: Icons.edit,
       onPressed: () {
@@ -446,7 +446,7 @@ class _AddFriendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GenericFloatingButton(
+    return GenericFAB(
       tooltip: "Add friend",
       icon: Icons.person_add,
       onPressed: () {

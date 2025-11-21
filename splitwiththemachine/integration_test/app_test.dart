@@ -129,7 +129,7 @@ void main() {
 
     });
 
-    testWidgets('add friend to expense (expense no friends)', (
+    testWidgets('add friend to expense', (
         tester,
         ) async {
       // Load app widget.

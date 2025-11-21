@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_app_bar.dart';
-import 'package:splitwiththemachine/ui/core/widgets/generic_floating_button.dart';
+import 'package:splitwiththemachine/ui/core/widgets/generic_fab.dart';
 import 'package:splitwiththemachine/ui/core/widgets/scrollable_sliver_list.dart';
 import '../viewmodel/expenses_viewmodel.dart';
 import 'package:splitwiththemachine/data/models.dart';
@@ -190,7 +190,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           );
         },
       ),
-      floatingActionButton: GenericFloatingButton(
+      floatingActionButton: GenericFAB(
         tooltip: "Add an expense",
         onPressed: () {
           Navigator.pushNamed(context, '/add_expense');

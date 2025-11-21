@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:splitwiththemachine/ui/features/expenses/viewmodel/expenses_viewmodel.dart';
 import 'package:splitwiththemachine/utils/command.dart';
 
 /// Generic Floating Action Button that listens to a ViewModel and optional commands
-class GenericFloatingButton extends StatelessWidget {
+class GenericFAB extends StatelessWidget {
   final IconData icon;
   final String tooltip;
   final VoidCallback onPressed;
-  final ChangeNotifier viewModel;
+  final ExpenseViewModel viewModel;
   final List<Command>? commands; // Commands to listen
   final Object? heroTag;
 
-  const GenericFloatingButton({
+  const GenericFAB({
     super.key,
     required this.icon,
     required this.onPressed,
@@ -26,21 +27,21 @@ class GenericFloatingButton extends StatelessWidget {
     return commands!.any((c) => c.running);
   }
 
-
   @override
   Widget build(BuildContext context) {
     // Listen to both the viewModel and all commands
-    final listeners = <Listenable>[viewModel, ...(commands ?? [])];
+    final listeners = <Listenable>[viewModel.loadExpenses, ...(commands ?? [])];
 
     return AnimatedBuilder(
       animation: Listenable.merge(listeners),
       builder: (context, child) {
         final loading = _isLoading();
+        final locked = viewModel.loadExpenses.running;
 
         return FloatingActionButton(
           heroTag: heroTag,
           tooltip: tooltip,
-          onPressed: loading ? null : onPressed,
+          onPressed: loading || locked ? null : onPressed,
           child: loading
               ? SizedBox(
             width: 24,
