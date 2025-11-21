@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -125,8 +126,91 @@ void main() {
       ));
 
       await tester.pumpAndSettle();
+
+      // Add expense button
+      final addExpenseFab = find.byTooltip("Add an expense");
+      await tester.tap(addExpenseFab);
       await tester.pumpAndSettle();
 
+      // Change date
+      await tester.tap(find.byIcon(Icons.calendar_today));
+      await tester.pumpAndSettle();
+
+      for (var i = 0; i < 2; i++) { // Go back 2 months
+        await tester.tap(find.byIcon(Icons.chevron_left));
+        await tester.pumpAndSettle();
+      }
+
+      await tester.tap(find.text("15")); // Select 15th day
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Confirm Date"));
+      await tester.pumpAndSettle();
+
+      // Find fields
+      final descriptionFieldFinder = find.widgetWithText(TextField, 'Description');
+      final amountFieldFinder = find.widgetWithText(TextField, 'Amount (\$)');
+
+      // Verify fields
+      expect(descriptionFieldFinder, findsOneWidget);
+      expect(amountFieldFinder, findsOneWidget);
+
+      // Fill fields
+      await tester.enterText(descriptionFieldFinder, "New TV");
+      await tester.enterText(amountFieldFinder, "1500.99");
+      await tester.pumpAndSettle();
+
+      // Save expense
+      final saveExpenseFab = find.byTooltip("Save");
+      await tester.tap(saveExpenseFab);
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(7));
+      expect(find.text("New TV"), findsOne);
+    });
+
+    testWidgets('add an expense with error', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Add expense button
+      final addExpenseFab = find.byTooltip("Add an expense");
+      await tester.tap(addExpenseFab);
+      await tester.pumpAndSettle();
+
+      // Save with description and amount fields empty
+      final saveExpenseFab = find.byTooltip("Save");
+      await tester.tap(saveExpenseFab);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please fill in all fields correctly.'), findsOne);
+
+      // Save with amount field empty
+      final descriptionFieldFinder = find.widgetWithText(TextField, 'Description');
+      await tester.enterText(descriptionFieldFinder, "New TV");
+
+      await tester.pumpAndSettle();
+      await tester.tap(saveExpenseFab);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please fill in all fields correctly.'), findsOne);
+
+      // Save with description field empty
+      await tester.enterText(descriptionFieldFinder, ''); // Clear description
+      final amountFieldFinder = find.widgetWithText(TextField, 'Amount (\$)');
+      await tester.enterText(amountFieldFinder, "1500.99");
+
+      await tester.pumpAndSettle();
+      await tester.tap(saveExpenseFab);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please fill in all fields correctly.'), findsOne);
     });
 
     testWidgets('add friend to expense', (
@@ -172,6 +256,5 @@ void main() {
       expect(find.textContaining("Credit: \$ 0.00"), findsOne);
       expect(find.textContaining("Debit: \$ 1.55"), findsOne);
     });
-
   });
 }

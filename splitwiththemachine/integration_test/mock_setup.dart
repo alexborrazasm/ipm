@@ -1,3 +1,4 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'app_test.mocks.dart';
 import 'package:splitwiththemachine/data/models.dart';
@@ -83,6 +84,16 @@ MockSplitWithMeService buildMockService() {
   when(mockService.addFriendToExpense(2, 5)).thenAnswer((_) async => [
     Friend(id: 5, name: "Marcos", debitBalance: 1.55, creditBalance: 0),
   ]);
+
+  when(mockService.addExpense(any)).thenAnswer((_) async =>
+    Expense(
+      id: 7,
+      description: "New TV",
+      date: DateTime(2025, 01, 06),
+      amount: 1500.99,
+      creditBalance: 0,
+    ),
+  );
 
   return mockService;
 }
