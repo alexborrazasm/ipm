@@ -213,6 +213,61 @@ void main() {
       expect(find.text('Please fill in all fields correctly.'), findsOne);
     });
 
+    testWidgets('add a duplicated expense', (
+        tester,
+        ) async {
+
+      // Set a date to always be in November
+      final fakeNow = DateTime(2025, 11, 21);
+
+      await withClock(Clock.fixed(fakeNow), () async{
+        await tester.pumpWidget(MyApp(
+          expenseRepository: ExpenseRepository(service: mockService),
+          friendRepository: FriendRepository(service: mockService),
+        ));
+
+        await tester.pumpAndSettle();
+
+        // Add expense button
+        final addExpenseFab = find.byTooltip("Add an expense");
+        await tester.tap(addExpenseFab);
+        await tester.pumpAndSettle();
+
+        // Fill fields
+        final descriptionFieldFinder = find.widgetWithText(
+            TextField, 'Description');
+        final amountFieldFinder = find.widgetWithText(TextField, 'Amount (\$)');
+
+        // Add same expense
+        await tester.enterText(descriptionFieldFinder, "Gym Membership");
+        await tester.enterText(amountFieldFinder, "47.50");
+        await tester.pumpAndSettle();
+
+        // Change date
+        await tester.tap(find.byIcon(Icons.calendar_today));
+        await tester.pumpAndSettle();
+
+        for (var i = 0; i < 10; i++) {
+          await tester.tap(find.byIcon(Icons.chevron_left));
+          await tester.pumpAndSettle();
+        }
+
+        await tester.tap(find.text("12"));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text("Confirm Date"));
+        await tester.pumpAndSettle();
+
+        // Save expense
+        final saveExpenseFab = find.byTooltip("Save");
+        await tester.tap(saveExpenseFab);
+        await tester.pumpAndSettle();
+
+        // Duplicated expense error
+        expect(find.text("Expense 'Gym Membership' is already added"),
+            findsOneWidget);
+      });
+    });
+
     testWidgets('add friend to expense', (
         tester,
         ) async {

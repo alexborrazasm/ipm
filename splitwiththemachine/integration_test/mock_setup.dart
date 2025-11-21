@@ -95,5 +95,21 @@ MockSplitWithMeService buildMockService() {
     ),
   );
 
+  when(mockService.addExpense(
+    argThat(
+      predicate<Expense>((e) =>
+      e.description == 'Gym Membership' &&
+      e.date.year == 2025 &&
+      e.date.month == 1 &&
+      e.date.day == 12,
+      ),
+    ),
+  )).thenAnswer((_) async {
+    throw ServerException(
+      message: "Expense 'Gym Membership' is already added",
+      type: ServerErrorType.validation,
+    );
+  });
+
   return mockService;
 }
