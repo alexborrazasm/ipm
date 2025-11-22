@@ -155,5 +155,12 @@ MockSplitWithMeService buildMockService() {
     ),
   ]);
 
+  when(mockService.deleteFriendFromExpense(any, 4)).thenAnswer((_) async {
+    throw ServerException(
+      message: "Cannot delete 'Alex' from Books",
+      type: ServerErrorType.validation,
+    );
+  });
+
   return mockService;
 }

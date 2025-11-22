@@ -494,5 +494,55 @@ void main() {
       expect(find.text("Dani"), findsOne);
     });
 
+    testWidgets('delete friend from expense with error', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Click on expense
+      final expenseRow = find.byKey(ValueKey("expense-5"));
+      final inkWellExpense = find.descendant(
+          of: expenseRow, matching: find.byType(InkWell)
+      ).first;
+      await tester.tap(inkWellExpense);
+      await tester.pumpAndSettle();
+
+      final friendCard = find.byKey(ValueKey("friend-4"));
+      await tester.drag(friendCard, const Offset(-500, 0)); // Slide to left
+      await tester.pumpAndSettle();
+      //await tester.pump(const Duration(seconds: 5));
+      expect(find.text("Are you sure you want to delete Alex from this expense?"), findsOne);
+      final deleteButton = find.text("Delete");
+      await tester.tap(deleteButton);
+      await tester.pumpAndSettle();
+
+      // Verify snackBar
+      final errorMessageFinder = find.text("Cannot delete 'Alex' from Books");
+      expect(errorMessageFinder, findsOne);
+
+      final errorSnackBarFinder = find.ancestor(
+          of: errorMessageFinder,
+          matching: find.byType(Material)
+      );
+      expect(errorSnackBarFinder, findsOneWidget);
+
+      final dismissButton = find.text("DISMISS");
+      expect(dismissButton, findsOneWidget);
+      await tester.tap(dismissButton);
+      await tester.pumpAndSettle();
+
+      expect(errorSnackBarFinder, findsNothing); // Verify SnackBar is gone
+
+      // Verify all friends still in the list
+      expect(find.text("Nerea"), findsOne);
+      expect(find.text("Alex"), findsOne);
+      expect(find.text("Dani"), findsOne);
+    });
   });
 }
