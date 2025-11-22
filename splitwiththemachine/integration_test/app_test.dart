@@ -494,6 +494,93 @@ void main() {
       expect(find.text("Dani"), findsOne);
     });
 
+    testWidgets('delete an expense', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Click on expense
+      final expenseRow = find.byKey(const ValueKey("expense-2"));
+
+      await tester.drag(expenseRow, const Offset(-500, 0));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text("Are you sure you want to delete this expense?"),
+        findsOne,
+      );
+
+      final deleteButton = find.text("Delete");
+      await tester.tap(deleteButton);
+      await tester.pumpAndSettle();
+
+      // Verify snackBar
+      expect(find.text("Expense 'Coffee' deleted"), findsOne);
+
+      // Verify expense is removed from the list
+      expect(expenseRow, findsNothing);
+      expect(find.text("Books"), findsOne); // Remaining expenses
+      expect(find.text("Dinner"), findsOne);
+      expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(5));
+    });
+
+    testWidgets('add credit to friend in expense', (tester) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Tap on the expense row
+      final expenseRow = find.byKey(ValueKey("expense-5")); // For example "Books"
+      final inkWellExpense = find.descendant(
+          of: expenseRow, matching: find.byType(InkWell)
+      ).first;
+      await tester.tap(inkWellExpense);
+
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining("\$ 3.30"), findsOne);
+
+      // Find the friend to add credit
+      final friendCard = find.byKey(ValueKey("friend-1")); // For example "Nerea"
+
+      // Swipe right to reveal "add credit" option
+      await tester.drag(friendCard, const Offset(500, 0));
+      await tester.pumpAndSettle();
+
+      // Verify the add credit dialog appears
+      expect(find.text("Add Credit"), findsOne);
+
+
+      // Enter the amount
+      final creditField = find.byType(TextField).first;
+      await tester.enterText(creditField, "5.50");
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final addButton = find.widgetWithText(TextButton, "Add");
+
+      await tester.tap(addButton);
+      await tester.pumpAndSettle();
+
+      // Verify snackBar
+      expect(find.text("Added \$ 5.50 credit to 'Nerea' in 'Books'"), findsOne);
+
+      // Verify credit is updated in the list
+      expect(find.textContaining("\$ 8.80"), findsOne);
+      expect(find.textContaining("Credit: \$ 5.50"), findsOne);
+    });
+
     testWidgets('delete friend from expense with error', (
         tester,
         ) async {
