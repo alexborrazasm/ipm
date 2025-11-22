@@ -258,9 +258,22 @@ void main() {
         await tester.tap(saveExpenseFab);
         await tester.pumpAndSettle();
 
-        // Duplicated expense error
-        expect(find.text("Expense 'Gym Membership' is already added"),
-            findsOneWidget);
+        // Duplicated expense error (SnackBar)
+        final errorMessageFinder = find.text("Expense 'Gym Membership' is already added");
+        expect(errorMessageFinder, findsOneWidget);
+
+        final errorSnackBarFinder = find.ancestor(
+            of: errorMessageFinder,
+            matching: find.byType(Material)
+        );
+        expect(errorSnackBarFinder, findsOneWidget);
+
+        final dismissButton = find.text("DISMISS");
+        expect(dismissButton, findsOneWidget);
+        await tester.tap(dismissButton);
+        await tester.pumpAndSettle();  
+
+        expect(errorSnackBarFinder, findsNothing); // Verify SnackBar is gone
       });
     });
 
