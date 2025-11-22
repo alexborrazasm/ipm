@@ -155,7 +155,6 @@ MockSplitWithMeService buildMockService() {
     ),
   ]);
 
-<<<<<<< HEAD
   when(mockService.deleteFriendFromExpense(any, 4)).thenAnswer((_) async {
     throw ServerException(
       message: "Cannot delete 'Alex' from Books",
@@ -163,8 +162,7 @@ MockSplitWithMeService buildMockService() {
     );
   });
 
-=======
-  when(mockService.addCreditToFriend(5, 1, 5.50)).thenAnswer((_) async =>[
+ when(mockService.addCreditToFriend(5, 1, 5.50)).thenAnswer((_) async =>[
     Friend(
       id: 1,
       name: "Nerea",
@@ -185,6 +183,5 @@ MockSplitWithMeService buildMockService() {
     ),
     ],
   );
->>>>>>> 856d4a0 (Añadidos los test borrar expense y añadir credito a amigo, además arreglado pequeño error)
   return mockService;
 }
