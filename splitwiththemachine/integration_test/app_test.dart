@@ -631,5 +631,31 @@ void main() {
       expect(find.text("Alex"), findsOne);
       expect(find.text("Dani"), findsOne);
     });
+
+    testWidgets('search expenses', (tester) async {
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(6));
+
+      final searchField = find.byType(TextField).first;
+      expect(searchField, findsOneWidget);
+
+      await tester.enterText(searchField, "Coffee");
+      await tester.pumpAndSettle();
+
+      expect(find.text("Coffee"), findsNWidgets(2));
+      expect(find.text("Groceries"), findsNothing);
+      expect(find.text("Dinner"), findsNothing);
+
+      await tester.enterText(searchField, "");
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(6));
+    });
   });
 }
