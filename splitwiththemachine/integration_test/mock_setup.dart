@@ -89,7 +89,7 @@ MockSplitWithMeService buildMockService() {
     Expense(
       id: 7,
       description: "New TV",
-      date: DateTime(2025, 01, 06),
+      date: DateTime(2025, 09, 15),
       amount: 1500.99,
       creditBalance: 0,
     ),

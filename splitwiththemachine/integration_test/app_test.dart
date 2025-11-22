@@ -115,57 +115,81 @@ void main() {
     testWidgets('add an expense', (
         tester,
         ) async {
-      // Load app widget.
-      await tester.pumpWidget(MyApp(
-        expenseRepository: ExpenseRepository(service: mockService),
-        friendRepository: FriendRepository(service: mockService),
-      ));
 
-      await tester.pumpAndSettle();
+      final fakeNow = DateTime(2025, 11, 22);
 
-      // Add expense button
-      final addExpenseFab = find.byTooltip("Add an expense");
-      await tester.tap(addExpenseFab);
-      await tester.pumpAndSettle();
+      await withClock(Clock.fixed(fakeNow), () async{ // Load app widget.
+        await tester.pumpWidget(MyApp(
+          expenseRepository: ExpenseRepository(service: mockService),
+          friendRepository: FriendRepository(service: mockService),
+        ));
 
-      // Change date
-      await tester.tap(find.byIcon(Icons.calendar_today));
-      await tester.pumpAndSettle();
-
-      for (var i = 0; i < 2; i++) { // Go back 2 months
-        await tester.tap(find.byIcon(Icons.chevron_left));
         await tester.pumpAndSettle();
-      }
 
-      await tester.tap(find.text("15")); // Select 15th day
-      await tester.pumpAndSettle();
-      await tester.tap(find.text("Confirm Date"));
-      await tester.pumpAndSettle();
+        // Add expense button
+        final addExpenseFab = find.byTooltip("Add an expense");
+        await tester.tap(addExpenseFab);
+        await tester.pumpAndSettle();
 
-      // Find fields
-      final descriptionFieldFinder = find.widgetWithText(TextField, 'Description');
-      final amountFieldFinder = find.widgetWithText(TextField, 'Amount (\$)');
+        // Change date
+        await tester.tap(find.byIcon(Icons.calendar_today));
+        await tester.pumpAndSettle();
 
-      // Verify fields
-      expect(descriptionFieldFinder, findsOneWidget);
-      expect(amountFieldFinder, findsOneWidget);
+        // Verify that the calendar shows the current date
+        final currentDateString = "Selected: Saturday, November 22";
+        expect(find.text(currentDateString), findsOneWidget);
 
-      // Fill fields
-      await tester.enterText(descriptionFieldFinder, "New TV");
-      await tester.enterText(amountFieldFinder, "1500.99");
-      await tester.pumpAndSettle();
+        for (var i = 0; i < 2; i++) { // Go back 2 months
+          await tester.tap(find.byIcon(Icons.chevron_left));
+          await tester.pumpAndSettle();
+        }
 
-      // Save expense
-      final saveExpenseFab = find.byTooltip("Save");
-      await tester.tap(saveExpenseFab);
-      await tester.pumpAndSettle();
+        await tester.tap(find.text("15")); // Select 15th day
+        await tester.pumpAndSettle();
+        await tester.tap(find.text("Confirm Date"));
+        await tester.pumpAndSettle();
 
-      // Verify snackBar
-      expect(find.text("Expense 'New TV' added"), findsOne);
-      await tester.pump(const Duration(seconds: 3));
+        // Find fields
+        final descriptionFieldFinder = find.widgetWithText(
+            TextField, 'Description');
+        final amountFieldFinder = find.widgetWithText(TextField, 'Amount (\$)');
 
-      expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(7));
-      expect(find.text("New TV"), findsOne);
+        // Verify fields
+        expect(descriptionFieldFinder, findsOneWidget);
+        expect(amountFieldFinder, findsOneWidget);
+
+        // Fill fields
+        await tester.enterText(descriptionFieldFinder, "New TV");
+        await tester.enterText(amountFieldFinder, "1500.99");
+        await tester.pumpAndSettle();
+
+        // Save expense
+        final saveExpenseFab = find.byTooltip("Save");
+        await tester.tap(saveExpenseFab);
+        await tester.pumpAndSettle();
+
+        // Verify snackBar
+        expect(find.text("Expense 'New TV' added"), findsOne);
+
+        expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(7));
+        expect(find.text("New TV"), findsOne);
+
+        // Check expense
+        final expenseRow = find.byKey(ValueKey("expense-7"));
+        await tester.ensureVisible(expenseRow);
+        await tester.pumpAndSettle();
+
+        final inkWellExpense = find.descendant(
+            of: expenseRow, matching: find.byType(InkWell)
+        ).first;
+
+        await tester.tap(inkWellExpense);
+        await tester.pumpAndSettle();
+
+        expect(find.text("New TV"), findsExactly(2));
+        expect(find.text("\$ 1500.99"), findsOne);
+        expect(find.text("Monday, September 15, 2025"), findsOne);
+      });
     });
 
     testWidgets('add an expense with error', (
@@ -366,6 +390,10 @@ void main() {
       await tester.tap(find.byIcon(Icons.calendar_today));
       await tester.pumpAndSettle();
 
+      // Verify that the calendar shows the expense date
+      final selectedDateString = "Selected: Saturday, March 2";
+      expect(find.text(selectedDateString), findsOneWidget);
+
       for (var i = 0; i < 3; i++) { // Go forward 2 months
         await tester.tap(find.byIcon(Icons.chevron_right));
         await tester.pumpAndSettle();
@@ -394,6 +422,17 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(6));
+
+      // Check expense
+      await tester.ensureVisible(expenseRow);
+      await tester.pumpAndSettle();
+
+      await tester.tap(inkWellExpense);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 5));
+      expect(find.text("Travel to Singapore"), findsExactly(2));
+      expect(find.text("\$ 1700.40"), findsOne);
+      expect(find.text("Saturday, June 15, 2024"), findsOne);
     });
 
     testWidgets('edit an expense with error', (
@@ -559,7 +598,6 @@ void main() {
 
       // Verify the add credit dialog appears
       expect(find.text("Add Credit"), findsOne);
-
 
       // Enter the amount
       final creditField = find.byType(TextField).first;
