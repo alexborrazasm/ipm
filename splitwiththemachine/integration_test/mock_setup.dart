@@ -140,5 +140,20 @@ MockSplitWithMeService buildMockService() {
         ],
       ));
 
+  when(mockService.deleteFriendFromExpense(any, any)).thenAnswer((_) async =>[
+    Friend(
+      id: 4,
+      name: "Alex",
+      creditBalance: 1.3,
+      debitBalance: 40.2,
+    ),
+    Friend(
+      id: 3,
+      name: "Dani",
+      creditBalance: 2,
+      debitBalance: 40.2,
+    ),
+  ]);
+
   return mockService;
 }

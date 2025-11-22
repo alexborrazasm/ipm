@@ -456,5 +456,43 @@ void main() {
 
       expect(find.text('Please fill in all fields correctly.'), findsOne);
     });
+
+    testWidgets('delete friend from expense', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Click on expense
+      final expenseRow = find.byKey(ValueKey("expense-5"));
+      final inkWellExpense = find.descendant(
+          of: expenseRow, matching: find.byType(InkWell)
+      ).first;
+      await tester.tap(inkWellExpense);
+      await tester.pumpAndSettle();
+
+      final friendCard = find.byKey(ValueKey("friend-1"));
+      await tester.drag(friendCard, const Offset(-500, 0)); // Slide to left
+      await tester.pumpAndSettle();
+      //await tester.pump(const Duration(seconds: 5));
+      expect(find.text("Are you sure you want to delete Nerea from this expense?"), findsOne);
+      final deleteButton = find.text("Delete");
+      await tester.tap(deleteButton);
+      await tester.pumpAndSettle();
+
+      // Verify snackBar
+      expect(find.text("'Nerea' deleted from 'Books'"), findsOne);
+
+      // Verify friend is removed from the list
+      expect(find.text("Nerea"), findsNothing);
+      expect(find.text("Alex"), findsOne); // Remaining friends
+      expect(find.text("Dani"), findsOne);
+    });
+
   });
 }
