@@ -395,5 +395,66 @@ void main() {
 
       expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(6));
     });
+
+    testWidgets('edit an expense with error', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Click on expense
+      final expenseRow = find.byKey(ValueKey("expense-5"));
+      final inkWellExpense = find.descendant(
+          of: expenseRow, matching: find.byType(InkWell)
+      ).first;
+      await tester.tap(inkWellExpense);
+      await tester.pumpAndSettle();
+
+      // Click on expense
+      final editExpenseFab = find.byTooltip("Edit expense");
+      await tester.tap(editExpenseFab);
+      await tester.pumpAndSettle();
+
+      // Find fields
+      final descriptionFieldFinder = find.widgetWithText(TextField, 'Description');
+      final amountFieldFinder = find.widgetWithText(TextField, 'Amount (\$)');
+
+      // Verify fields
+      expect(descriptionFieldFinder, findsOneWidget);
+      expect(amountFieldFinder, findsOneWidget);
+
+      // Save with description and amount fields empty
+      await tester.enterText(descriptionFieldFinder, "");
+      await tester.enterText(amountFieldFinder, "");
+      final saveExpenseFab = find.byTooltip("Save");
+      await tester.tap(saveExpenseFab);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please fill in all fields correctly.'), findsOne);
+
+      // Save with amount field empty
+      await tester.enterText(descriptionFieldFinder, "New TV");
+
+      await tester.pumpAndSettle();
+      await tester.tap(saveExpenseFab);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please fill in all fields correctly.'), findsOne);
+
+      // Save with description field empty
+      await tester.enterText(descriptionFieldFinder, ''); // Clear description
+      await tester.enterText(amountFieldFinder, "1500.99");
+
+      await tester.pumpAndSettle();
+      await tester.tap(saveExpenseFab);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please fill in all fields correctly.'), findsOne);
+    });
   });
 }
