@@ -657,5 +657,53 @@ void main() {
 
       expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(6));
     });
+
+    testWidgets('search friends when adding to an expense', (tester) async {
+      // Load app widget with mock repositories
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Tap on a specific expense (e.g., "Coffee")
+      final expenseRow = find.byKey(ValueKey("expense-2"));
+      final inkWellExpense = find.descendant(
+          of: expenseRow,
+          matching: find.byType(InkWell)
+      ).first;
+      await tester.tap(inkWellExpense);
+      await tester.pumpAndSettle();
+
+      // Tap on the "Add friend" button
+      final addFriendFab = find.byTooltip("Add friend");
+      await tester.tap(addFriendFab);
+      await tester.pumpAndSettle();
+
+      // Verify all friends are visible initially
+      expect(find.byType(CircleAvatar), findsExactly(6));
+
+      // Find the search TextField inside the "Add friend" overlay/dialog
+      final searchField = find.byType(TextField).first;
+      expect(searchField, findsOneWidget);
+
+      // Enter a search query to filter friends (e.g., "Pepe")
+      await tester.enterText(searchField, "Pepe");
+      await tester.pumpAndSettle();
+
+      // Verify only the searched friend is visible
+      expect(find.byType(CircleAvatar), findsExactly(1));
+      expect(find.text("Pepe"), findsNWidgets(2));
+
+
+      // Clear the search field
+      await tester.enterText(searchField, "");
+
+      await tester.pumpAndSettle(Duration(milliseconds: 100));
+
+      // Verify all friends are visible again
+      expect(find.byType(CircleAvatar), findsExactly(6));
+    });
   });
 }
