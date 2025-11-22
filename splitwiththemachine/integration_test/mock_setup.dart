@@ -110,6 +110,35 @@ MockSplitWithMeService buildMockService() {
       type: ServerErrorType.validation,
     );
   });
+  
+  when(mockService.editExpense(any)).thenAnswer((_) async =>
+      Expense(
+        id: 5,
+        description: "Travel to Singapore",
+        date: DateTime(2024, 06, 15),
+        amount: 1700.4,
+        creditBalance: 3.3,
+        friends: [
+          Friend(
+            id: 1,
+            name: "Nerea",
+            creditBalance: 0,
+            debitBalance: 566.8,
+          ),
+          Friend(
+            id: 4,
+            name: "Alex",
+            creditBalance: 1.3,
+            debitBalance: 565.5,
+          ),
+          Friend(
+            id: 3,
+            name: "Dani",
+            creditBalance: 2,
+            debitBalance: 564.8,
+          ),
+        ],
+      ));
 
   return mockService;
 }

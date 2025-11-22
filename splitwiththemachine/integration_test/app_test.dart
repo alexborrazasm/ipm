@@ -160,6 +160,10 @@ void main() {
       await tester.tap(saveExpenseFab);
       await tester.pumpAndSettle();
 
+      // Verify snackBar
+      expect(find.text("Expense 'New TV' added"), findsOne);
+      await tester.pump(const Duration(seconds: 3));
+
       expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(7));
       expect(find.text("New TV"), findsOne);
     });
@@ -259,7 +263,8 @@ void main() {
         await tester.pumpAndSettle();
 
         // Duplicated expense error (SnackBar)
-        final errorMessageFinder = find.text("Expense 'Gym Membership' is already added");
+        final errorMessageFinder = find.text("Expense 'Gym Membership' is "
+            "already added");
         expect(errorMessageFinder, findsOneWidget);
 
         final errorSnackBarFinder = find.ancestor(
@@ -319,6 +324,76 @@ void main() {
       expect(find.text("Marcos"), findsOne);
       expect(find.textContaining("Credit: \$ 0.00"), findsOne);
       expect(find.textContaining("Debit: \$ 1.55"), findsOne);
+    });
+
+    testWidgets('edit expense', (
+        tester,
+        ) async {
+      // Load app widget.
+      await tester.pumpWidget(MyApp(
+        expenseRepository: ExpenseRepository(service: mockService),
+        friendRepository: FriendRepository(service: mockService),
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Click on expense
+      final expenseRow = find.byKey(ValueKey("expense-5"));
+      final inkWellExpense = find.descendant(
+          of: expenseRow, matching: find.byType(InkWell)
+      ).first;
+      await tester.tap(inkWellExpense);
+      await tester.pumpAndSettle();
+
+      final editExpenseFab = find.byTooltip("Edit expense");
+      await tester.tap(editExpenseFab);
+      await tester.pumpAndSettle();
+
+      // Find fields
+      final descriptionFieldFinder = find.widgetWithText(TextField, 'Description');
+      final amountFieldFinder = find.widgetWithText(TextField, 'Amount (\$)');
+
+      // Verify fields
+      expect(descriptionFieldFinder, findsOneWidget);
+      expect(amountFieldFinder, findsOneWidget);
+
+      // Fill fields
+      await tester.enterText(descriptionFieldFinder, "Travel to Singapore");
+      await tester.enterText(amountFieldFinder, "1700.4");
+      await tester.pumpAndSettle();
+
+      // Change date
+      await tester.tap(find.byIcon(Icons.calendar_today));
+      await tester.pumpAndSettle();
+
+      for (var i = 0; i < 3; i++) { // Go forward 2 months
+        await tester.tap(find.byIcon(Icons.chevron_right));
+        await tester.pumpAndSettle();
+      }
+
+      await tester.tap(find.text("15")); // Select 15th day
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Confirm Date"));
+      await tester.pumpAndSettle();
+
+      // Save button
+      final saveExpenseFab = find.byTooltip("Save");
+      await tester.tap(saveExpenseFab);
+      await tester.pumpAndSettle();
+
+      // Verify snackBar
+      expect(find.text("Expense 'Travel to Singapore' edited"), findsOne);
+
+      expect(find.text("Nerea"), findsOne);
+      expect(find.textContaining("Credit: \$ 0.00"), findsOne);
+      expect(find.textContaining("Debit: \$ 566.8"), findsOne);
+
+      // Go back
+      final goBack = find.byIcon(Icons.arrow_back);
+      await tester.tap(goBack);
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(6));
     });
   });
 }
