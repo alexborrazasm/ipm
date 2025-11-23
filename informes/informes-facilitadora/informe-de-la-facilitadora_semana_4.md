@@ -29,7 +29,7 @@ N/A
 
 ## 📊 Análisis final
 Esta semana nos dedicamos a realizar los tests para nuestra aplicación. Además 
-corregimos los errores de las anteriores entregas.
+Alexandre se encargó de corregir los errores de las anteriores entregas.
 
 ---
 
