@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:splitwiththemachine/ui/core/widgets/generic_snack_bar.dart';
 import '../widgets/generic_search.dart';
 import 'expense_detail_view.dart';
+import 'package:clock/clock.dart';
 
 class ExpenseListScreen extends StatefulWidget {
   const ExpenseListScreen({
@@ -194,7 +195,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         tooltip: "Add an expense",
         onPressed: () {
           Navigator.pushNamed(context, '/add_expense');
-          widget.viewModel.setSelectedDate(DateTime.now());
+          widget.viewModel.setSelectedDate(clock.now());
         },
         icon: Icons.add,
         viewModel: widget.viewModel,

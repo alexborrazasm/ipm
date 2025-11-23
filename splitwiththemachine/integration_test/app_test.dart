@@ -429,7 +429,6 @@ void main() {
 
       await tester.tap(inkWellExpense);
       await tester.pumpAndSettle();
-      await tester.pump(const Duration(seconds: 5));
       expect(find.text("Travel to Singapore"), findsExactly(2));
       expect(find.text("\$ 1700.40"), findsOne);
       expect(find.text("Saturday, June 15, 2024"), findsOne);
@@ -518,8 +517,10 @@ void main() {
       final friendCard = find.byKey(ValueKey("friend-1"));
       await tester.drag(friendCard, const Offset(-500, 0)); // Slide to left
       await tester.pumpAndSettle();
-      //await tester.pump(const Duration(seconds: 5));
-      expect(find.text("Are you sure you want to delete Nerea from this expense?"), findsOne);
+      expect(
+        find.text("Are you sure you want to delete Nerea from this expense?"),
+        findsOne
+      );
       final deleteButton = find.text("Delete");
       await tester.tap(deleteButton);
       await tester.pumpAndSettle();
@@ -579,7 +580,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap on the expense row
-      final expenseRow = find.byKey(ValueKey("expense-5")); // For example "Books"
+      final expenseRow = find.byKey(ValueKey("expense-5"));
       final inkWellExpense = find.descendant(
           of: expenseRow, matching: find.byType(InkWell)
       ).first;
@@ -590,7 +591,7 @@ void main() {
       expect(find.textContaining("\$ 3.30"), findsOne);
 
       // Find the friend to add credit
-      final friendCard = find.byKey(ValueKey("friend-1")); // For example "Nerea"
+      final friendCard = find.byKey(ValueKey("friend-1"));
 
       // Swipe right to reveal "add credit" option
       await tester.drag(friendCard, const Offset(500, 0));
@@ -603,8 +604,7 @@ void main() {
       final creditField = find.byType(TextField).first;
       await tester.enterText(creditField, "5.50");
 
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
 
       final addButton = find.widgetWithText(TextButton, "Add");
 
@@ -641,7 +641,6 @@ void main() {
       final friendCard = find.byKey(ValueKey("friend-4"));
       await tester.drag(friendCard, const Offset(-500, 0)); // Slide to left
       await tester.pumpAndSettle();
-      //await tester.pump(const Duration(seconds: 5));
       expect(find.text("Are you sure you want to delete Alex from this expense?"), findsOne);
       final deleteButton = find.text("Delete");
       await tester.tap(deleteButton);
@@ -683,14 +682,24 @@ void main() {
       final searchField = find.byType(TextField).first;
       expect(searchField, findsOneWidget);
 
-      await tester.enterText(searchField, "Coffee");
+      await tester.enterText(searchField, "coffee");
       await tester.pumpAndSettle();
 
-      expect(find.text("Coffee"), findsNWidgets(2));
+      expect(find.text("Coffee"), findsOne);
       expect(find.text("Groceries"), findsNothing);
       expect(find.text("Dinner"), findsNothing);
 
+      // Enter a search query to filter friends
+      await tester.enterText(searchField, "bhvbfvbvf");
+      await tester.pumpAndSettle();
+
+      // Verify verify that no expenses have been shown
+      expect(find.byIcon(FontAwesomeIcons.creditCard), findsNothing);
+      expect(find.text("No expenses found"), findsOne);
+
       await tester.enterText(searchField, "");
+      // Close keyboard
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
       expect(find.byIcon(FontAwesomeIcons.creditCard), findsNWidgets(6));
@@ -705,7 +714,7 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Tap on a specific expense (e.g., "Coffee")
+      // Tap on a specific expense
       final expenseRow = find.byKey(ValueKey("expense-2"));
       final inkWellExpense = find.descendant(
           of: expenseRow,
@@ -726,19 +735,27 @@ void main() {
       final searchField = find.byType(TextField).first;
       expect(searchField, findsOneWidget);
 
-      // Enter a search query to filter friends (e.g., "Pepe")
-      await tester.enterText(searchField, "Pepe");
+      // Enter a search query to filter friends
+      await tester.enterText(searchField, "pepe");
       await tester.pumpAndSettle();
 
       // Verify only the searched friend is visible
       expect(find.byType(CircleAvatar), findsExactly(1));
-      expect(find.text("Pepe"), findsNWidgets(2));
+      expect(find.text("Pepe"), findsOne);
 
+      // Enter a search query to filter friends
+      await tester.enterText(searchField, "vbdvbdhjvvfvf");
+      await tester.pumpAndSettle();
+
+      // Verify verify that no friends have been shown
+      expect(find.byType(CircleAvatar), findsNothing);
+      expect(find.text("No friends found"), findsOne);
 
       // Clear the search field
       await tester.enterText(searchField, "");
-
-      await tester.pumpAndSettle(Duration(milliseconds: 100));
+      // Close keyboard
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
 
       // Verify all friends are visible again
       expect(find.byType(CircleAvatar), findsExactly(6));
