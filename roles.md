@@ -2,7 +2,7 @@
 
 Los miembros del equipo de trabajo tienen que:
 
-  - Participar de forma equitativa en el desarollo de la práctica.
+  - Participar de forma equitativa en el desarrollo de la práctica.
 
   - Adoptar un _rol_ de gestión del desarrollo.
   
@@ -86,7 +86,7 @@ Este rol tiene asignados varios cometidos:
     para desarrollar la actividad.
 
   - Como curador, presentar y explicar a sus compañeros los recursos
-    indentificados.
+    identificados.
 
 ### Informes
 
@@ -135,7 +135,7 @@ de reflexión y metacognición del equipo.
 
 ### Informes
 
-Cada semana del cuatrimestre el análisita entrega una informe con dos
+Cada semana del cuatrimestre el analista entrega una informe con dos
 partes:
 
   - Un informe de evaluación del equipo.

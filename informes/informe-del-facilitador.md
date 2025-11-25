@@ -15,4 +15,4 @@
   - Conflictos, desviaciones, etc.
   
 
-## Estado del repositorio en la semama 1
+## Estado del repositorio en la semana 1

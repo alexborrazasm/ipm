@@ -15,7 +15,7 @@
   funcionamiento de una aplicación web y las herramientas básicas para
   desarrolladores web.
 
-- **How long**: Este assigment está formado por tres pasos o
+- **How long**: Este assignment está formado por tres pasos o
   _tareas_. La duración estimada de cada tarea es de una semana
   lectiva.
 

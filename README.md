@@ -1,6 +1,6 @@
 # Curso 25/26. Práctica 3. Interfaces gráficas para aplicaciones web
 
-![Image of the assigment](life-b4-autocad.jpeg)
+![Image of the assignment](life-b4-autocad.jpeg)
 
 _Repositorio dedicado al desarrollo de la tercera práctica de equipo
 de IPM_
@@ -26,10 +26,9 @@ Este repositorio contiene:
   
 ## Miembros del equipo:
 
-- Apellido1 Apellido2, Nombre : github username : udc username : role
-- Apellido1 Apellido2, Nombre : github username : udc username : role
-- Apellido1 Apellido2, Nombre : github username : udc username : role
-
+- García Figueroa, Daniel : gitdfigueroa : d.figueroa : Facilitador-Administrador
+- Borrazás Mancebo, Alexandre : alexborrazasm : alexandre.bmancebo : Curador-Traductor
+- Pérez Pértega, Nerea : NereaPP : nerea.ppertega : Analista
 
 ## Pasos para realizar la práctica
 

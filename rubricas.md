@@ -217,4 +217,4 @@ El proyecto cumple los requisitos
 
     | Se cumplen los requisitos funcionales, pero no los no funcionales.
 
-    | Se cumplen tanto los requsitos funciones como no los no funcionales.
+    | Se cumplen tanto los requisitos funciones como no los no funcionales.
