@@ -3,10 +3,207 @@
     padding: 0px;
 }
 
-h1 { font-size: 2.5em; }
-h2 { font-size: 2em; }
-h3 { font-size: 1.5em; }
-h4 { font-size: 1.2em; }
-h5 { font-size: 1em; }
-h6 { font-size: 0.8em; }
+/* Default = light mode */
+:root {
+  --color-rosewater: #dc8a78;
+  --color-flamingo: #dd7878;
+  --color-pink: #ea76cb;
+  --color-mauve: #8839ef;
+  --color-red: #d20f39;
+  --color-maroon: #e64553;
+  --color-peach: #fe640b;
+  --color-yellow: #df8e1d;
+  --color-green: #40a02b;
+  --color-teal: #179299;
+  --color-sky: #04a5e5;
+  --color-sapphire: #209fb5;
+  --color-blue: #1e66f5;
+  --color-lavender: #7287fd;
+  --color-text: #4c4f69;
+  --color-subtext1: #5c5f77;
+  --color-subtext0: #6c6f85;
+  --color-overlay2: #7c7f93;
+  --color-overlay1: #8c8fa1;
+  --color-overlay0: #9ca0b0;
+  --color-surface2: #acb0be;
+  --color-surface1: #bcc0cc;
+  --color-surface0: #ccd0da;
+  --color-base: #eff1f5;
+  --color-mantle: #e6e9ef;
+  --color-crust: #dce0e8;
+}
 
+/* Automatically switch to dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-rosewater: #f5e0dc;
+    --color-flamingo: #f2cdcd;
+    --color-pink: #f5c2e7;
+    --color-mauve: #cba6f7;
+    --color-red: #f38ba8;
+    --color-maroon: #eba0ac;
+    --color-peach: #fab387;
+    --color-yellow: #f9e2af;
+    --color-green: #a6e3a1;
+    --color-teal: #94e2d5;
+    --color-sky: #89dceb;
+    --color-sapphire: #74c7ec;
+    --color-blue: #89b4fa;
+    --color-lavender: #b4befe;
+    --color-text: #cdd6f4;
+    --color-subtext1: #bac2de;
+    --color-subtext0: #a6adc8;
+    --color-overlay2: #9399b2;
+    --color-overlay1: #7f849c;
+    --color-overlay0: #6c7086;
+    --color-surface2: #585b70;
+    --color-surface1: #45475a;
+    --color-surface0: #313244;
+    --color-base: #1e1e2e;
+    --color-mantle: #181825;
+    --color-crust: #11111b;
+  }
+}
+
+html, body {
+  height: 100%;
+  font-family: sans-serif;
+  font-size: 100%;
+}
+
+body {
+  background-color: var(--color-base);
+  color: var(--color-text);
+}
+
+h1 { font-size: clamp(2.2rem, 4vw, 3.2rem); }
+h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); }
+h3 { font-size: clamp(1.5rem, 2vw, 2rem); }
+h4 { font-size: clamp(1.25rem, 1.5vw, 1.5rem); }
+h5 { font-size: clamp(1.1rem, 1vw, 1.25rem); }
+h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
+
+.main-title {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Expense list styles */
+.expense-list-container {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 90%;
+}
+
+.expense-list-title {
+  margin-bottom: 0.6rem;
+}
+
+.expense-list {
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+  margin: 0 auto;
+}
+
+.expense-card {
+  border-radius: 0.5rem;
+  padding: 1em;
+  background-color: var(--color-surface0);
+}
+
+/* Expense detail styles */
+.expense-detail-container {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 90%;
+}
+
+.expense-detail-title-main {
+  margin-bottom: 0.6rem;
+}
+
+.expense-detail-card {
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background-color: var(--color-surface1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Expense friends styles */
+.expense-friend-container {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 90%;
+}
+
+.expense-friend-title {
+  margin-bottom: 0.6rem;
+}
+
+/* Container of the card */
+.friend-card {
+  display: flex; /* Makes children align horizontally */
+  align-items: center; /* Vertically center icon and text content */
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-surface1);
+}
+
+/* Icon friend within a circle */
+.friend-icon {
+  font-size: 1.5rem;       /* Icon size */
+  width: 3rem;             /* Circle width */
+  height: 3rem;            /* Circle height */
+  display: flex;           /* Center icon inside */
+  justify-content: center;
+  align-items: center;
+  background: var(--color-base);     /* Background color of the circle */
+  color: var(--color-lavender);      /* Icon color */
+  border-radius: 50%;      /* Makes it a perfect circle */
+}
+
+/* Text content */
+.friend-info {
+  display: flex;
+  color: var(--color-text);
+  flex-direction: column; /* Stack text vertically */
+  gap: 0.2rem;
+}
+
+.expense-friend-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* Edit expense styles */
+
+/* Add friend to expense styles */
+
+/* Delete friend from expense styles */
+
+/* Add credit to friend styles */
+
+/* Footer styles */
+footer {
+  text-align: center;
+  font-size: 1rem;
+  padding: 0.25rem;
+}
