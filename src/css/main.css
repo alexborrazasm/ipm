@@ -36,13 +36,6 @@
 /* Automatically switch to dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-rosewater: #f5e0dc;
-    --color-flamingo: #f2cdcd;
-    --color-pink: #f5c2e7;
-    --color-mauve: #cba6f7;
-    --color-red: #f38ba8;
-    --color-maroon: #eba0ac;
-    --color-peach: #fab387;
     --color-yellow: #f9e2af;
     --color-green: #a6e3a1;
     --color-teal: #94e2d5;
@@ -119,9 +112,27 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 .expense-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
   border-radius: 0.5rem;
   padding: 1em;
   background-color: var(--color-mantle);
+}
+
+.expense-icon {
+  font-size: 1.5rem;       /* Icon size */
+  width: 3rem;
+  display: flex;
+  color: var(--color-yellow); /* Icon color */
+}
+
+.expense-title {
+  display: flex;
+  color: var(--color-text);
+  flex-direction: column; /* Stack text vertically */
+  gap: 0.2rem;
 }
 
 /* Expense detail styles */
@@ -173,8 +184,8 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   display: flex;           /* Center icon inside */
   justify-content: center;
   align-items: center;
-  background: var(--color-crust);     /* Background color of the circle */
-  color: var(--color-lavender);      /* Icon color */
+  background: var(--color-crust); /* Background color of the circle */
+  color: var(--color-lavender);   /* Icon color */
   border-radius: 50%;      /* Makes it a perfect circle */
 }
 
