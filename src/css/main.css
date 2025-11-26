@@ -81,8 +81,13 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 .main-title {
   text-align: center;
+  color: var(--color-crust);
+}
+
+.main-banner {
+  background-color: var(--color-accent);
+  text-align: center;
   padding: 0.5rem;
-  color: var(--color-accent);
 }
 
 .visually-hidden {
@@ -99,7 +104,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 /* Expense list styles */
 .expense-list-container {
-  margin: 2rem auto;
+  margin: 0 auto;
   padding: 1rem;
   max-width: 90%;
 }
@@ -142,7 +147,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 /* Expense detail styles */
 .expense-detail-container {
-  margin: 2rem auto;
+  margin: 0 auto;
   padding: 1rem;
   max-width: 90%;
 }
@@ -180,7 +185,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 /* Expense friends styles */
 .expense-friend-container {
-  margin: 2rem auto;
+  margin: 0 auto;
   padding: 1rem;
   max-width: 90%;
 }
@@ -230,7 +235,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 /* Edit expense styles */
 .edit-expense-container {
-  margin: 2rem auto;
+  margin: 0 auto;
   padding: 1rem;
   max-width: 90%;
 }
@@ -263,7 +268,6 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   justify-content: center;
   align-items: center;
 }
-
 
 .form-input, 
 .form-button {
