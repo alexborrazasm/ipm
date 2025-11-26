@@ -213,7 +213,8 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   max-width: 90%;
 }
 
-.edit-expense-title-main {
+.edit-expense-title {
+  color: var(--color-lavender);
   margin-bottom: 0.6rem;
 }
 
