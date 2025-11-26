@@ -87,6 +87,10 @@
           <i class="fa-solid fa-scale-balanced expense-detail-icon"></i>
           Balance: $110
         </p>
+        <p class="expense-detail-date">
+          <i class="fa-solid fa-calendar-days expense-detail-icon"></i>
+          <time datetime="2024-06-15">June 15, 2024</time>
+        </p>
       </article>
     </section>
     
@@ -137,13 +141,22 @@
       </h2>
 
         <form class="edit-expense-card">
-          <h4 for="expense-title-input" class="form-label"> <i class="fa-solid fa-pen"></i> Description:</h4>
+          <h5 for="expense-title-input" class="form-label edit-title">
+            <i class="fa-solid fa-pen edit-icon"></i> 
+            Description:
+          </h5>
           <input type="text" id="expense-title-input" name="expense-title" class="form-input" value="Travel to A Coruña" required>
 
-          <h4 for="expense-amount-input" class="form-label"><i class="fa-solid fa-coins"></i> Amount:</h4>
+          <h5 for="expense-amount-input" class="form-label edit-title">
+            <i class="fa-solid fa-coins edit-icon"></i>
+            Amount:
+          </h5>
           <input type="number" id="expense-amount-input" name="expense-amount" class="form-input" value="300" required>
 
-          <h4 for="expense-date-input" class="form-label"><i class="fa-solid fa-calendar-days"></i> Date:</h4>
+          <h5 for="expense-date-input" class="form-label edit-title">
+            <i class="fa-solid fa-calendar-days edit-icon"></i> 
+            Date:
+          </h5>
           <input type="date" id="expense-date-input" name="expense-date" class="form-input" value="2024-06-15" required>
 
           <button type="submit" class="form-button">Save</button>
