@@ -62,7 +62,8 @@
 
 html, body {
   height: 100%;
-  font-family: sans-serif;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
   font-size: 100%;
 }
 
