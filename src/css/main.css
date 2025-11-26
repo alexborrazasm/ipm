@@ -121,7 +121,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 .expense-card {
   border-radius: 0.5rem;
   padding: 1em;
-  background-color: var(--color-surface0);
+  background-color: var(--color-mantle);
 }
 
 /* Expense detail styles */
@@ -138,7 +138,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 .expense-detail-card {
   border-radius: 0.5rem;
   padding: 1.5rem;
-  background-color: var(--color-surface1);
+  background-color: var(--color-mantle);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -162,7 +162,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   gap: 1rem;
   padding: 1rem;
   border-radius: 0.5rem;
-  background: var(--color-surface1);
+  background: var(--color-mantle);
 }
 
 /* Icon friend within a circle */
@@ -173,7 +173,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   display: flex;           /* Center icon inside */
   justify-content: center;
   align-items: center;
-  background: var(--color-base);     /* Background color of the circle */
+  background: var(--color-crust);     /* Background color of the circle */
   color: var(--color-lavender);      /* Icon color */
   border-radius: 50%;      /* Makes it a perfect circle */
 }
