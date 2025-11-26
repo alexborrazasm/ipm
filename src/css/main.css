@@ -102,6 +102,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 .expense-list-title {
   margin-bottom: 0.6rem;
+  color: var(--color-green);
 }
 
 .expense-list {
@@ -125,7 +126,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   font-size: 1.5rem;       /* Icon size */
   width: 3rem;
   display: flex;
-  color: var(--color-yellow); /* Icon color */
+  color: var(--color-green); /* Icon color */
 }
 
 .expense-title {
@@ -163,6 +164,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 .expense-friend-title {
+  color: var(--color-lavender);
   margin-bottom: 0.6rem;
 }
 
@@ -214,7 +216,11 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 /* Footer styles */
 footer {
+  display: flex;
+  gap: 0.3rem;
   text-align: center;
   font-size: 1rem;
   padding: 0.25rem;
+  align-items: center;
+  justify-content: center;
 }
