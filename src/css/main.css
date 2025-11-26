@@ -207,6 +207,45 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 /* Edit expense styles */
+.edit-expense-container {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 90%;
+}
+
+.edit-expense-title-main {
+  margin-bottom: 0.6rem;
+}
+
+.edit-expense-card {
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background-color: var(--color-mantle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-input, 
+.form-button {
+  width: 100%;              
+  padding: 0.8rem;
+  box-sizing: border-box;   
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.form-input {
+  background-color: var(--color-surface2);
+  color: var(--color-text);
+}
+
+.form-button {
+  background-color: var(--color-lavender);
+  color: var(--color-base);
+  margin-top: 0.5rem;   
+}
+
 
 /* Add friend to expense styles */
 

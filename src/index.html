@@ -47,7 +47,7 @@
         </li>
         <li class="expense-card">
           <i class="fa-solid fa-credit-card expense-icon"></i>
-          <h3 class="expense-title">Travel to Malaga</h3>
+          <h3 class="expense-title">Travel to Málaga</h3>
         </li>
         <li class="expense-card">
           <i class="fa-solid fa-credit-card expense-icon"></i>
@@ -96,8 +96,8 @@
 
           <div class="friend-info">
             <h4 class="friend-name">Nerea</h4>
-            <p class="friend-credit">Crédito: $60</p>
-            <p class="friend-debit">Débito: $100</p>
+            <p class="friend-credit">Credit: $60</p>
+            <p class="friend-debit">Debit: $100</p>
           </div>
         </li>
         <li class="friend-card">
@@ -105,8 +105,8 @@
 
           <div class="friend-info">
             <h4 class="friend-name">Dani</h4>
-            <p class="friend-credit">Crédito: $30</p>
-            <p class="friend-debit">Débito: $100</p>
+            <p class="friend-credit">Credit: $30</p>
+            <p class="friend-debit">Debit: $100</p>
           </div>
         </li>
         <li class="friend-card">
@@ -114,15 +114,28 @@
 
           <div class="friend-info">
             <h4 class="friend-name">Álex</h4>
-            <p class="friend-credit">Crédito: $20</p>
-            <p class="friend-debit">Débito: $100</p>
+            <p class="friend-credit">Credit: $20</p>
+            <p class="friend-debit">Debit: $100</p>
           </div>
       </ul>
     </section>
     
     <!-- Edit expense -->
-    <section>
-      
+    <section aria-labelledby="edit-expense-section-title" class="edit-expense-container">
+      <h2 class="edit-expense-title">
+        <i class="fa-solid fa-pen"></i>
+        Edit Expense
+      </h2>
+
+        <form class="edit-expense-card">
+          <h4 for="expense-title-input" class="form-label">Description:</h4>
+          <input type="text" id="expense-title-input" name="expense-title" class="form-input" value="Travel to A Coruña" required>
+
+          <h4 for="expense-amount-input" class="form-label">Amount:</h4>
+          <input type="number" id="expense-amount-input" name="expense-amount" class="form-input" value="300" required>
+
+          <button type="submit" class="form-button">Save</button>
+        </form>
     </section>
 
     <!-- Add friend to expense -->
