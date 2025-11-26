@@ -248,7 +248,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 .form-input {
-  background-color: var(--color-surface2);
+  background-color: var(--color-base);
   color: var(--color-text);
 }
 
