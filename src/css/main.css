@@ -31,6 +31,7 @@
   --color-base: #eff1f5;
   --color-mantle: #e6e9ef;
   --color-crust: #dce0e8;
+  --color-accent: var(--color-lavender);
 }
 
 /* Automatically switch to dark mode */
@@ -55,6 +56,7 @@
     --color-base: #1e1e2e;
     --color-mantle: #181825;
     --color-crust: #11111b;
+    --color-accent: var(--color-lavender);
   }
 }
 
@@ -102,7 +104,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 .expense-list-title {
   margin-bottom: 0.6rem;
-  color: var(--color-green);
+  color: var(--color-accent);
 }
 
 .expense-list {
@@ -126,7 +128,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   font-size: 1.5rem;       /* Icon size */
   width: 3rem;
   display: flex;
-  color: var(--color-green); /* Icon color */
+  color: var(--color-accent); /* Icon color */
 }
 
 .expense-title {
@@ -145,7 +147,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 .expense-detail-title-main {
   margin-bottom: 0.6rem;
-  color: var(--color-lavender)
+  color: var(--color-accent)
 }
 
 .expense-detail-card {
@@ -163,9 +165,8 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   font-size: 1.2rem;      /* Icon visual size */
   justify-content: center;
   align-items: center;
-  color: var(--color-lavender);
+  color: var(--color-accent);
 }
-
 
 /* Expense friends styles */
 .expense-friend-container {
@@ -175,7 +176,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 .expense-friend-title {
-  color: var(--color-lavender);
+  color: var(--color-accent);
   margin-bottom: 0.6rem;
 }
 
@@ -198,7 +199,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   justify-content: center;
   align-items: center;
   background: var(--color-crust); /* Background color of the circle */
-  color: var(--color-lavender);   /* Icon color */
+  color: var(--color-accent);   /* Icon color */
   border-radius: 50%;      /* Makes it a perfect circle */
 }
 
@@ -225,7 +226,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 .edit-expense-title {
-  color: var(--color-lavender);
+  color: var(--color-accent);
   margin-bottom: 0.6rem;
 }
 
@@ -253,7 +254,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 .form-button {
-  background-color: var(--color-lavender);
+  background-color: var(--color-accent);
   color: var(--color-base);
   margin-top: 0.5rem;   
 }
