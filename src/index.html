@@ -169,10 +169,35 @@
     </section>
 
     <!-- Add friend to expense -->
-    <section>
+    <section aria-labelledby="expense-friend-section-title" class="expense-friend-container">
+      <h2 id="expense-friend-section-title" class="visually-hidden">Expense Add Friends</h2>
+      <h2 class="expense-friend-title">Friends</h2>
+      <search class="friend-search-bar">
+        <input type="text" class="friend-search-input" placeholder="🔍 Search friend to add..." />
+      </search>
+      <ul class="expense-friend-list">
+        <li class="friend-card">
+          <i class="fa-solid fa-user friend-icon"></i>
 
+          <div class="friend-info">
+            <h4 class="add-friend-name">Nerea</h4>
+          </div>
+        </li>
+        <li class="friend-card">
+          <i class="fa-solid fa-user friend-icon"></i>
+
+          <div class="friend-info">
+            <h4 class="add-friend-name">Dani</h4>
+          </div>
+        </li>
+        <li class="friend-card">
+          <i class="fa-solid fa-user friend-icon"></i>
+
+          <div class="friend-info">
+            <h4 class="add-friend-name">Álex</h4>
+          </div>
+      </ul>
     </section>
-    
     <!-- Delete friend from expense -->
     <section>
 
