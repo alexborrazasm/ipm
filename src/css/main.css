@@ -313,10 +313,10 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 .friend-search-input:focus {
   outline: none;
+  color: var(--color-text);
 }
-
 .friend-search-input::placeholder {
-  color: var(--color-subtext0)
+  color: var(--color-subtext0);
  }
 /* Delete friend from expense styles */
 
