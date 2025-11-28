@@ -222,21 +222,49 @@
 
     <!-- Delete friend from expense -->
     <section aria-labelledby="delete-friend-title" class="delete-friend-container">
-      <h2 id="delete-friend-title" class="section-title">
+      <h2 id="delete-friend-title" class="delete-friend-title">
         <i class="fa-solid fa-user-minus" aria-hidden="true"></i>
         Remove Friend
       </h2>
-    <!-- TODO -->
+       <form class="delete-friend-card">
+        <label for="delete-friend-title-input" class="form-label edit-title">
+          Do you want to remove "Dani" from this expense?
+        </label>
+        <nav class="delete-friend-buttons">
+          <button type="button" class="form-button delete-friend-cancel-button">Cancel</button>
+          <button type="submit" class="form-button delete-friend-acept-button">Confirm</button>
+        </nav>
+      </form>
     </section>
-
     <!-- Add credit to friend -->
     <section aria-labelledby="add-credit-title" class="add-credit-container">
-      <h2 id="add-credit-title" class="section-title">
-        <i class="fa-solid fa-coins" aria-hidden="true"></i>
+      <h2 id="add-credit-title" class="add-credit-title">
+        <i class="fa-solid fa-coins" arsection"true"></i>
         Add Credit
       </h2>
-    <!-- TODO -->
+      <form class="add-credit-card">
+      <label for="add-credit-title-input" class="form-label edit-title">
+          <i class="fa-solid fa-coins edit-icon" aria-hidden="true"></i>
+          How many credits do you want to add to "Alex" from "Travel to A Coruña"?
+        </label>
+        <input
+          type="number"
+          id="add-credit-input"
+          name="add-credit"
+          class="form-input"
+          value="233" required
+        >      
+      <nav class="add-credit-buttons">
+        <button type="button" class="form-button add-credit-cancel-button">Cancel</button>
+        <button type="submit" class="form-button add-credit-acept-button">Confirm</button>
+      </nav>
+
+      </form>
+
+
     </section>
+
+    
 
   </main>
   <footer>

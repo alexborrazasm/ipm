@@ -331,9 +331,55 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 /* Delete friend from expense styles */
+.delete-friend-container {
+  margin: 0 auto;
+  padding: 1rem;
+  max-width: 90%;
+}
 
+.delete-friend-title {
+  color: var(--color-accent);
+  margin-bottom: 0.6rem;
+}
+
+.delete-friend-card {
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background-color: var(--color-mantle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+nav.delete-friend-buttons {
+  display: flex;
+  gap: 10px;
+}
 /* Add credit to friend styles */
 
+.add-credit-container {
+  margin: 0 auto;
+  padding: 1rem;
+  max-width: 90%;
+}
+
+.add-credit-title {
+  color: var(--color-accent);
+  margin-bottom: 0.6rem;
+}
+
+.add-credit-card {
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background-color: var(--color-mantle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+nav.add-credit-buttons {
+  display: flex;
+  gap: 10px;
+}
 /* Footer styles */
 footer {
   display: flex;
