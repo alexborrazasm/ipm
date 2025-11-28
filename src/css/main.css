@@ -289,19 +289,29 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   margin-top: 0.5rem;   
 }
 
-
 /* Add friend to expense styles */
-.friend-search-bar  {
+.add-friend-title {
+  color: var(--color-accent);
+  margin-bottom: 0.6rem;
+}
+
+.friend-search-bar {
   margin-bottom: 1rem;
   margin-right: 2rem;
 }
+
 .add-friend-name {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text);
   font-size: 1.5rem;
   color: var(--color-text);
 }
+
 .friend-search-container {
   align-items: center;
 }
+
 .friend-search-input {
   border-radius: 0.25rem;
   border: 1px solid var(--color);
@@ -315,9 +325,11 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   outline: none;
   color: var(--color-text);
 }
+
 .friend-search-input::placeholder {
   color: var(--color-subtext0);
- }
+}
+
 /* Delete friend from expense styles */
 
 /* Add credit to friend styles */
