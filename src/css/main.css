@@ -72,12 +72,17 @@ body {
   color: var(--color-text);
 }
 
-h1 { font-size: clamp(2.2rem, 4vw, 3.2rem); }
-h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); }
-h3 { font-size: clamp(1.5rem, 2vw, 2rem); }
-h4 { font-size: clamp(1.25rem, 1.5vw, 1.5rem); }
-h5 { font-size: clamp(1.1rem, 1vw, 1.25rem); }
-h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
+main {
+  margin: 0 auto;
+  max-width: 1400px;
+}
+
+h1 { font-size: 2.2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.1rem; }
+h6 { font-size: 1rem; }
 
 .main-title {
   text-align: center;
@@ -88,6 +93,20 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   background-color: var(--color-accent);
   text-align: center;
   padding: 0.5rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.6rem;
+  color: var(--color-accent);
+}
+
+.container {
+  margin: 0 auto;
+  padding: 1rem;
+  max-width: 100%;
 }
 
 .visually-hidden {
@@ -102,45 +121,74 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   border: 0;
 }
 
-/* Expense list styles */
-.expense-list-container {
+.form-input, 
+.form-button {
+  width: 100%;
   margin: 0 auto;
-  padding: 1rem;
-  max-width: 90%;
+  padding: 0.8rem;
+  box-sizing: border-box;   
+  border: none;
+  border-radius: 0.5rem;
 }
 
-.expense-list-title {
-  margin-bottom: 0.6rem;
-  color: var(--color-accent);
+.form-input {
+  background-color: var(--color-base);
+  color: var(--color-text);
 }
 
-.expense-search-bar {
+.form-label {
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
+.form-button {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.confirm-button {
+  background: var(--color-accent);
+  color: var(--color-base);
+}
+
+.cancel-button {
+  background: var(--color-overlay0);
+  color: var(--color-base);
+}
+
+.search-bar {
   margin-bottom: 1rem;
   margin-right: 2rem;
 }
 
-.expense-search-container {
-  align-items: center;
-}
-
-.expense-search-input {
-  border-radius: 0.25rem;
+.search-input {
+  border-radius: 0.4rem;
   border: 1px solid var(--color);
   background: var(--color-mantle);
+  color: var(--color-text);
   font-size: 1rem;
   padding: 1rem;
   width: 100%;
 }
 
-.expense-search-input:focus {
+.search-input:focus {
   outline: none;
-  color: var(--color-text);
 }
 
-.expense-search-input::placeholder {
+.search-input::placeholder {
   color: var(--color-subtext0);
 }
 
+.card {
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background-color: var(--color-mantle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Expense list styles */
 .expense-list {
   list-style: none;
   display: grid;
@@ -173,26 +221,6 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 /* Expense detail styles */
-.expense-detail-container {
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 90%;
-}
-
-.expense-detail-title-main {
-  margin-bottom: 0.6rem;
-  color: var(--color-accent)
-}
-
-.expense-detail-card {
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  background-color: var(--color-mantle);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
 .expense-detail-amount,
 .expense-detail-balance,
 .expense-detail-date {
@@ -211,18 +239,6 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 /* Expense friends styles */
-.expense-friend-container {
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 90%;
-}
-
-.expense-friend-title {
-  color: var(--color-accent);
-  margin-bottom: 0.6rem;
-}
-
-/* Container of the card */
 .friend-card {
   display: flex; /* Makes children align horizontally */
   align-items: center; /* Vertically center icon and text content */
@@ -263,31 +279,11 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 .expense-friend-list {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
 }
 
 /* Edit expense styles */
-.edit-expense-container {
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 90%;
-}
-
-.edit-expense-title {
-  color: var(--color-accent);
-  margin-bottom: 0.6rem;
-}
-
-.edit-expense-card {
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  background-color: var(--color-mantle);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
 .edit-title {
   display: flex;
   align-items: center;
@@ -303,67 +299,7 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   align-items: center;
 }
 
-.form-input, 
-.form-button {
-  width: 100%;              
-  padding: 0.8rem;
-  box-sizing: border-box;   
-  border: none;
-  border-radius: 0.5rem;
-}
-
-.form-input {
-  background-color: var(--color-base);
-  color: var(--color-text);
-}
-
-.form-button {
-  background-color: var(--color-accent);
-  color: var(--color-base);
-  margin-top: 0.5rem;   
-}
-
 /* Add friend to expense styles */
-.add-friend-title {
-  color: var(--color-accent);
-  margin-bottom: 0.6rem;
-}
-
-.friend-search-bar {
-  margin-bottom: 1rem;
-  margin-right: 2rem;
-}
-
-.add-friend-name {
-  display: flex;
-  flex-direction: column;
-  color: var(--color-text);
-  font-size: 1.5rem;
-  color: var(--color-text);
-}
-
-.friend-search-container {
-  align-items: center;
-}
-
-.friend-search-input {
-  border-radius: 0.25rem;
-  border: 1px solid var(--color);
-  background: var(--color-mantle);
-  font-size: 1rem;
-  padding: 1rem;
-  width: 100%;
-}
-
-.friend-search-input:focus {
-  outline: none;
-  color: var(--color-text);
-}
-
-.friend-search-input::placeholder {
-  color: var(--color-subtext0);
-}
-
 .add-friend-button {
   margin-left: auto;
   background: none;
@@ -372,12 +308,6 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 }
 
 /* Delete friend from expense styles */
-.delete-friend-container {
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 90%;
-}
-
 .delete-friend-title {
   color: var(--color-accent);
   margin-bottom: 0.6rem;
@@ -387,44 +317,12 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   margin-bottom: 0.6rem;
 }
 
-.delete-friend-card {
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  background-color: var(--color-mantle);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
 nav.delete-friend-buttons {
   display: flex;
   gap: 10px;
 }
 
 /* Add credit to friend styles */
-.add-credit-container {
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 90%;
-}
-
-.add-credit-title {
-  color: var(--color-accent);
-  margin-bottom: 0.6rem;
-}
-
-.add-credit-text {
-  margin-bottom: 0.6rem;
-}
-
-.add-credit-card {
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  background-color: var(--color-mantle);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
 nav.add-credit-buttons {
   display: flex;
   gap: 10px;
@@ -439,4 +337,47 @@ footer {
   padding: 0.25rem;
   align-items: center;
   justify-content: center;
+}
+
+@media (min-width: 576px) {
+  main {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  /* Left column */
+  .left-list {
+    flex: 0 0 20%;
+  }
+
+  /* Right column */
+  .right-wrapper {
+    flex: 1 1;
+  }
+}
+
+@media (min-width: 768px) {
+
+  /* Left column */
+  .left-list {
+    flex: 0 0 30%;
+  }
+}
+
+@media (min-width:  992px) {
+  .container {
+    max-width: 95%;
+  }
+}
+
+@media (min-width:  1200px) {
+  .container {
+    max-width: 90%;
+  }
+}
+
+@media (min-width:  1400px) {
+  .container {
+    max-width: 85%;
+  }
 }
