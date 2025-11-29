@@ -217,6 +217,14 @@ h6 { font-size: 1rem; }
   color: var(--color-accent);
 }
 
+.error-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.6rem;
+  color: var(--color-red);
+}
+
 .container {
   margin: 0 auto;
   padding: 1rem;
@@ -289,6 +297,11 @@ h6 { font-size: 1rem; }
 
 .confirm-button {
   background: var(--color-accent);
+  color: var(--color-base);
+}
+
+.dismiss-button {
+  background: var(--color-red);
   color: var(--color-base);
 }
 
@@ -486,8 +499,20 @@ h6 { font-size: 1rem; }
   margin-bottom: 0.6rem;
 }
 
+.error-delete-friend-title {
+  color: var(--color-red);
+  margin-bottom: 0.6rem;
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
 .delete-friend-text {
   margin-bottom: 0.6rem;
+}
+
+.delete-article-p {
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
 }
 
 div.delete-friend-buttons {

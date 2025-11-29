@@ -261,9 +261,9 @@
           Remove Friend
         </h2>
          <form class="card">
-          <label class="form-label">
+          <p class="delete-article-p" role="alert">
             Do you want to remove "Dani" from this expense?
-          </label>
+          </p>
           <div class="delete-friend-buttons">
             <button type="button" class="form-button cancel-button">
               Cancel
@@ -274,7 +274,26 @@
           </div>
         </form>
       </section>
-
+          <!-- ERROR: Delete friend from expense -->
+      <section aria-labelledby="error-delete-friend-title" class="container">
+        <h2 id="error-delete-friend-title" class="error-section-title">
+          <i class="fa-solid fa-user-minus" aria-hidden="true"></i>
+          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+          Error Removing Friend 
+          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+        </h2>
+         <article class="card">
+          <h3 class="visually-hidden">Error Removing Friend</h3> <!--TODO--> 
+          <p class="delete-article-p" role="alert">
+            You can't remove 'Dani' because his credit is higher than 0
+          </p>
+          <div class="error-delete-friend-buttons">
+            <button type="button" class="form-button dismiss-button">
+              Dissmiss
+            </button>
+          </div>
+        </article>
+      </section>
       <!-- Add credit to friend -->
       <section aria-labelledby="add-credit-title" class="container">
         <h2 id="add-credit-title" class="section-title">
