@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>SplitSWithMe</title>
+  <title>SplitWithMe</title>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" type="text/css" href="css/main.css" />
+  <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 <body>
   <header class="main-banner">
@@ -79,7 +79,10 @@
       </ul>
     </section>
     
-      <section class="right-wrapper" aria-labelledby="current-expense-title">
+    <section class="right-wrapper" aria-labelledby="current-expense-title">
+      <h2 id="current-expense-title" class="visually-hidden">
+        Selected Expense Details
+      </h2>
       <!-- Expense detail -->
       <section aria-labelledby="expense-detail-title" class="container">
         <h2 id="expense-detail-title" class="section-title">
@@ -156,7 +159,7 @@
           </li>
           <li class="friend-card friend-card--action">
             <button type="button" class="friend-action">
-              <i class="fa-solid fa-user-plus friend-icon" aria-hidden="true""></i>
+              <i class="fa-solid fa-user-plus friend-icon" aria-hidden="true"></i>
               <span class="friend-action-text">Add Friend</span>
             </button>
           </li>
@@ -216,7 +219,7 @@
         <h2 id="add-friend-title" class="section-title">
           <i class="fa-solid fa-user-plus" aria-hidden="true"></i> Add Friend
         </h2>
-        <h7 class="tap-friend-text">Tap on a friend to add them</h7>
+        <h5 class="tap-friend-text">Tap on a friend to add them</h5>
         <search class="search-bar">
           <input 
             type="text" 
@@ -258,7 +261,7 @@
           Remove Friend
         </h2>
          <form class="card">
-          <label for="delete-friend-title-input" class="form-label">
+          <label class="form-label">
             Do you want to remove "Dani" from this expense?
           </label>
           <div class="delete-friend-buttons">
@@ -278,7 +281,7 @@
           <i class="fa-solid fa-coins" aria-hidden="true"></i>Add Credit
         </h2>
         <form class="card">
-          <label for="add-credit-title-input" class="form-label">
+          <label for="add-credit-input" class="form-label">
           How much credit do you want to add to 'Alex' for 'Travel to A Coruña'?
           </label>
           <input
