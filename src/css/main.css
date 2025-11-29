@@ -330,6 +330,14 @@ h6 { font-size: 1rem; }
 }
 
 /* Add friend to expense styles */
+.tap-friend-text {
+  display: flex;
+  color: var(--color-subtext1);
+  text-align: left;
+  margin-bottom: 0.8rem;
+  margin-left: 0.9rem;
+}
+
 .add-friend-button {
   font-size: 160%;
   margin-left: auto;
