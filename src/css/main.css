@@ -114,6 +114,33 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   color: var(--color-accent);
 }
 
+.expense-search-bar {
+  margin-bottom: 1rem;
+  margin-right: 2rem;
+}
+
+.expense-search-container {
+  align-items: center;
+}
+
+.expense-search-input {
+  border-radius: 0.25rem;
+  border: 1px solid var(--color);
+  background: var(--color-mantle);
+  font-size: 1rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+.expense-search-input:focus {
+  outline: none;
+  color: var(--color-text);
+}
+
+.expense-search-input::placeholder {
+  color: var(--color-subtext0);
+}
+
 .expense-list {
   list-style: none;
   display: grid;
@@ -203,6 +230,13 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   padding: 1rem;
   border-radius: 0.5rem;
   background: var(--color-mantle);
+}
+
+.friend-menu-button {
+  margin-left:auto;
+  background: none;
+  border: none;
+  color: var(--color-subtext1);
 }
 
 /* Icon friend within a circle */
@@ -330,6 +364,13 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
   color: var(--color-subtext0);
 }
 
+.add-friend-button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--color-subtext1);
+}
+
 /* Delete friend from expense styles */
 .delete-friend-container {
   margin: 0 auto;
@@ -339,6 +380,10 @@ h6 { font-size: clamp(1rem, 0.8vw, 1.1rem); }
 
 .delete-friend-title {
   color: var(--color-accent);
+  margin-bottom: 0.6rem;
+}
+
+.delete-friend-text {
   margin-bottom: 0.6rem;
 }
 
@@ -355,8 +400,8 @@ nav.delete-friend-buttons {
   display: flex;
   gap: 10px;
 }
-/* Add credit to friend styles */
 
+/* Add credit to friend styles */
 .add-credit-container {
   margin: 0 auto;
   padding: 1rem;
@@ -365,6 +410,10 @@ nav.delete-friend-buttons {
 
 .add-credit-title {
   color: var(--color-accent);
+  margin-bottom: 0.6rem;
+}
+
+.add-credit-text {
   margin-bottom: 0.6rem;
 }
 
@@ -380,6 +429,7 @@ nav.add-credit-buttons {
   display: flex;
   gap: 10px;
 }
+
 /* Footer styles */
 footer {
   display: flex;
