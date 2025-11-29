@@ -121,6 +121,27 @@ h6 { font-size: 1rem; }
   border: 0;
 }
 
+.circle-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 160%;
+  margin-left:auto;
+  background: none;
+  border: none;
+  color: var(--color-subtext1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.circle-button:hover {
+  color: var(--color-accent);
+  box-shadow: 0 0 6px 2px var(--color-base);
+  border-radius: 50%; 
+}
+
 .form-input, 
 .form-button {
   width: 100%;
@@ -249,20 +270,7 @@ h6 { font-size: 1rem; }
   background: var(--color-mantle);
 }
 
-.friend-menu-button {
-  width: 2.5rem;
-  height: 2.5rem;
-  font-size: 160%;
-  margin-left:auto;
-  background: none;
-  border: none;
-  color: var(--color-subtext1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 50%;
-}
+
 
 /* Icon friend within a circle */
 .friend-icon {
@@ -328,23 +336,6 @@ h6 { font-size: 1rem; }
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.edit-button {
-  background: none;
-  border: none;
-  color: var(--color-subtext1);
-  width: 2rem;
-  height: 2rem;
-  font-size: 140%;
-  cursor: pointer;
-}
-
-
-.edit-button:hover {
-  color: var(--color-green);
-  box-shadow: 0 0 6px 2px var(--color-base);
-  border-radius: 50%; 
 }
 .expense-detail-header {
   display: flex;
