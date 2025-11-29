@@ -249,10 +249,18 @@ h6 { font-size: 1rem; }
 }
 
 .friend-menu-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 160%;
   margin-left:auto;
   background: none;
   border: none;
   color: var(--color-subtext1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
 }
 
 /* Icon friend within a circle */
@@ -323,10 +331,12 @@ h6 { font-size: 1rem; }
 
 /* Add friend to expense styles */
 .add-friend-button {
+  font-size: 160%;
   margin-left: auto;
   background: none;
   border: none;
   color: var(--color-subtext1);
+  cursor: pointer;
 }
 
 /* Delete friend from expense styles */
