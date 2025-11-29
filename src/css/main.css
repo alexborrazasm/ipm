@@ -329,6 +329,22 @@ h6 { font-size: 1rem; }
   align-items: center;
 }
 
+.edit-button {
+  background: none;
+  border: none;
+  color: var(--color-subtext1);
+}
+
+
+.edit-button:hover {
+  color: var(--color-green);
+}
+
+.expense-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 /* Add friend to expense styles */
 .tap-friend-text {
   display: flex;
