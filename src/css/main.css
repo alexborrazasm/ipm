@@ -343,8 +343,9 @@ h6 { font-size: 1rem; }
 
 .edit-button:hover {
   color: var(--color-green);
+  box-shadow: 0 0 6px 2px var(--color-base);
+  border-radius: 50%; 
 }
-
 .expense-detail-header {
   display: flex;
   align-items: center;
