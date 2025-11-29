@@ -129,6 +129,7 @@ h6 { font-size: 1rem; }
   box-sizing: border-box;   
   border: none;
   border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .form-input {
@@ -333,6 +334,10 @@ h6 { font-size: 1rem; }
   background: none;
   border: none;
   color: var(--color-subtext1);
+  width: 2rem;
+  height: 2rem;
+  font-size: 140%;
+  cursor: pointer;
 }
 
 
@@ -373,13 +378,13 @@ h6 { font-size: 1rem; }
   margin-bottom: 0.6rem;
 }
 
-nav.delete-friend-buttons {
+div.delete-friend-buttons {
   display: flex;
   gap: 10px;
 }
 
 /* Add credit to friend styles */
-nav.add-credit-buttons {
+div.add-credit-buttons {
   display: flex;
   gap: 10px;
 }
