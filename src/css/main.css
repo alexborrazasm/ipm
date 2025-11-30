@@ -4,6 +4,7 @@
 }
 
 /* Default = light mode */
+/* Catppuccin Latte Palette */
 :root {
   --color-rosewater: #dc8a78;
   --color-rosewater-rgb: 220 138 120;
@@ -83,12 +84,13 @@
   --color-crust: #dce0e8;
   --color-crust-rgb: 220 224 232;
   --color-crust-hsl: 220.000 20.690% 88.627%;
-  --color-accent: var(--color-lavender);
-  --color-accent-rgb: var(--color-lavender-rgb);
-  --color-accent-hsl: var(--color-lavender-hsl);
+  --color-accent: var(--color-blue);
+  --color-accent-rgb: var(--color-blue-rgb);
+  --color-accent-hsl: var(--color-blue-hsl);
 }
 
 /* Automatically switch to dark mode */
+/* Catppuccin Mocha Palette */
 @media (prefers-color-scheme: dark) {
   :root {
     --color-rosewater: #f5e0dc;
@@ -288,7 +290,8 @@ h6 { font-size: 1rem; }
 
 .form-button {
   margin-top: 0.5rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .form-button:hover {
@@ -297,7 +300,7 @@ h6 { font-size: 1rem; }
 
 .confirm-button {
   background: var(--color-accent);
-  color: var(--color-base);
+  color: var(--color-crust);
 }
 
 .dismiss-button {
@@ -307,7 +310,7 @@ h6 { font-size: 1rem; }
 
 .cancel-button {
   background: var(--color-overlay0);
-  color: var(--color-base);
+  color: var(--color-text);
 }
 
 .search-bar {

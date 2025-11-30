@@ -1,4 +1,4 @@
-# UI DESING
+# UI DESIGN
 
 ---
 
