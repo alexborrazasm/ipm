@@ -406,8 +406,6 @@ h6 { font-size: 1rem; }
   background: var(--color-mantle);
 }
 
-
-
 /* Icon friend within a circle */
 .friend-icon {
   font-size: 1.5rem;       /* Icon size */
@@ -478,6 +476,7 @@ h6 { font-size: 1rem; }
   align-items: center;
   justify-content: space-between;
 }
+
 /* Add friend to expense styles */
 .tap-friend-text {
   display: flex;
