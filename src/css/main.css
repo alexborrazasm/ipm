@@ -185,7 +185,7 @@ html, body {
 
 main {
   margin: 0 auto;
-  max-width: 1400px;
+  max-width: 1600px;
 }
 
 body {
@@ -521,6 +521,9 @@ footer {
 
 
 @media (min-width: 576px) {
+}
+
+@media (min-width: 768px) {
   main {
     display: flex;
     flex-wrap: wrap;
@@ -531,13 +534,10 @@ footer {
     flex: 0 0 20%;
   }
 
-  /* Right column */
+  /* Right content */
   main article#content {
     flex: 1 1;
   }
-}
-
-@media (min-width: 768px) {
 
   /* Left column */
   main aside {
@@ -545,20 +545,22 @@ footer {
   }
 }
 
-@media (min-width:  992px) {
-  .container {
-    max-width: 95%;
-  }
-}
-
 @media (min-width:  1200px) {
-  .container {
-    max-width: 90%;
+  /* Right content */
+  #content {
+    display: flex;
+    flex-wrap: wrap;
   }
+  #content > section {
+    flex: 0 0 45%;
+  }
+
+main aside {
+  margin-right: 1.5rem;
+}
+  
+  
 }
 
 @media (min-width:  1400px) {
-  .container {
-    max-width: 85%;
-  }
 }
