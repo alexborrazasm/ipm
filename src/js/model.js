@@ -65,79 +65,92 @@ async function retrieveFriendsOnExpense(expenseId) {
 		}
 }
 
-async function editExpense(id, description, date) {
+async function editExpense(id, description, amount, date) {
 	let response;
 	try {
-		response = await fetch(); // TODO
+		response = await fetch(
+			`${server_url}/${expense_endpoint}/${id}`,
+			{
+				method: "put",
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({description: description, amount:amount, date: date})
+			}
+		);
 	} catch (error) {
 		throw new ConnectionError(error.message);
 	}
 
-	if (response.status == 409) {
-		throw new RequestError('...'); // TODO
-	}
-
-	return "..."; // TODO
+	let data = await response.json();
+	return new Expense(data.id, data.description, data.date, data.amount);
 }
 
 async function addFriendToExpense(expenseId, friendId) {
 	let response;
 	try {
-		response = await fetch(); // TODO
+		response = await fetch(
+			`${server_url}/${expense_endpoint}/${expenseId}/${friend_endpoint}`,
+				{
+					method: "post",
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({friendId: friendId})
+				}
+		);
 	} catch (error) {
 		throw new ConnectionError(error.message);
 	}
 
 	if (response.status == 409) {
-		throw new RequestError('...'); // TODO
+		throw new RequestError('Friend cannot be added to expense');
 	}
 
-	return "..."; // TODO
-}
-
-async function aaa() {
-	let response;
-	try {
-		response = await fetch(); // TODO
-	} catch (error) {
-		throw new ConnectionError(error.message);
-	}
-
-	if (response.status == 409) {
-		throw new RequestError('...'); // TODO
-	}
-
-	return "..."; // TODO
+    let data = await response.json();
+	return retrieveFriendsOnExpense(data.id);
 }
 
 async function removeFriendFromExpense(friendId, expenseId) {
 	let response;
 	try {
-		response = await fetch(); // TODO
+		response = await fetch(
+			`${server_url}/${expense_endpoint}/${expenseId}/${friend_endpoint}/${friendId}/`,
+			{method: "delete"}
+		);
 	} catch (error) {
 		throw new ConnectionError(error.message);
 	}
 
 	if (response.status == 409) {
-		throw new RequestError('...'); // TODO
+		throw new RequestError('Friend cannot be deleted'); 
 	}
 
-	return "..."; // TODO
+	return true;
 }
 
 async function addCreditToFriend(friendId, expenseId, amount) {
 	let response;
 	try {
-		response = await fetch(); // TODO
+		response = await fetch(
+			`${server_url}/${expense_endpoint}/${expenseId}/${friend_endpoint}/${friendId}/`,
+			{
+				method: "put",
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({amount: amount})
+			}
+		); 
 	} catch (error) {
 		throw new ConnectionError(error.message);
 	}
 
-	if (response.status == 409) {
-		throw new RequestError('...'); // TODO
-	}
-
-	return "..."; // TODO
+	let data = await response.json();
+	return retrieveFriendsOnExpense(data.id);
 }
 
 export { retrieveExpenses, retrieveFriends, retrieveFriendsOnExpense, editExpense,
