@@ -1,4 +1,4 @@
-import { Expense, Friend } from './dto.js';
+import { Expense, Friend } from './dtos.js';
 
 const server_url = "http://localhost:8000";
 const expense_endpoint = "expenses";

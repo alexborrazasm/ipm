@@ -1,12 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
   <title>SplitWithMe</title>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Split expenses with your friends app.">
-
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,170 +15,127 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
+
 <body>
-  <header class="main-banner">
-    <h1 class="main-title">SplitWithMe</h1>
+
+  <header id="banner">
+    <h1>SplitWithMe</h1>
   </header>
 
   <main>
-    <!-- Expense list -->
-    <section class="left-list container">
-      <h2 class="section-title">
-        <i class="fa-solid fa-wallet" aria-hidden="true"></i>
-        Expenses
-      </h2>
-
-      <search class="search-bar">
-        <input 
-          type="text"
-          class="search-input"
-          placeholder="Search expense..." 
-        >
-      </search>
-
-      <ul class="expense-list">
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to A Coruña</h3>
-        </li>
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to Santiago</h3>
-        </li>
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to Vigo</h3>
-        </li>
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to Ferrol</h3>
-        </li>
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to Madrid</h3>
-        </li>
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to Málaga</h3>
-        </li>
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to Singapore</h3>
-        </li>
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to Berlin</h3>
-        </li>
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to London</h3>
-        </li>
-        <li class="expense-card">
-          <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
-          <h3 class="expense-title">Travel to Bali</h3>
-        </li>
-      </ul>
-    </section>
-    
-    <section class="right-wrapper">
-      <h2 class="visually-hidden">
-        Selected Expense Details
-      </h2>
-      <!-- Expense detail -->
-      <section class="container">
-        <h2 class="section-title">
-          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-          Expense Detail
+    <!-- ERROR -->
+    <aside>
+      <div id="error-message" aria-live="assertive" role="alert">
+        <h2 class="error-section-title">
+          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+          Error
         </h2>
-
-        <article class="card">
-          <header class="expense-detail-header">
-            <h3 class="expense-detail-title">Travel to A Coruña</h3>
+          <article>
+            <p role="alert">
+              You cannot remove ‘Dani’ because his credit is not 0
+            </p>
+            <button type="button" class="form-button">
+              Dismiss
+            </button>
+          </article>
+      </div>
+      <!-- Expense list -->
+      <section id="expense-list">
+        <h2>
+          <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+          Expenses
+          <button id="reload" class="circle-button">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+        </h2>
+        <search>
+          <input type="text" placeholder="Search expense...">
+        </search>
+        <div class="loading"></div>
+        <ul> <!-- list of expenses-->
+          <li>
+            <a href="#add-friend">
+              <i class="fa-solid fa-credit-card expense-icon" aria-hidden="true"></i>
+              <h3>Travel to A Coruña</h3>
+            </a>
+          </li>
+        </ul>
+      </section>
+    </aside>
+    <article id="content">
+      <!-- Expense detail -->
+      <section id="details">
+        <h2>
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          Expense Details
+        </h2>
+        <article>
+          <header>
+            <h3>Travel to A Coruña</h3>
             <button class="circle-button" aria-label="Edit expense">
               <i class="fa-solid fa-pencil" aria-hidden="true"></i>
             </button>
           </header>
-          <p class="expense-detail-amount">
-            <i class="fa-solid fa-coins expense-detail-icon" aria-hidden="true"></i>
-            Amount: $300.00
+          <p>
+            <span>
+              <i class="fa-solid fa-coins aria-hidden="true"></i>
+              Amount:
+            </span> 
+            $300.00
           </p>
-          <p class="expense-detail-balance">
-            <i class="fa-solid fa-scale-balanced expense-detail-icon" aria-hidden="true"></i>
-            Balance: $110.00
+          <p>
+            <span>
+              <i class="fa-solid fa-scale-balanced aria-hidden="true"></i>
+              Balance:
+            </span>
+            $110.00
           </p>
-          <p class="expense-detail-date">
-            <i class="fa-solid fa-calendar-days expense-detail-icon" aria-hidden="true"></i>
+          <p>
+            <span>
+              <i class="fa-solid fa-calendar-days aria-hidden="true"></i>
+              Date:
+            </span>
             <time datetime="2024-06-15">June 15, 2024</time>
           </p>
         </article>
       </section>
 
-      <!-- Expense friends -->
-      <section class="container">
-        <h2 id="expense-friend-title" class="section-title">
+      <!-- Friends -->
+      <section id="friends">
+        <h2>
           <i class="fa-solid fa-user-group" aria-hidden="true"></i>
           Friends on expense
         </h2>
-
-        <ul class="expense-friend-list">
-          <li class="friend-card">
+        <ul>
+          <li>
             <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-
-            <article class="friend-info">
-              <h3 class="friend-name">Nerea</h3>
-              <p class="friend-credit">Credit: $60.00</p>
-              <p class="friend-debit">Debit: $100.00</p>
+            <article>
+              <h3>Nerea</h3>
+              <p><span>Credit:</span>$60.00</p>
+              <p><span>Debit:</span>$100.00</p>
             </article>
-    
             <button type="button" class="circle-button" aria-label="Open friend menu">
               <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
             </button>
           </li>
-          <li class="friend-card">
-            <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-
-            <article class="friend-info">
-              <h3 class="friend-name">Dani</h3>
-              <p class="friend-credit">Credit: $30.00</p>
-              <p class="friend-debit">Debit: $100.00</p>
-            </article>
-  
-            <button type="button" class="circle-button" aria-label="Open friend menu">
-              <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
-            </button>
-          </li>
-          <li class="friend-card">
-            <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-
-            <article class="friend-info">
-              <h3 class="friend-name">Álex</h3>
-              <p class="friend-credit">Credit: $20.00</p>
-              <p class="friend-debit">Debit: $100.00</p>
-            </article>
-  
-            <button type="button" class="circle-button" aria-label="Open friend menu">
-              <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
-            </button>
-          </li>
-          <li class="friend-card friend-card--action">
-            <button type="button" class="friend-action">
+          <li>
+            <a href="#add-friend">
               <i class="fa-solid fa-user-plus friend-icon" aria-hidden="true"></i>
-              <span class="friend-action-text">Add Friend</span>
-            </button>
+              <h3>Add Friend</h3>
+            </a>
           </li>
         </ul>
       </section>
       
       <!-- Edit expense -->
-      <section class="container">
-        <h2 class="section-title">
+      <section id="edit">
+        <h2>
           <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
           Edit Expense
         </h2>
-
-        <form class="card">
-          <label for="expense-title-input" class="form-label edit-title">
-            <i class="fa-solid fa-pen edit-icon" aria-hidden="true"></i> 
+        <form>
+          <label for="expense-title-input" class="form-label">
+            <i class="fa-solid fa-pen" aria-hidden="true"></i> 
             Description:
           </label>
           <input 
@@ -189,8 +146,8 @@
             value="Travel to A Coruña" required
           >
 
-          <label for="expense-amount-input" class="form-label edit-title">
-            <i class="fa-solid fa-coins edit-icon" aria-hidden="true"></i>
+          <label for="expense-amount-input" class="form-label">
+            <i class="fa-solid fa-coins" aria-hidden="true"></i>
             Amount:
           </label>
           <input
@@ -201,8 +158,8 @@
             value="30.00" required
           >
 
-          <label for="expense-date-input" class="form-label edit-title">
-            <i class="fa-solid fa-calendar-days edit-icon" aria-hidden="true"></i> 
+          <label for="expense-date-input" class="form-label">
+            <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> 
             Date:
           </label>
           <input
@@ -218,89 +175,43 @@
       </section>
 
       <!-- Add friend to expense -->
-      <section class="container">
-        <h2 class="section-title">
+      <section id="add">
+        <h2>
           <i class="fa-solid fa-user-plus" aria-hidden="true"></i> Add Friend
         </h2>
-        <h3 class="tap-friend-text">Tap on a friend to add them</h3>
-        <search class="search-bar">
-          <input 
-            type="text" 
-            class="search-input"
-            placeholder="Search friend to add..." 
-          >
+        <search>
+          <input type="text" placeholder="Search expense...">
         </search>
-        <ul class="expense-friend-list">
-          <li class="friend-card">
-            <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-            <h4 class="add-friend-name">Marcos</h4>
-          </li>
-          <li class="friend-card">
-            <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-            <h4 class="add-friend-name">David</h4>          </li>
-          <li class="friend-card">
-            <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-            <h4 class="add-friend-name">Alba</h4>
-          </li>
-          <li class="friend-card">
-            <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-            <h4 class="add-friend-name">Óscar</h4>
-          </li>
-          <li class="friend-card">
-            <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-            <h4 class="add-friend-name">Miriam</h4>
-          </li>
-          <li class="friend-card">
-            <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-            <h4 class="add-friend-name">Luis</h4>
+        <ul>
+          <li>
+            <a href="#add-friend-marcos">
+              <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
+              <h3>Marcos</h3>
+            </a>
           </li>
         </ul>
       </section>
 
-      <!-- Delete friend from expense -->
-      <section class="container">
-        <h2 class="section-title">
-          <i class="fa-solid fa-user-minus" aria-hidden="true"></i>
-          Remove Friend
+      <!-- Dialog: add credit to friends or confirm remove -->
+      <dialog id="remove-friend">
+        <h2>
+          <i class="fa-solid fa-user-minus" aria-hidden="true"></i>Remove Friend
         </h2>
-         <form class="card">
-          <p class="delete-article-p" role="alert">
+          <p>
             Do you want to remove "Dani" from this expense?
           </p>
-          <div class="delete-friend-buttons">
+          <div class="two-buttons">
             <button type="button" class="form-button cancel-button">
               Cancel
             </button>
             <button type="submit" class="form-button confirm-button">
               Confirm
-            </button>
           </div>
         </form>
-      </section>
+      </dialog>
 
-      <!-- ERROR: Delete friend from expense -->
-      <section class="container">
-        <h2 class="error-section-title">
-          <i class="fa-solid fa-user-minus" aria-hidden="true"></i>
-          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-          Error Removing Friend 
-          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-        </h2>
-         <article class="card">
-          <h3 class="visually-hidden">Error Removing Friend</h3> <!--TODO--> 
-          <p class="delete-article-p" role="alert">
-            You cannot remove ‘Dani’ because his credit is not 0
-          </p>
-          <div class="error-delete-friend-buttons">
-            <button type="button" class="form-button dismiss-button">
-              Dissmiss
-            </button>
-          </div>
-        </article>
-      </section>
-      <!-- Add credit to friend -->
-      <section class="container">
-        <h2 class="section-title">
+      <dialog id="add-credit">
+        <h2>
           <i class="fa-solid fa-coins" aria-hidden="true"></i>Add Credit
         </h2>
         <form class="card">
@@ -314,22 +225,28 @@
             class="form-input"
             value="233.00" required
           >      
-          <div class="add-credit-buttons">
-            <button type="button" class="form-button cancel-button">
-              Cancel
-            </button>
-            <button type="submit" class="form-button confirm-button">
-              Confirm
-            </button>
-          </div>
         </form>
-      </section>
-    </section>
+        <div class="two-buttons">
+          <button type="button" class="form-button cancel-button">
+            Cancel
+          </button>
+          <button type="submit" class="form-button confirm-button">
+            Confirm
+          </button>
+        </div>
+      </dialog>
+
+    </article>
 
   </main>
+  
   <footer>
     <i class="fa-regular fa-copyright" aria-hidden="true"></i>
     <p>2025 IPM  Rage Against the Machine</p>
   </footer>
+  
+  <script type="module" src="./js/main.js"></script>
+
 </body>
+
 </html>

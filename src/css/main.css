@@ -183,66 +183,51 @@ html, body {
   font-size: 100%;
 }
 
-body {
-  background-color: var(--color-base);
-  color: var(--color-text);
-}
-
 main {
   margin: 0 auto;
   max-width: 1400px;
 }
 
-h1 { font-size: 2.2rem; }
-h2 { font-size: 1.8rem; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
-h5 { font-size: 1.1rem; }
-h6 { font-size: 1rem; }
-
-.main-title {
-  text-align: center;
-  color: var(--color-crust);
+body {
+  background-color: var(--color-base);
+  color: var(--color-text);
 }
 
-.main-banner {
+body header#banner {
   background-color: var(--color-accent);
   text-align: center;
   padding: 0.5rem;
 }
 
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0.6rem;
-  color: var(--color-accent);
+body header#banner h1 {
+  color: var(--color-crust);
+  font-size: 2.6rem;
 }
 
-.error-section-title {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0.6rem;
-  color: var(--color-red);
-}
-
-.container {
+div#error-message,
+main section {
   margin: 0 auto;
   padding: 1rem;
   max-width: 100%;
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
+main dialog {
+  margin: auto;
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  background: var(--color-crust);
+  color: var(--color-text);
+  border: none;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+dialog div.two-buttons {
+  display: flex;
+  gap: 10px;
 }
 
 .circle-button {
@@ -262,9 +247,202 @@ h6 { font-size: 1rem; }
 }
 
 .circle-button:hover {
-  background: var(--color-base);
   color: var(--color-accent);
   transform: scale(1.1);
+}
+
+main h2 {
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.6rem;
+  color: var(--color-accent);
+}
+
+main search {
+  margin-bottom: 0.4rem;
+  margin-right: 2rem;
+}
+
+main search input {
+  border-radius: 0.4rem;
+  background: var(--color-mantle);
+  border: 1px solid var(--color-crust);
+  color: var(--color-text);
+  font-size: 1rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+main search input:placeholder {
+  color: var(--color-subtext0);
+}
+
+main section#expense-list button#reload {
+  color: var(--color-accent);
+  background-color: var(--color-base);
+  font-size: 2rem;
+}
+
+main section#expense-list div.loading {
+  margin: 0 auto;
+  display: block;
+}
+
+main section#expense-list ul {
+  list-style: none;
+  display: grid;
+  padding-top: 0.4rem;
+  gap: 1rem;
+  margin: 0 auto;
+}
+
+main section#expense-list li a {
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 1em;
+  background-color: var(--color-mantle);
+  text-decoration: none;
+  color: inherit;
+}
+
+main section#expense-list li i {
+  font-size: 1.5rem;
+  display: flex;
+  color: var(--color-accent);
+}
+
+div#error-message h2 {
+  color: var(--color-red);
+}
+
+div#error-message button {
+  background-color: var(--color-mantle);
+  color: var(--color-text);
+}
+
+div#error-message article,
+section#edit form,
+section#details article {
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background-color: var(--color-mantle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+div#error-message article {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-base);
+  background-color: var(--color-red);
+}
+
+article#content header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-text);
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+section#details p {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+section#edit form i,
+section#details p i {
+  width: 1.2rem;
+  text-align: center;
+  font-size: 1rem;
+}
+
+section#add ul,
+section#friends ul {
+  margin-top: 0.8rem;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+section#add li a,
+section#friends li {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-mantle);
+}
+
+section#add li a {
+  text-decoration: none;
+  color: inherit;
+}
+
+section#add h3,
+section#friends h3 {
+  font-size: 1.5rem;
+}
+
+section#friends p {
+  font-size: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+section#friends li article {
+  flex: 1;
+}
+
+section#friends a {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+section#friends a h3 {
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+/* Icon friend within a circle */
+.friend-icon {
+  font-size: 1.5rem;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-crust);
+  color: var(--color-accent);
+  border-radius: 50%;      /* Makes it a perfect circle */
+}
+
+section#edit form label {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  white-space: nowrap;
 }
 
 .form-input, 
@@ -303,232 +481,11 @@ h6 { font-size: 1rem; }
   color: var(--color-crust);
 }
 
-.dismiss-button {
-  background: var(--color-red);
-  color: var(--color-base);
-}
-
 .cancel-button {
   background: var(--color-overlay0);
   color: var(--color-text);
 }
 
-.search-bar {
-  margin-bottom: 1rem;
-  margin-right: 2rem;
-}
-
-.search-input {
-  border-radius: 0.4rem;
-  background: var(--color-mantle);
-  border: 1px solid var(--color-crust);
-  color: var(--color-text);
-  font-size: 1rem;
-  padding: 1rem;
-  width: 100%;
-}
-
-.search-input:focus {
-  border: 1px solid var(--color-accent);
-  outline: none;
-}
-
-.search-input::placeholder {
-  color: var(--color-subtext0);
-}
-
-.card {
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  background-color: var(--color-mantle);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-/* Expense list styles */
-.expense-list {
-  list-style: none;
-  display: grid;
-  gap: 1rem;
-  margin: 0 auto;
-}
-
-.expense-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 0.5rem;
-  padding: 1em;
-  background-color: var(--color-mantle);
-}
-
-.expense-icon {
-  font-size: 1.5rem;       /* Icon size */
-  width: 3rem;
-  display: flex;
-  color: var(--color-accent); /* Icon color */
-}
-
-.expense-title {
-  display: flex;
-  color: var(--color-text);
-  flex-direction: column; /* Stack text vertically */
-  gap: 0.2rem;
-}
-
-/* Expense detail styles */
-.expense-detail-amount,
-.expense-detail-balance,
-.expense-detail-date {
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
-  white-space: nowrap;
-}
-
-.expense-detail-icon {
-  width: 1.6rem;
-  height: 1.6rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Expense friends styles */
-.friend-card {
-  display: flex; /* Makes children align horizontally */
-  align-items: center; /* Vertically center icon and text content */
-  gap: 1rem;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  background: var(--color-mantle);
-}
-
-/* Icon friend within a circle */
-.friend-icon {
-  font-size: 1.5rem;       /* Icon size */
-  width: 3rem;             /* Circle width */
-  height: 3rem;            /* Circle height */
-  display: flex;           /* Center icon inside */
-  justify-content: center;
-  align-items: center;
-  background: var(--color-crust); /* Background color of the circle */
-  color: var(--color-accent);   /* Icon color */
-  border-radius: 50%;      /* Makes it a perfect circle */
-}
-
-/* Text content */
-.friend-info {
-  display: flex;
-  color: var(--color-text);
-  flex-direction: column; /* Stack text vertically */
-  gap: 0.2rem;
-}
-
-.expense-friend-list {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.friend-card--action {
-  padding: 0; /* remove padding because button will handle it */
-}
-
-.friend-action {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  padding: 1rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-}
-
-.friend-action-text {
-  font-size: 1.2rem;
-  color: var(--color-text);
-  font-weight: 600;
-}
-
-/* Edit expense styles */
-.edit-title {
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
-  white-space: nowrap;
-}
-
-.edit-icon {
-  width: 1.6rem;
-  height: 1.6rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.expense-detail-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* Add friend to expense styles */
-.tap-friend-text {
-  display: flex;
-  color: var(--color-subtext1);
-  text-align: left;
-  margin-bottom: 0.8rem;
-  margin-left: 0.9rem;
-}
-
-.add-friend-button {
-  font-size: 160%;
-  margin-left: auto;
-  background: none;
-  border: none;
-  color: var(--color-subtext1);
-  cursor: pointer;
-}
-
-/* Delete friend from expense styles */
-.delete-friend-title {
-  color: var(--color-accent);
-  margin-bottom: 0.6rem;
-}
-
-.error-delete-friend-title {
-  color: var(--color-red);
-  margin-bottom: 0.6rem;
-  font-size: 1.1rem;
-  margin-bottom: 0.3rem;
-}
-
-.delete-friend-text {
-  margin-bottom: 0.6rem;
-}
-
-.delete-article-p {
-  font-size: 1.1rem;
-  margin-bottom: 0.3rem;
-}
-
-div.delete-friend-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-/* Add credit to friend styles */
-div.add-credit-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-/* Footer styles */
 footer {
   display: flex;
   gap: 0.3rem;
@@ -539,6 +496,30 @@ footer {
   justify-content: center;
 }
 
+/* spinner */
+.loading {
+  display: inline-block;
+  width: calc(1.2em - 3px);
+  height: calc(1.2em - 3px);
+  border: 3px solid var(--color-accent);
+  border-radius: 50%;
+  border-top-color: var(--color-base);
+  -webkit-animation: spin 1s ease-in-out infinite;
+  animation: spin 1s ease-in-out infinite; 
+}
+
+@keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none!important;
+}
+
+
 @media (min-width: 576px) {
   main {
     display: flex;
@@ -546,12 +527,12 @@ footer {
   }
 
   /* Left column */
-  .left-list {
+  main section#expense-list {
     flex: 0 0 20%;
   }
 
   /* Right column */
-  .right-wrapper {
+  main article#content {
     flex: 1 1;
   }
 }
@@ -559,7 +540,7 @@ footer {
 @media (min-width: 768px) {
 
   /* Left column */
-  .left-list {
+  main aside {
     flex: 0 0 30%;
   }
 }
