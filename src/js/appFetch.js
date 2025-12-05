@@ -1,5 +1,9 @@
 let networkErrorCallback;
 
+const config = {
+  BASE_PATH: "http://localhost:8000"
+};
+
 const isJson = (response) => {
   const contentType = response.headers.get("content-type");
   return contentType && contentType.indexOf("application/json") !== -1;

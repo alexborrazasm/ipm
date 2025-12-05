@@ -17,21 +17,27 @@ class RequestError extends Error {
 
 async function retrieveExpenses() {
   try {
-    const data = await appFetch(`/expenses`, fetchConfig('GET'));
-    return data.map(item => new Expense(
-      item.id,
-      item.description,
-      item.date,
-      item.amount,
-      item.numFriends,
-      item.creditBalance,
-      item.friends.map(friend => new Friend(
-        friend.id,
-        friend.name,
-        friend.credit_balance,
-        friend.debit_balance
-      ))
-    ));
+    const expenses = await appFetch(`/expenses`, fetchConfig('GET'));
+
+    // Load friends for each expense in parallel
+    const expensesWithFriends = await Promise.all(
+      expenses.map(async (item) => {
+        const friends = await retrieveFriendsOnExpense(item.id);
+
+        return new Expense(
+          item.id,
+          item.description,
+          item.date,
+          item.amount,
+          item.num_friends,
+          item.credit_balance,
+          friends
+        );
+      })
+    );
+    
+    return expensesWithFriends;
+
   } catch (error) {
     throw new ConnectionError(error.message);
   }
