@@ -1,6 +1,7 @@
 const expenseList = document.querySelector("section#expense-list ul");
 const spinnerExpenses = document.querySelector("section#expense-list div.loading");
 const reloadButton = document.querySelector("section#expense-list button#reload");
+const errorMessageDiv = document.querySelector("div#error-message");
 
 function init() {
   spinnerExpenses.classList.add("hidden");
@@ -37,9 +38,42 @@ function toggleLoadingExpenses() {
     spinnerExpenses.classList.toggle("hidden");
 }
 
+function showError(message) {
+  // Clean prev content
+  errorMessageDiv.innerHTML = "";
 
+  let iconItem = document.createElement("i");
+  let titleItem = document.createElement("h2");
+  let buttonItem = document.createElement("button");
+  
+  
+  iconItem.className = "fa-solid fa-triangle-exclamation expense-icon";
+  iconItem.setAttribute("aria-hidden", "true");
+  titleItem.textContent = "Error";
+  buttonItem.type = "button";
+  buttonItem.className = "form-button";
+  buttonItem.textContent = "Dismiss";
+  buttonItem.addEventListener("click", () => {
+    errorMessageDiv.classList.add("hidden");
+    errorMessageDiv.innerHTML = "";
+  });
+  
+  titleItem.appendChild(iconItem);
+  errorMessageDiv.appendChild(titleItem);
+  titleItem.textContent = message;
+  errorMessageDiv.appendChild(buttonItem);
+  
+  errorMessageDiv.setAttribute("role", "alert");
+  errorMessageDiv.setAttribute("aria-live", "assertive");
+  errorMessageDiv.className = "";
+  
+  buttonItem.focus;
+}
 
-
+function clearError() {
+  errorMessageDiv.classList.add("hidden");
+  errorMessageDiv.innerHTML = "";
+}
 
 export { 
   init, 
@@ -47,4 +81,6 @@ export {
   addExpenseItem,
   clearExpenses, 
   toggleLoadingExpenses,
+  showError,
+  clearError,
 }; // TODO
