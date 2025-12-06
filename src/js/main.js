@@ -6,7 +6,7 @@ ui.init();
 ui.setReloadCallback(load);
 load();
 
-async function load(event) {
+async function load() {
   console.log("on load expenses");
   try {
     ui.clearError();
@@ -16,7 +16,7 @@ async function load(event) {
     let friends = await model.retrieveFriends();
     friends.map((friend) => cache.setFriend(friend));
     let expenses = await model.retrieveExpenses();
-    expenses.map((expense) => ui.addExpenseItem(expense));
+    expenses.map((expense) => ui.addExpenseItem(expense, onShowExpense));
     expenses.map((expense) => cache.setExpense(expense));
     ui.toggleLoadingExpenses();
   } catch(error) {
@@ -24,4 +24,37 @@ async function load(event) {
     ui.showError("Connection error. Please, try again later.");
     console.error(error);
   }
+}
+
+async function onShowExpense(expense) {
+  console.log(expense);
+  // TODO
+}
+
+async function onEditExpense(expense) {
+  // TODO
+}
+
+async function onConfirmEditExpense(expense, newExpense) {
+  // TODO
+}
+
+async function onAddFriendExpense(friend, expense) {
+  // TODO
+}
+
+async function onRemoveFriendExpense(friend, expense) {
+  // TODO
+}
+
+async function onConfirmRemoveFriendExpense(friend, expense) {
+  // TODO
+}
+
+async function onAddCreditToExpense(friend, expense) {
+  // TODO
+}
+
+async function onConfirmAddCreditFriendExpense(friend, expense, amount) {
+  // TODO
 }

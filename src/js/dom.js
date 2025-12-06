@@ -11,7 +11,7 @@ function setReloadCallback(callback) {
   reloadButton.addEventListener("click", callback);
 }
 
-function addExpenseItem(expense) {
+function addExpenseItem(expense, callback) {
   let listItem = document.createElement("li");
   let linkItem = document.createElement("a");
   let iconItem = document.createElement("i");
@@ -19,7 +19,11 @@ function addExpenseItem(expense) {
   
   listItem.dataset.id = expense.id;
   titleItem.textContent = expense.description;
-  linkItem.href = `#expense-${expense.id}`;
+  linkItem.href = "#";
+  linkItem.addEventListener("click", (event) => {
+    event.preventDefault();
+    callback(expense);
+  });
   iconItem.className = "fa-solid fa-credit-card expense-icon";
   iconItem.setAttribute("aria-hidden", "true");
   
@@ -73,6 +77,30 @@ function showError(message) {
 function clearError() {
   errorMessageDiv.classList.add("hidden");
   errorMessageDiv.innerHTML = "";
+}
+
+function createExpenseDetails(expense, editCallback) {
+  // TODO
+}
+
+function createExpenseFriends(expense, allFriends, addFriendsCallback) {
+  // TODO
+}
+
+function createEditExpense(expense, callback) {
+  // TODO
+}
+
+function createAddFriendExpense(expense, callback) {
+  // TODO
+}
+
+function showRemoveFriend(removeCallback) {
+  // TODO
+}
+
+function showAddCreditFriend(addCallback) {
+  // TODO
 }
 
 export { 

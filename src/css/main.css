@@ -225,7 +225,7 @@ dialog::backdrop {
   backdrop-filter: blur(2px);
 }
 
-dialog div.two-buttons {
+.two-buttons {
   display: flex;
   gap: 10px;
 }
