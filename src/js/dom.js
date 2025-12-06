@@ -11,28 +11,6 @@ function setReloadCallback(callback) {
   reloadButton.addEventListener("click", callback);
 }
 
-function showExpenseDetails(expense) {
-  const detailsSection = document.querySelector('#details article');
-  detailsSection.querySelector('header h3').textContent = expense.description;
-  
-  const amountSpan = detailsSection.querySelector('p:nth-of-type(1) span');
-  amountSpan.nextSibling.textContent = ` $${expense.amount.toFixed(2)}`;
-  
-  const balanceSpan = detailsSection.querySelector('p:nth-of-type(2) span');
-  balanceSpan.nextSibling.textContent = ` $${expense.creditBalance.toFixed(2)}`;
-  
-  const timeElement = detailsSection.querySelector('time');
-  if (timeElement) {
-    const date = new Date(expense.date);
-    const formattedDate = date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-    timeElement.textContent = formattedDate;
-    timeElement.setAttribute('datetime', expense.date);
-  }
-}
 
 function addExpenseItem(expense, callback) {
   let listItem = document.createElement("li");
@@ -107,8 +85,38 @@ function clearError() {
   errorMessageDiv.innerHTML = "";
 }
 
-function createExpenseDetails(expense, editCallback) {
-  // TODO
+function showExpenseDetails(expense) {
+  const detailsSection = document.querySelector('#details article');
+  
+  const date = new Date(expense.date);
+  const formattedDate = date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  
+  detailsSection.innerHTML = `
+    <header>
+      <h3>${expense.description}</h3>
+      <button class="circle-button" aria-label="Edit expense">
+        <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+      </button>
+    </header>
+    <p>
+      <span><i class="fa-solid fa-coins" aria-hidden="true"></i> Amount:</span>
+      $${expense.amount.toFixed(2)}
+    </p>
+    <p>
+      <span><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> Balance:</span>
+      $${expense.creditBalance.toFixed(2)}
+    </p>
+    <p>
+      <span><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Date:</span>
+      <time datetime="${expense.date}">${formattedDate}</time>
+    </p>
+  `;
+  
+  return detailsSection.querySelector('button');
 }
 
 function createExpenseFriends(expense, allFriends, addFriendsCallback) {
