@@ -126,8 +126,73 @@ function buildFriendsExpense(expense, addFriendsCallback) {
   // TODO
 }
 
-function buildEditExpense(expense, callback) {
-  // TODO
+function buildEditExpense(expense, confirmCallback, cancelCallback) {
+  const editSection = document.querySelector('#edit article');
+
+  editSection.innerHTML = `
+    <form>
+      <label for="expense-title-input" class="form-label">
+        <i class="fa-solid fa-pen" aria-hidden="true"></i> 
+        Description:
+      </label>
+      <input 
+        type="text"
+        id="expense-title-input"
+        name="expense-title"
+        class="form-input"
+        value="${expense.description}" required
+      >
+
+      <label for="expense-amount-input" class="form-label">
+        <i class="fa-solid fa-coins" aria-hidden="true"></i>
+        Amount:
+      </label>
+      <input
+        type="number"
+        id="expense-amount-input"
+        name="expense-amount"
+        class="form-input"
+        value="${expense.amount.toFixed(2)}" required
+      >
+
+      <label for="expense-date-input" class="form-label">
+        <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> 
+        Date:
+      </label>
+      <input
+        type="date"
+        id="expense-date-input"
+        name="expense-date"
+        class="form-input"
+        value="${expense.date}" required
+      >
+
+      <div class="two-buttons">
+        <button type="button" class="form-button cancel-button">
+          Cancel
+        </button>
+        <button type="submit" class="form-button confirm-button">
+          Save
+        </button>
+      </div>
+    </form>
+  `;
+
+  const form = editSection.querySelector('#form');
+  const cancelButton = editSection.querySelector('.cancel-button');
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent from recharging the page
+    const formData = new FormData(form);
+    const description = formData.get('expense-title');
+    const amount = parseFloat(formData.get('expense-amount'));
+    const date = formData.get('expense-date');
+    confirmCallback(expense.id, description, amount, date);
+  });
+
+  cancelButton.addEventListener('click', () => {
+    cancelCallback();
+  });
 }
 
 function buildAddFriendExpense(expense, allFriends,  callback) {

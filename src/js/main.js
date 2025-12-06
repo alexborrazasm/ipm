@@ -32,13 +32,16 @@ async function onShowExpense(expense) {
 }
 
 async function onEditExpense(expense) {
-  console.log("on edit expense");
-  console.log(expense);
-  // TODO
+  ui.buildEditExpense(expense, onConfirmEditExpense, onCancelEditExpense);
 }
 
 async function onConfirmEditExpense(expense, newExpense) {
   console.log("on confirm edit expense");
+  // TODO
+}
+
+async function onCancelEditExpense(expense, newExpense) {
+  console.log("on cancel edit expense");
   // TODO
 }
 
