@@ -27,7 +27,7 @@ async function load() {
 }
 
 async function onShowExpense(expense) {
-  ui.showExpenseDetails(expense, onEditExpense);
+  ui.buildExpenseDetails(expense, onEditExpense);
 }
 
 async function onEditExpense(expense) {

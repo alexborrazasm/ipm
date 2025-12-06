@@ -79,7 +79,7 @@ function clearError() {
   errorMessageDiv.innerHTML = "";
 }
 
-function showExpenseDetails(expense, editExpenseCallback) {
+function buildExpenseDetails(expense, editExpenseCallback) {
   const date = new Date(expense.date);
   const formattedDate = date.toLocaleDateString('en-US', { 
     year: 'numeric', 
@@ -123,15 +123,15 @@ function clearExpenseDetails() {
   `;
 }
 
-function createExpenseFriends(expense, allFriends, addFriendsCallback) {
+function buildExpenseFriends(expense, addFriendsCallback) {
   // TODO
 }
 
-function createEditExpense(expense, callback) {
+function buildEditExpense(expense, callback) {
   // TODO
 }
 
-function createAddFriendExpense(expense, callback) {
+function buildAddFriendExpense(expense, allFriends,  callback) {
   // TODO
 }
 
@@ -151,11 +151,11 @@ export {
   toggleLoadingExpenses,
   showError,
   clearError,
-  showExpenseDetails,
+  buildExpenseDetails,
   clearExpenseDetails,
-  createExpenseFriends,
-  createEditExpense,
-  createAddFriendExpense,
+  buildExpenseFriends,
+  buildEditExpense,
+  buildAddFriendExpense,
   showRemoveFriend,
   showAddCreditFriend
 }; // TODO
