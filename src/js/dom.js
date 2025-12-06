@@ -11,6 +11,29 @@ function setReloadCallback(callback) {
   reloadButton.addEventListener("click", callback);
 }
 
+function showExpenseDetails(expense) {
+  const detailsSection = document.querySelector('#details article');
+  detailsSection.querySelector('header h3').textContent = expense.description;
+  
+  const amountSpan = detailsSection.querySelector('p:nth-of-type(1) span');
+  amountSpan.nextSibling.textContent = ` $${expense.amount.toFixed(2)}`;
+  
+  const balanceSpan = detailsSection.querySelector('p:nth-of-type(2) span');
+  balanceSpan.nextSibling.textContent = ` $${expense.creditBalance.toFixed(2)}`;
+  
+  const timeElement = detailsSection.querySelector('time');
+  if (timeElement) {
+    const date = new Date(expense.date);
+    const formattedDate = date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    timeElement.textContent = formattedDate;
+    timeElement.setAttribute('datetime', expense.date);
+  }
+}
+
 function addExpenseItem(expense, callback) {
   let listItem = document.createElement("li");
   let linkItem = document.createElement("a");
@@ -30,6 +53,11 @@ function addExpenseItem(expense, callback) {
   linkItem.appendChild(iconItem);
   linkItem.appendChild(titleItem);
   listItem.appendChild(linkItem);
+  
+  linkItem.addEventListener('click', async (event) => {
+    event.preventDefault(); 
+    showExpenseDetails(expense);
+  });
   
   expenseList.appendChild(listItem);
 }
