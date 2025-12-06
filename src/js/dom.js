@@ -12,7 +12,6 @@ function setReloadCallback(callback) {
   reloadButton.addEventListener("click", callback);
 }
 
-
 function addExpenseItem(expense, callback) {
   let listItem = document.createElement("li");
   let linkItem = document.createElement("a");
@@ -123,7 +122,7 @@ function clearExpenseDetails() {
   `;
 }
 
-function buildExpenseFriends(expense, addFriendsCallback) {
+function buildFriendsExpense(expense, addFriendsCallback) {
   // TODO
 }
 
@@ -153,7 +152,7 @@ export {
   clearError,
   buildExpenseDetails,
   clearExpenseDetails,
-  buildExpenseFriends,
+  buildFriendsExpense,
   buildEditExpense,
   buildAddFriendExpense,
   showRemoveFriend,

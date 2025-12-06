@@ -27,34 +27,42 @@ async function load() {
 }
 
 async function onShowExpense(expense) {
+  console.log("on show expense");
   ui.buildExpenseDetails(expense, onEditExpense);
 }
 
 async function onEditExpense(expense) {
+  console.log("on edit expense");
   console.log(expense);
   // TODO
 }
 
 async function onConfirmEditExpense(expense, newExpense) {
+  console.log("on confirm edit expense");
   // TODO
 }
 
 async function onAddFriendExpense(friend, expense) {
+  console.log("on add friends expense");
   // TODO
 }
 
 async function onRemoveFriendExpense(friend, expense) {
+  console.log("on remove friends expense");
   // TODO
 }
 
 async function onConfirmRemoveFriendExpense(friend, expense) {
+  console.log("on confirm remove friends expense");
   // TODO
 }
 
 async function onAddCreditToExpense(friend, expense) {
+  console.log("on add credit to expense");
   // TODO
 }
 
 async function onConfirmAddCreditFriendExpense(friend, expense, amount) {
+  console.log("on confirm add credit to friend expense");
   // TODO
 }
