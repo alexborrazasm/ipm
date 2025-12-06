@@ -82,7 +82,8 @@ async function editExpense(id, description, date) {
 
 async function addFriendToExpense(expenseId, friendId) {
   try {
-    return await appFetch(`/expenses/${expenseId}/friends`, fetchConfig('POST', { friendId }));
+    return await appFetch(`/expenses/${expenseId}/friends?friend_id=${friendId}`, 
+      fetchConfig('POST'));
   } catch (error) {
     if (error.message.includes('409')) throw new RequestError(error.message);
     throw new ConnectionError(error.message);
@@ -91,7 +92,8 @@ async function addFriendToExpense(expenseId, friendId) {
 
 async function removeFriendFromExpense(friendId, expenseId) {
   try {
-    return await appFetch(`/expenses/${expenseId}/friends/${friendId}`, fetchConfig('DELETE'));
+    return await appFetch(`/expenses/${expenseId}/friends/${friendId}`, 
+      fetchConfig('DELETE'));
   } catch (error) {
     throw new ConnectionError(error.message);
   }
@@ -99,7 +101,8 @@ async function removeFriendFromExpense(friendId, expenseId) {
 
 async function addCreditToFriend(friendId, expenseId, amount) {
   try {
-    return await appFetch(`/expenses/${expenseId}/friends/${friendId}/credit`, fetchConfig('POST', { amount }));
+    return await appFetch(`/expenses/${expenseId}/friends/${friendId}/credit`, 
+      fetchConfig('POST', { amount }));
   } catch (error) {
     throw new ConnectionError(error.message);
   }

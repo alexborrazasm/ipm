@@ -2,7 +2,11 @@ const expenseList = document.querySelector("section#expense-list ul");
 const spinnerExpenses = document.querySelector("section#expense-list div.loading");
 const reloadButton = document.querySelector("section#expense-list button#reload");
 const errorMessageDiv = document.querySelector("div#error-message");
-const detailsSectionArticle = document.querySelector('#details article');
+const detailsSectionArticle = document.querySelector("section#details article");
+const addFriendExpense = document.querySelector("section#add");
+const addFriendExpenseList = document.querySelector("section#add ul");
+const friendsSection = document.querySelector("section#friends");
+const friendsList = document.querySelector('#friends ul');
 
 function init() {
   spinnerExpenses.classList.add("hidden");
@@ -36,11 +40,11 @@ function addExpenseItem(expense, callback) {
 }
 
 function clearExpenses() {
-    expenseList.innerHTML = "";
+  expenseList.innerHTML = "";
 }
 
 function toggleLoadingExpenses() {
-    spinnerExpenses.classList.toggle("hidden");
+  spinnerExpenses.classList.toggle("hidden");
 }
 
 function showError(message) {
@@ -50,7 +54,6 @@ function showError(message) {
   let iconItem = document.createElement("i");
   let titleItem = document.createElement("h2");
   let buttonItem = document.createElement("button");
-  
   
   iconItem.className = "fa-solid fa-triangle-exclamation expense-icon";
   iconItem.setAttribute("aria-hidden", "true");
@@ -123,9 +126,7 @@ function clearExpenseSelection() {
 }
 
 function buildFriendsExpense(expense, addFriendsCallback, removeCallback, addCreditCallback) {
-  const friendsSection = document.querySelector('#friends ul');
-  
-  friendsSection.innerHTML = '';
+  friendsList.innerHTML = '';
   
   expense.friends.forEach(friend => {
     const li = document.createElement('li');
@@ -147,7 +148,7 @@ function buildFriendsExpense(expense, addFriendsCallback, removeCallback, addCre
 
     });
     
-    friendsSection.appendChild(li);
+    friendsList.appendChild(li);
   });
   
   const addFriendLi = document.createElement('li');
@@ -165,7 +166,14 @@ function buildFriendsExpense(expense, addFriendsCallback, removeCallback, addCre
   });
   
   addFriendLi.appendChild(addFriendLink);
-  friendsSection.appendChild(addFriendLi);
+  friendsList.appendChild(addFriendLi);
+
+  friendsSection.className = "";
+}
+
+function clearFriendsExpense() {
+  friendsSection.className = "hidden"
+  friendsList.innerHTML = "";
 }
 
 
@@ -238,8 +246,48 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
   });
 }
 
-function buildAddFriendExpense(expense, allFriends,  callback) {
-  // TODO
+function buildAddFriendExpense(expense, allFriends, callback) {
+  addFriendExpenseList.innerHTML = "";
+
+  // Create a Set of IDs already in the expense for O(1) lookup
+  const friendExpenseIds = new Set(expense.friends.map(f => f.id));
+
+  // Filter out friends already in the expense
+  const availableFriends = allFriends.filter(f => !friendExpenseIds.has(f.id));
+
+  availableFriends.forEach((friend) => addFriendToAddFriendsItem(
+    friend, expense, callback)
+  );
+  
+  addFriendExpense.className = "";
+}
+
+function addFriendToAddFriendsItem(friend, expense, callback) {
+  let listItem = document.createElement("li");
+  let linkItem = document.createElement("a");
+  let iconItem = document.createElement("i");
+  let titleItem = document.createElement("h3");
+
+  listItem.dataset.id = friend.id;
+  titleItem.textContent = friend.name;
+  iconItem.className = "fa-solid fa-user friend-icon";
+  iconItem.setAttribute("aria-hidden", "true");
+  linkItem.href = "#";
+  linkItem.addEventListener("click", (event) => {
+    event.preventDefault();
+    callback(friend, expense);
+  });
+
+  linkItem.appendChild(iconItem);
+  linkItem.appendChild(titleItem);
+  listItem.appendChild(linkItem);
+
+  addFriendExpenseList.appendChild(listItem);
+}
+
+function clearAddFriendExpense() {
+  addFriendExpense.className = "hidden";
+  addFriendExpenseList.innerHTML = "";
 }
 
 function showRemoveFriend(removeCallback) {
@@ -261,8 +309,10 @@ export {
   buildExpenseDetails,
   clearExpenseSelection,
   buildFriendsExpense,
+  clearFriendsExpense,
   buildEditExpense,
   buildAddFriendExpense,
+  clearAddFriendExpense,
   showRemoveFriend,
   showAddCreditFriend
 }; // TODO

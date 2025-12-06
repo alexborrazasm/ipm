@@ -14,10 +14,10 @@ async function load() {
     ui.clearExpenses();
     cache.clearCache();
     let friends = await model.retrieveFriends();
-    friends.map((friend) => cache.setFriend(friend));
+    friends.forEach((friend) => cache.setFriend(friend));
     let expenses = await model.retrieveExpenses();
-    expenses.map((expense) => ui.addExpenseItem(expense, onShowExpense));
-    expenses.map((expense) => cache.setExpense(expense));
+    expenses.forEach((expense) => ui.addExpenseItem(expense, onShowExpense));
+    expenses.forEach((expense) => cache.setExpense(expense));
     ui.toggleLoadingExpenses();
   } catch(error) {
     ui.toggleLoadingExpenses();
@@ -46,9 +46,24 @@ async function onCancelEditExpense(expense, newExpense) {
   // TODO
 }
 
-async function onAddFriendExpense(friend, expense) {
+async function onAddFriendExpense(expense) {
   console.log("on add friends expense");
-  // TODO
+  ui.buildAddFriendExpense(
+    expense, 
+    cache.getAllFriends(), 
+    onConfirmAddFriendExpense
+  );
+  ui.clearFriendsExpense();
+}
+
+async function onConfirmAddFriendExpense(friend, expense) {
+  console.log("on confirm add friends expense");
+  await model.addFriendToExpense(expense.id, friend.id);
+  
+  expense.friends = await model.retrieveFriendsOnExpense(expense.id);
+
+  cache.setExpense(expense);
+  ui.clearAddFriendExpense();
 }
 
 async function onRemoveFriendExpense(friend, expense) {
