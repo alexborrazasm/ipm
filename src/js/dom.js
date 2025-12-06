@@ -114,7 +114,7 @@ function buildExpenseDetails(expense, editExpenseCallback) {
   });
 }
 
-function clearExpenseDetails() {
+function clearExpenseSelection() {
   detailsSectionArticle.innerHTML = `
     <article>
       <h3>Pick an Expense</h3>
@@ -122,9 +122,52 @@ function clearExpenseDetails() {
   `;
 }
 
-function buildFriendsExpense(expense, addFriendsCallback) {
-  // TODO
+function buildFriendsExpense(expense, addFriendsCallback, removeCallback, addCreditCallback) {
+  const friendsSection = document.querySelector('#friends ul');
+  
+  friendsSection.innerHTML = '';
+  
+  expense.friends.forEach(friend => {
+    const li = document.createElement('li');
+    
+    li.innerHTML = `
+      <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
+      <article>
+        <h3>${friend.name}</h3>
+        <p><span>Credit:</span>$${friend.credit_balance.toFixed(2)}</p>
+        <p><span>Debit:</span>$${friend.debit_balance.toFixed(2)}</p>
+      </article>
+      <button type="button" class="circle-button" aria-label="Open friend menu">
+        <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
+      </button>
+    `;
+    
+    const menuButton = li.querySelector('button');
+    menuButton.addEventListener('click', () => {
+
+    });
+    
+    friendsSection.appendChild(li);
+  });
+  
+  const addFriendLi = document.createElement('li');
+  const addFriendLink = document.createElement('a');
+  addFriendLink.href = '#add-friend';
+  
+  addFriendLink.innerHTML = `
+    <i class="fa-solid fa-user-plus friend-icon" aria-hidden="true"></i>
+    <h3>Add Friend</h3>
+  `;
+  
+  addFriendLink.addEventListener('click', (event) => {
+    event.preventDefault();
+    addFriendsCallback(expense);
+  });
+  
+  addFriendLi.appendChild(addFriendLink);
+  friendsSection.appendChild(addFriendLi);
 }
+
 
 function buildEditExpense(expense, confirmCallback, cancelCallback) {
   const editSection = document.querySelector('#edit article');
@@ -216,7 +259,7 @@ export {
   showError,
   clearError,
   buildExpenseDetails,
-  clearExpenseDetails,
+  clearExpenseSelection,
   buildFriendsExpense,
   buildEditExpense,
   buildAddFriendExpense,

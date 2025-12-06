@@ -29,6 +29,7 @@ async function load() {
 async function onShowExpense(expense) {
   console.log("on show expense");
   ui.buildExpenseDetails(expense, onEditExpense);
+  ui.buildFriendsExpense(expense, onAddFriendExpense, onRemoveFriendExpense, onAddCreditToExpense);
 }
 
 async function onEditExpense(expense) {
