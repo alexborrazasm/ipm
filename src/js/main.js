@@ -27,11 +27,11 @@ async function load() {
 }
 
 async function onShowExpense(expense) {
-  console.log(expense);
-  // TODO
+  ui.showExpenseDetails(expense, onEditExpense);
 }
 
 async function onEditExpense(expense) {
+  console.log(expense);
   // TODO
 }
 

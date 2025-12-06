@@ -2,6 +2,7 @@ const expenseList = document.querySelector("section#expense-list ul");
 const spinnerExpenses = document.querySelector("section#expense-list div.loading");
 const reloadButton = document.querySelector("section#expense-list button#reload");
 const errorMessageDiv = document.querySelector("div#error-message");
+const detailsSectionArticle = document.querySelector('#details article');
 
 function init() {
   spinnerExpenses.classList.add("hidden");
@@ -31,11 +32,6 @@ function addExpenseItem(expense, callback) {
   linkItem.appendChild(iconItem);
   linkItem.appendChild(titleItem);
   listItem.appendChild(linkItem);
-  
-  linkItem.addEventListener('click', async (event) => {
-    event.preventDefault(); 
-    showExpenseDetails(expense);
-  });
   
   expenseList.appendChild(listItem);
 }
@@ -76,8 +72,6 @@ function showError(message) {
   errorMessageDiv.setAttribute("role", "alert");
   errorMessageDiv.setAttribute("aria-live", "assertive");
   errorMessageDiv.className = "";
-  
-  buttonItem.focus;
 }
 
 function clearError() {
@@ -85,9 +79,7 @@ function clearError() {
   errorMessageDiv.innerHTML = "";
 }
 
-function showExpenseDetails(expense) {
-  const detailsSection = document.querySelector('#details article');
-  
+function showExpenseDetails(expense, editExpenseCallback) {
   const date = new Date(expense.date);
   const formattedDate = date.toLocaleDateString('en-US', { 
     year: 'numeric', 
@@ -95,7 +87,7 @@ function showExpenseDetails(expense) {
     day: 'numeric' 
   });
   
-  detailsSection.innerHTML = `
+  detailsSectionArticle.innerHTML = `
     <header>
       <h3>${expense.description}</h3>
       <button class="circle-button" aria-label="Edit expense">
@@ -116,7 +108,19 @@ function showExpenseDetails(expense) {
     </p>
   `;
   
-  return detailsSection.querySelector('button');
+  // Get the button we just inserted
+  let editButton = detailsSectionArticle.querySelector("#details header button");
+  editButton.addEventListener("click", () => {
+    editExpenseCallback(expense);
+  });
+}
+
+function clearExpenseDetails() {
+  detailsSectionArticle.innerHTML = `
+    <article>
+      <h3>Pick an Expense</h3>
+    </article>
+  `;
 }
 
 function createExpenseFriends(expense, allFriends, addFriendsCallback) {
@@ -147,4 +151,11 @@ export {
   toggleLoadingExpenses,
   showError,
   clearError,
+  showExpenseDetails,
+  clearExpenseDetails,
+  createExpenseFriends,
+  createEditExpense,
+  createAddFriendExpense,
+  showRemoveFriend,
+  showAddCreditFriend
 }; // TODO
