@@ -111,7 +111,7 @@ function buildExpenseDetails(expense, editExpenseCallback) {
   `;
   
   // Get the button we just inserted
-  let editButton = detailsSectionArticle.querySelector("#details header button");
+  let editButton = detailsSectionArticle.querySelector('button');
   editButton.addEventListener("click", () => {
     editExpenseCallback(expense);
   });
@@ -144,10 +144,40 @@ function buildFriendsExpense(expense, addFriendsCallback, removeCallback, addCre
     `;
     
     const menuButton = li.querySelector('button');
-    menuButton.addEventListener('click', () => {
 
+    menuButton.addEventListener('click', () => {
+      const existingMenu = li.querySelector('.friend-menu');
+      if (existingMenu) {
+        existingMenu.classList.add('hidden');
+        menuButton.classList.remove('hidden');
+      }
+
+      menuButton.classList.add('hidden');
+
+      const menu = document.createElement('div');
+      menu.className = 'friend-menu';
+      
+      const addCreditButton = document.createElement('button');
+      addCreditButton.innerHTML = `Add credit`;
+      addCreditButton.addEventListener('click', () => {
+        addCreditCallback(friend, expense);
+        menu.remove();
+        menuButton.classList.remove('hidden');
+      });
+
+      const removeButton = document.createElement('button');
+      removeButton.innerHTML = `Remove friend`;
+      removeButton.addEventListener('click', () => {
+        removeCallback(friend, expense);
+        menu.remove();
+        menuButton.classList.remove('hidden');
+      });
+
+      menu.appendChild(addCreditButton);
+      menu.appendChild(removeButton);
+
+      li.appendChild(menu);
     });
-    
     friendsList.appendChild(li);
   });
   
@@ -178,9 +208,12 @@ function clearFriendsExpense() {
 
 
 function buildEditExpense(expense, confirmCallback, cancelCallback) {
-  const editSection = document.querySelector('#edit article');
+  const editSection = document.querySelector('#edit');
+  editSection.classList.remove("hidden");
 
-  editSection.innerHTML = `
+  const editArticle = editSection.querySelector('article');
+
+  editArticle.innerHTML = `
     <form>
       <label for="expense-title-input" class="form-label">
         <i class="fa-solid fa-pen" aria-hidden="true"></i> 
@@ -229,8 +262,8 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
     </form>
   `;
 
-  const form = editSection.querySelector('#form');
-  const cancelButton = editSection.querySelector('.cancel-button');
+  const form = editArticle.querySelector('form');
+  const cancelButton = editArticle.querySelector('.cancel-button');
 
   form.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent from recharging the page
@@ -242,6 +275,7 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
   });
 
   cancelButton.addEventListener('click', () => {
+    editSection.classList.add("hidden");
     cancelCallback();
   });
 }
@@ -290,12 +324,58 @@ function clearAddFriendExpense() {
   addFriendExpenseList.innerHTML = "";
 }
 
-function showRemoveFriend(removeCallback) {
-  // TODO
+function showRemoveFriend(friend, removeCallback) {
+  const removeFriend = document.querySelector('#remove-friend article');
+  dialog.classList.remove('hidden');
+  removeFriend.innerHTML = `
+  <p> Do you want to remove "${friend.name}" from this expense? </p>
+  <div class="two-buttons">
+    <button type="button" class="form-button cancel-button">
+      Cancel
+    </button>
+    <button type="submit" class="form-button confirm-button">
+      Confirm
+    </button>
+  </div>
+  ` 
+
+  const confirmButton = removeFriend.querySelector('.confirm-button');
+  confirmButton.addEventListener('click', () => {
+    removeCallback();
+  });
 }
 
 function showAddCreditFriend(addCallback) {
-  // TODO
+  const addCreditFriend = document.querySelector('#add-credit article');
+  
+  addCreditFriend.innerHTML = `
+    <form class="card">
+      <label for="add-credit-input" class="form-label">
+      How much credit do you want to add to 'Alex' for 'Travel to A Coruña'?
+      </label>
+      <input
+        type="number"
+        id="add-credit-input"
+        name="add-credit"
+        class="form-input"
+        value="233.00" required
+      >      
+    </form>
+    <div class="two-buttons">
+      <button type="button" class="form-button cancel-button">
+        Cancel
+      </button>
+      <button type="submit" class="form-button confirm-button">
+        Confirm
+      </button>
+    </div>
+  `
+  const confirmButton = addCreditFriend.querySelector('.confirm-button');
+  confirmButton.addEventListener('click', () => {
+    const inputField = addCreditFriend.querySelector('#add-credit-input');
+    const amount = parseFloat(inputField.value);
+    addCallback(amount);
+  });
 }
 
 export { 
