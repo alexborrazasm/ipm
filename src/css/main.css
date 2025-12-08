@@ -325,7 +325,6 @@ div#error-message button {
   color: var(--color-text);
 }
 
-section#edit form,
 section#details article {
   border-radius: 0.5rem;
   padding: 1.5rem;
@@ -362,7 +361,7 @@ section#details p {
   gap: 0.2rem;
 }
 
-section#edit form i,
+section#details form i,
 section#details p i {
   width: 1.2rem;
   text-align: center;
@@ -465,7 +464,7 @@ section#friends a h3 {
   border-bottom: 1px solid var(--color-overlay0);
 }
 
-section#edit form label {
+section#details form label {
   display: flex;
   align-items: center;
   gap: 0.2rem;
@@ -558,8 +557,8 @@ footer {
   }
 
   /* Left column */
-  main section#expense-list {
-    flex: 0 0 20%;
+  main aside {
+    flex: 0 0 30%;
   }
 
   /* Right content */
@@ -567,26 +566,24 @@ footer {
     flex: 1 1;
   }
 
-  /* Left column */
-  main aside {
-    flex: 0 0 30%;
-  }
 }
 
 @media (min-width:  1200px) {
   /* Right content */
-  #content {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  #content > section {
-    flex: 0 0 45%;
-  }
 
-main aside {
-  margin-right: 1.5rem;
-}
+  main aside {
+    margin-right: 1.5rem;
+  }
   
+  article#content {
+    display: flex;
+  }
+  
+  article#content section {
+    flex: 1;              /* Each section takes equal width */
+    padding: 1rem;
+    border-radius: 8px;
+  }
   
 }
 

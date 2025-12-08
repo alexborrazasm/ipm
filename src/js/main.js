@@ -3,7 +3,7 @@ import * as ui from "./dom.js";
 import * as cache from "./cache.js";
 
 ui.init();
-ui.setReloadCallback(load);
+ui.setReloadCallback(reload);
 load();
 
 async function load() {
@@ -11,7 +11,6 @@ async function load() {
   try {
     ui.clearError();
     ui.toggleLoadingExpenses();
-    ui.clearExpenses();
     cache.clearCache();
     let friends = await model.retrieveFriends();
     friends.forEach((friend) => cache.setFriend(friend));
@@ -26,24 +25,36 @@ async function load() {
   }
 }
 
+async function reload() {
+  ui.clearExpenses();
+  ui.clearExpenseSelection();
+  await load();
+}
+
 async function onShowExpense(expense) {
   console.log("on show expense");
   ui.buildExpenseDetails(expense, onEditExpense);
-  ui.buildFriendsExpense(expense, onAddFriendExpense, onRemoveFriendExpense, onAddCreditToExpense);
+  ui.buildFriendsExpense(
+    expense,
+    onAddFriendExpense, 
+    onRemoveFriendExpense, 
+    onAddCreditToExpense
+  );
 }
 
 async function onEditExpense(expense) {
+  console.log("on edit expense");
   ui.buildEditExpense(expense, onConfirmEditExpense, onCancelEditExpense);
 }
 
-async function onConfirmEditExpense(expense, newExpense) {
+async function onConfirmEditExpense(expense, description, date, amount) {
   console.log("on confirm edit expense");
   // TODO
 }
 
-async function onCancelEditExpense(expense, newExpense) {
+async function onCancelEditExpense(expense) {
   console.log("on cancel edit expense");
-  // TODO
+  ui.buildExpenseDetails(expense, onEditExpense);
 }
 
 async function onAddFriendExpense(expense) {
@@ -53,7 +64,6 @@ async function onAddFriendExpense(expense) {
     cache.getAllFriends(), 
     onConfirmAddFriendExpense
   );
-  ui.clearFriendsExpense();
 }
 
 async function onConfirmAddFriendExpense(friend, expense) {

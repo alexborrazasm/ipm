@@ -2,11 +2,12 @@ const expenseList = document.querySelector("section#expense-list ul");
 const spinnerExpenses = document.querySelector("section#expense-list div.loading");
 const reloadButton = document.querySelector("section#expense-list button#reload");
 const errorMessageDiv = document.querySelector("div#error-message");
+const detailsSection = document.querySelector("section#details");
+const detailsSectionTitle = document.querySelector("section#details h2");
 const detailsSectionArticle = document.querySelector("section#details article");
-const addFriendExpense = document.querySelector("section#add");
-const addFriendExpenseList = document.querySelector("section#add ul");
 const friendsSection = document.querySelector("section#friends");
-const friendsList = document.querySelector('#friends ul');
+const friendsSectionTitle = document.querySelector("section#friends h2");
+const friendsSectionList = document.querySelector('section#friends ul');
 
 function init() {
   spinnerExpenses.classList.add("hidden");
@@ -89,6 +90,11 @@ function buildExpenseDetails(expense, editExpenseCallback) {
     day: 'numeric' 
   });
   
+  detailsSectionTitle.innerHTML = `
+    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+    Expense Details
+  `
+
   detailsSectionArticle.innerHTML = `
     <header>
       <h3>${expense.description}</h3>
@@ -111,22 +117,31 @@ function buildExpenseDetails(expense, editExpenseCallback) {
   `;
   
   // Get the button we just inserted
-  let editButton = detailsSectionArticle.querySelector('button');
+  let editButton = detailsSection.querySelector('button');
   editButton.addEventListener("click", () => {
     editExpenseCallback(expense);
   });
 }
 
-function clearExpenseSelection() {
-  detailsSectionArticle.innerHTML = `
+function clearExpenseDetails() {
+  detailsSection.innerHTML = `
+    <h2>
+      <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+      Expense Details
+    </h2>
     <article>
       <h3>Pick an Expense</h3>
     </article>
   `;
 }
 
+function clearExpenseSelection() {
+  clearExpenseDetails();
+  clearFriendsExpense();
+}
+
 function buildFriendsExpense(expense, addFriendsCallback, removeCallback, addCreditCallback) {
-  friendsList.innerHTML = '';
+  friendsSectionList.innerHTML = '';
   
   expense.friends.forEach(friend => {
     const li = document.createElement('li');
@@ -178,12 +193,16 @@ function buildFriendsExpense(expense, addFriendsCallback, removeCallback, addCre
 
       li.appendChild(menu);
     });
-    friendsList.appendChild(li);
+    friendsSectionList.appendChild(li);
   });
+  
+  friendsSectionTitle.innerHTML = `
+    <i class="fa-solid fa-user-group" aria-hidden="true"></i>Friends on expense
+  `;
   
   const addFriendLi = document.createElement('li');
   const addFriendLink = document.createElement('a');
-  addFriendLink.href = '#add-friend';
+  addFriendLink.href = '#';
   
   addFriendLink.innerHTML = `
     <i class="fa-solid fa-user-plus friend-icon" aria-hidden="true"></i>
@@ -196,24 +215,25 @@ function buildFriendsExpense(expense, addFriendsCallback, removeCallback, addCre
   });
   
   addFriendLi.appendChild(addFriendLink);
-  friendsList.appendChild(addFriendLi);
+  friendsSectionList.appendChild(addFriendLi);
 
   friendsSection.className = "";
 }
 
 function clearFriendsExpense() {
   friendsSection.className = "hidden"
-  friendsList.innerHTML = "";
+  friendsSectionTitle.innerHTML = "";
+  friendsSectionList.innerHTML = "";
 }
 
-
 function buildEditExpense(expense, confirmCallback, cancelCallback) {
-  const editSection = document.querySelector('#edit');
-  editSection.classList.remove("hidden");
 
-  const editArticle = editSection.querySelector('article');
+  detailsSectionTitle.innerHTML = `
+    <i class="fa-solid fa-pen-to-square expense-icon" aria-hidden="true"></i>
+    Edit expense
+  `;
 
-  editArticle.innerHTML = `
+  detailsSectionArticle.innerHTML = `
     <form>
       <label for="expense-title-input" class="form-label">
         <i class="fa-solid fa-pen" aria-hidden="true"></i> 
@@ -262,8 +282,8 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
     </form>
   `;
 
-  const form = editArticle.querySelector('form');
-  const cancelButton = editArticle.querySelector('.cancel-button');
+  const form = detailsSectionArticle.querySelector('form');
+  const cancelButton = detailsSectionArticle.querySelector('.cancel-button');
 
   form.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent from recharging the page
@@ -271,17 +291,15 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
     const description = formData.get('expense-title');
     const amount = parseFloat(formData.get('expense-amount'));
     const date = formData.get('expense-date');
-    confirmCallback(expense.id, description, amount, date);
+    confirmCallback(expense, description, amount, date);
   });
 
   cancelButton.addEventListener('click', () => {
-    editSection.classList.add("hidden");
-    cancelCallback();
+    cancelCallback(expense);
   });
 }
 
 function buildAddFriendExpense(expense, allFriends, callback) {
-  addFriendExpenseList.innerHTML = "";
 
   // Create a Set of IDs already in the expense for O(1) lookup
   const friendExpenseIds = new Set(expense.friends.map(f => f.id));
@@ -289,11 +307,13 @@ function buildAddFriendExpense(expense, allFriends, callback) {
   // Filter out friends already in the expense
   const availableFriends = allFriends.filter(f => !friendExpenseIds.has(f.id));
 
+  friendsSectionTitle.innerHTML = `
+    <i class="fa-solid fa-user-plus" aria-hidden="true"></i> Add Friend
+  `;
+  friendsSectionList.innerHTML = "";
   availableFriends.forEach((friend) => addFriendToAddFriendsItem(
     friend, expense, callback)
   );
-  
-  addFriendExpense.className = "";
 }
 
 function addFriendToAddFriendsItem(friend, expense, callback) {
@@ -316,12 +336,7 @@ function addFriendToAddFriendsItem(friend, expense, callback) {
   linkItem.appendChild(titleItem);
   listItem.appendChild(linkItem);
 
-  addFriendExpenseList.appendChild(listItem);
-}
-
-function clearAddFriendExpense() {
-  addFriendExpense.className = "hidden";
-  addFriendExpenseList.innerHTML = "";
+  friendsSectionList.appendChild(listItem);
 }
 
 function showRemoveFriend(friend, removeCallback) {
@@ -337,7 +352,7 @@ function showRemoveFriend(friend, removeCallback) {
       Confirm
     </button>
   </div>
-  ` 
+  `;
 
   const confirmButton = removeFriend.querySelector('.confirm-button');
   confirmButton.addEventListener('click', () => {
@@ -382,17 +397,17 @@ export {
   init, 
   setReloadCallback, 
   addExpenseItem,
-  clearExpenses, 
   toggleLoadingExpenses,
   showError,
-  clearError,
   buildExpenseDetails,
-  clearExpenseSelection,
   buildFriendsExpense,
-  clearFriendsExpense,
   buildEditExpense,
   buildAddFriendExpense,
-  clearAddFriendExpense,
   showRemoveFriend,
-  showAddCreditFriend
+  showAddCreditFriend,
+  clearExpenses, 
+  clearError,
+  clearExpenseSelection,
+  clearExpenseDetails,
+  clearFriendsExpense,
 }; // TODO
