@@ -71,9 +71,9 @@ async function retrieveFriendsOnExpense(expenseId) {
   }
 }
 
-async function editExpense(id, description, date) {
+async function editExpense(id, description, date, amount) {
   try {
-    return await appFetch(`/expenses/${id}`, fetchConfig('PUT', { description, date }));
+    return await appFetch(`/expenses/${id}`, fetchConfig('PUT', { description, date, amount }));
   } catch (error) {
     if (error.message.includes('409')) throw new RequestError(error.message);
     throw new ConnectionError(error.message);

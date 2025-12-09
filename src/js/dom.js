@@ -4,6 +4,7 @@ const reloadButton = document.querySelector("section#expense-list button#reload"
 const errorMessageDiv = document.querySelector("div#error-message");
 const detailsSection = document.querySelector("section#details");
 const detailsSectionTitle = document.querySelector("section#details h2");
+const spinnerEditDetails = document.querySelector("section#details div.loading");
 const detailsSectionArticle = document.querySelector("section#details article");
 const friendsSection = document.querySelector("section#friends");
 const friendsSectionTitle = document.querySelector("section#friends h2");
@@ -11,6 +12,7 @@ const friendsSectionList = document.querySelector('section#friends ul');
 
 function init() {
   spinnerExpenses.classList.add("hidden");
+  spinnerEditDetails.classList.add("hidden");
 }
 
 function setReloadCallback(callback) {
@@ -82,6 +84,10 @@ function clearError() {
   errorMessageDiv.innerHTML = "";
 }
 
+function toggleLoadingEditDetails() {
+  spinnerEditDetails.classList.toggle("hidden");
+}
+
 function buildExpenseDetails(expense, editExpenseCallback) {
   const date = new Date(expense.date);
   const formattedDate = date.toLocaleDateString('en-US', { 
@@ -89,11 +95,16 @@ function buildExpenseDetails(expense, editExpenseCallback) {
     month: 'long', 
     day: 'numeric' 
   });
-  
-  detailsSectionTitle.innerHTML = `
-    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+  const textNode = detailsSectionTitle.childNodes[3];
+  textNode.textContent = `
     Expense Details
-  `
+  `;
+  
+  let iconItem = detailsSection.querySelector("i");
+
+  iconItem.className = "fa-solid fa-circle-info";
+  iconItem.setAttribute("aria-hidden", "true");
 
   detailsSectionArticle.innerHTML = `
     <header>
@@ -448,4 +459,5 @@ export {
   clearExpenseSelection,
   clearExpenseDetails,
   clearFriendsExpense,
+  toggleLoadingEditDetails
 }; // TODO
