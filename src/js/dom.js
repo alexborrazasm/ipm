@@ -124,14 +124,12 @@ function buildExpenseDetails(expense, editExpenseCallback) {
 }
 
 function clearExpenseDetails() {
-  detailsSection.innerHTML = `
-    <h2>
+  detailsSectionTitle.innerHTML = `
       <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
       Expense Details
-    </h2>
-    <article>
+  `;
+  detailsSectionArticle.innerHTML = `
       <h3>Pick an Expense</h3>
-    </article>
   `;
 }
 
