@@ -312,11 +312,9 @@ function buildAddFriendExpense(expense, allFriends, confirmCallback,
   }
 
   friendsSectionTitle.innerHTML = `
+    <button class="back-circle-button"><i class="fa-solid fa-circle-chevron-left"></i></button>
     <i class="fa-solid fa-user-plus" aria-hidden="true"></i> 
     Add Friend
-    <div class="back-button-container">
-      <button class="back-circle-button"><i class="fa-solid fa-circle-xmark"></i></button>
-    </div>
   `;
   
   let btn = friendsSectionTitle.querySelector("button");

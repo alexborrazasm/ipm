@@ -516,7 +516,6 @@ section#details form label {
   width: 2rem;
   height: 2rem;
   font-size: 2rem;
-  margin-left: auto;
   background: var(--color-mantle);
   border: none;
   color: var(--color-text);
@@ -529,13 +528,8 @@ section#details form label {
 }
 
 .back-circle-button:hover {
-  color: var(--color-red);
+  color: var(--color-accent);
   transform: scale(1.1);
-}
-
-.back-button-container {
-  display: flex;
-  margin-left: auto;
 }
 
 footer {

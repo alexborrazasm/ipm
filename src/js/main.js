@@ -69,11 +69,19 @@ async function onAddFriendExpense(expense) {
 
 async function onConfirmAddFriendExpense(friend, expense) {
   console.log("on confirm add friends expense");
-  await model.addFriendToExpense(expense.id, friend.id);
-  
-  expense.friends = await model.retrieveFriendsOnExpense(expense.id);
+  try {
+    //ui.toggleLoadingAddExpenses(); TODO
+    await model.addFriendToExpense(expense.id, friend.id);
+    
+    expense.friends = await model.retrieveFriendsOnExpense(expense.id);
 
-  cache.setExpense(expense);
+    cache.setExpense(expense);
+    //ui.toggleLoadingAddFriends();
+  } catch(error) {
+    //ui.toggleLoadingAddExpenses();
+    ui.showError("Connection error. Please, try again later.");
+    console.error(error);
+  }
   
   ui.buildFriendsExpense(
     expense,
