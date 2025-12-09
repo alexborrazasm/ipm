@@ -368,7 +368,6 @@ section#details p i {
   font-size: 1rem;
 }
 
-section#add ul,
 section#friends ul {
   margin-top: 0.8rem;
   list-style: none;
@@ -377,8 +376,8 @@ section#friends ul {
   gap: 1rem;
 }
 
-section#add li a,
 section#friends li {
+  position: relative;
   display: flex;
   align-items: center;
   padding: 1rem;
@@ -387,12 +386,6 @@ section#friends li {
   background: var(--color-mantle);
 }
 
-section#add li a {
-  text-decoration: none;
-  color: inherit;
-}
-
-section#add h3,
 section#friends h3 {
   font-size: 1.2rem;
 }
@@ -420,7 +413,7 @@ section#friends a {
   cursor: pointer;
 }
 
-section#friends a h3 {
+section#friends h3.big {
   font-size: 1.5rem;
   color: var(--color-text);
 }
@@ -439,29 +432,41 @@ section#friends a h3 {
 }
 
 .friend-menu {
-  background-color: var(--color-crust);
-  border: 1px solid var(--color-overlay1);
+  position: absolute;
+  top: 70%;
+  left: 88%;
+  transform: translateX(-50%);
+  background: var(--color-crust);
+  padding: 0.5rem;
   border-radius: 0.5rem;
   display: flex;
   flex-direction: column;
+  gap: 0.2rem;
+  z-index: 2;
+  width: max-content;
 }
 
-.friend-menu button {
-  background: none;
-  border: none;
+
+.friend-menu .menu-item {
+  background: var(--color-base);
   color: var(--color-text);
-  padding: 0.75rem 1rem;
-  width: 100%;
+  border: none;
+  padding: 0.3rem 1rem;
+  text-align: left;
   cursor: pointer;
-  font-size: 0.9rem;
 }
 
-.friend-menu button:hover {
-  background-color: var(--color-surface0);
+.friend-menu .remove {
+  background: var(--color-base);
+  color: var(--color-red);
+  border: none;
+  padding: 0.3rem 1rem;
+  text-align: left;
+  cursor: pointer;
 }
 
-.friend-menu button:not(:last-child) {
-  border-bottom: 1px solid var(--color-overlay0);
+.friend-menu .menu-item:hover {
+  opacity: 0.9;
 }
 
 section#details form label {

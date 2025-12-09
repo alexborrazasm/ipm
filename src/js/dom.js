@@ -138,85 +138,100 @@ function clearExpenseSelection() {
   clearFriendsExpense();
 }
 
-function buildFriendsExpense(expense, addFriendsCallback, removeCallback,
+function buildFriendsExpense(expense, addFriendCallback, removeFriendCallback,
    addCreditCallback) {
+
+  // Title
+  friendsSectionTitle.innerHTML = `
+    <i class="fa-solid fa-user-group" aria-hidden="true"></i>
+    Friends on expense
+  `;
   friendsSectionList.innerHTML = '';
   
-  expense.friends.forEach(friend => {
-    const li = document.createElement('li');
-    
-    li.innerHTML = `
-      <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-      <article>
-        <h3>${friend.name}</h3>
-        <p><span>Credit:</span>$${friend.credit_balance.toFixed(2)}</p>
-        <p><span>Debit:</span>$${friend.debit_balance.toFixed(2)}</p>
-      </article>
-      <button type="button" class="circle-button" aria-label="Open friend menu">
-        <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
-      </button>
+  // Build friends cards or not
+  if (expense.friends.length === 0) { // No friends
+    let noFriendsLi = document.createElement('li');
+    noFriendsLi.innerHTML = `
+      <i class="fa-solid fa-user-xmark friend-icon" aria-hidden="true"></i>
+      <h3 class="big">No friends</h3>
     `;
-    
-    const menuButton = li.querySelector('button');
-
-    menuButton.addEventListener('click', () => {
-      const existingMenu = li.querySelector('.friend-menu');
-      if (existingMenu) {
-        existingMenu.classList.add('hidden');
-        menuButton.classList.remove('hidden');
-      }
-
-      menuButton.classList.add('hidden');
-
-      const menu = document.createElement('div');
-      menu.className = 'friend-menu';
-      
-      const addCreditButton = document.createElement('button');
-      addCreditButton.innerHTML = `Add credit`;
-      addCreditButton.addEventListener('click', () => {
-        addCreditCallback(friend, expense);
-        menu.remove();
-        menuButton.classList.remove('hidden');
-      });
-
-      const removeButton = document.createElement('button');
-      removeButton.innerHTML = `Remove friend`;
-      removeButton.addEventListener('click', () => {
-        removeCallback(friend, expense);
-        menu.remove();
-        menuButton.classList.remove('hidden');
-      });
-
-      menu.appendChild(addCreditButton);
-      menu.appendChild(removeButton);
-
-      li.appendChild(menu);
-    });
-    friendsSectionList.appendChild(li);
-  });
+   friendsSectionList.appendChild(noFriendsLi);
+  } else {
+    expense.friends.forEach((item) => buildFriendsRow(
+      item, expense, addCreditCallback, removeFriendCallback)
+    );
+  }
   
-  friendsSectionTitle.innerHTML = `
-    <i class="fa-solid fa-user-group" aria-hidden="true"></i>Friends on expense
-  `;
-  
-  const addFriendLi = document.createElement('li');
-  const addFriendLink = document.createElement('a');
+  // Add friends btn
+  let addFriendLi = document.createElement('li');
+  let addFriendLink = document.createElement('a');
   addFriendLink.href = '#';
   
   addFriendLink.innerHTML = `
     <i class="fa-solid fa-user-plus friend-icon" aria-hidden="true"></i>
-    <h3>Add Friend</h3>
+    <h3 class="big">Add Friend</h3>
   `;
   
   addFriendLink.addEventListener('click', (event) => {
     event.preventDefault();
-    addFriendsCallback(expense);
+    addFriendCallback(expense);
   });
   
   addFriendLi.appendChild(addFriendLink);
   friendsSectionList.appendChild(addFriendLi);
 
+  // Show friends section/ remove hidden css class
   friendsSection.className = "";
+}
+
+function buildFriendsRow(friend, expense, addCallback, removeCallback) {
+  let li = document.createElement('li');
+
+  li.dataset.friendId = friend.id;
+  li.innerHTML = `
+    <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
+    <article>
+      <h3>${friend.name}</h3>
+      <p><span>Credit:</span>$${friend.credit_balance.toFixed(2)}</p>
+      <p><span>Debit:</span>$${friend.debit_balance.toFixed(2)}</p>
+    </article>
+
+    <button type="button" class="circle-button" aria-label="Open friend menu">
+      <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
+    </button>
+    
+    <div class="friend-menu hidden">
+      <button class="menu-item">Add credit</button>
+      <button class="menu-item remove">Delete</button>
+    </div>
+  `;
+  
+  const menuButton = li.querySelector("button.circle-button");
+  const menu = li.querySelector(".friend-menu");
+
+  menuButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    menu.classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", () => {
+    menu.classList.add("hidden");
+  });
+
+  // Get specific menu items
+  const addCreditBtn = menu.querySelector(".menu-item:not(.remove)");
+  const deleteBtn = menu.querySelector(".menu-item.remove");
+
+  // Add callbacks
+  addCreditBtn.addEventListener("click", () => {
+    addCallback(friend, expense);
+  });
+
+  deleteBtn.addEventListener("click", () => {
+    removeCallback(friend, expense);
+  });
+
+  friendsSectionList.appendChild(li);
 }
 
 function clearFriendsExpense() {

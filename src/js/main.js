@@ -103,7 +103,8 @@ async function onCancelAddFriendExpense(expense) {
 }
 
 async function onRemoveFriendExpense(friend, expense) {
-  ui.showRemoveFriend(friend, onConfirmRemoveFriendExpense);
+  console.log("on remove credit to expense");
+  //ui.showRemoveFriend(friend, onConfirmRemoveFriendExpense);
 }
 
 async function onConfirmRemoveFriendExpense(friend, expense) {
@@ -112,7 +113,8 @@ async function onConfirmRemoveFriendExpense(friend, expense) {
 }
 
 async function onAddCreditToExpense(friend, expense) {
-  ui.showAddCreditFriend(onConfirmAddCreditFriendExpense);
+  console.log("on add credit to expense");
+  //ui.showAddCreditFriend(onConfirmAddCreditFriendExpense);
 }
 
 async function onConfirmAddCreditFriendExpense(friend, expense, amount) {
