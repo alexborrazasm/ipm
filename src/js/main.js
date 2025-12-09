@@ -62,7 +62,8 @@ async function onAddFriendExpense(expense) {
   ui.buildAddFriendExpense(
     expense, 
     cache.getAllFriends(), 
-    onConfirmAddFriendExpense
+    onConfirmAddFriendExpense,
+    onCancelAddFriendExpense
   );
 }
 
@@ -73,7 +74,24 @@ async function onConfirmAddFriendExpense(friend, expense) {
   expense.friends = await model.retrieveFriendsOnExpense(expense.id);
 
   cache.setExpense(expense);
-  ui.clearAddFriendExpense();
+  
+  ui.buildFriendsExpense(
+    expense,
+    onAddFriendExpense, 
+    onRemoveFriendExpense, 
+    onAddCreditToExpense
+  );
+}
+
+async function onCancelAddFriendExpense(expense) {
+  console.log("on cancel add friends expense");
+
+  ui.buildFriendsExpense(
+    expense,
+    onAddFriendExpense, 
+    onRemoveFriendExpense, 
+    onAddCreditToExpense
+  );
 }
 
 async function onRemoveFriendExpense(friend, expense) {

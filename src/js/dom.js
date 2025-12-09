@@ -117,7 +117,7 @@ function buildExpenseDetails(expense, editExpenseCallback) {
   `;
   
   // Get the button we just inserted
-  let editButton = detailsSection.querySelector('button');
+  let editButton = detailsSectionArticle.querySelector('button');
   editButton.addEventListener("click", () => {
     editExpenseCallback(expense);
   });
@@ -140,7 +140,8 @@ function clearExpenseSelection() {
   clearFriendsExpense();
 }
 
-function buildFriendsExpense(expense, addFriendsCallback, removeCallback, addCreditCallback) {
+function buildFriendsExpense(expense, addFriendsCallback, removeCallback,
+   addCreditCallback) {
   friendsSectionList.innerHTML = '';
   
   expense.friends.forEach(friend => {
@@ -299,21 +300,47 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
   });
 }
 
-function buildAddFriendExpense(expense, allFriends, callback) {
+function buildAddFriendExpense(expense, allFriends, confirmCallback, 
+  cancelCallback) {
 
-  // Create a Set of IDs already in the expense for O(1) lookup
-  const friendExpenseIds = new Set(expense.friends.map(f => f.id));
+  let availableFriends = [];
+  
+  if (allFriends.length != expense.friends.length) {
+    // Create a Set of IDs already in the expense for O(1) lookup
+    const friendExpenseIds = new Set(expense.friends.map(f => f.id));
 
-  // Filter out friends already in the expense
-  const availableFriends = allFriends.filter(f => !friendExpenseIds.has(f.id));
+    // Filter out friends already in the expense
+    availableFriends = allFriends.filter(f => !friendExpenseIds.has(f.id));
+  }
 
   friendsSectionTitle.innerHTML = `
-    <i class="fa-solid fa-user-plus" aria-hidden="true"></i> Add Friend
+    <i class="fa-solid fa-user-plus" aria-hidden="true"></i> 
+    Add Friend
+    <div class="back-button-container">
+      <button class="back-circle-button"><i class="fa-solid fa-circle-xmark"></i></button>
+    </div>
   `;
+  
+  let btn = friendsSectionTitle.querySelector("button");
+  btn.addEventListener("click", (event) => {
+    event.preventDefault();
+    cancelCallback(expense);
+  });
+
   friendsSectionList.innerHTML = "";
-  availableFriends.forEach((friend) => addFriendToAddFriendsItem(
-    friend, expense, callback)
-  );
+
+  if (availableFriends.length === 0) {
+    let listItem = document.createElement("li");
+    let titleItem = document.createElement("h3");
+
+    titleItem.textContent = "No available friends";
+    listItem.appendChild(titleItem);
+    friendsSectionList.appendChild(listItem);
+  } else {
+    availableFriends.forEach((friend) => addFriendToAddFriendsItem(
+      friend, expense, confirmCallback)
+    );
+  }
 }
 
 function addFriendToAddFriendsItem(friend, expense, callback) {

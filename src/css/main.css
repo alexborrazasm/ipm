@@ -512,6 +512,32 @@ section#details form label {
   color: var(--color-text);
 }
 
+.back-circle-button {
+  width: 2rem;
+  height: 2rem;
+  font-size: 2rem;
+  margin-left: auto;
+  background: var(--color-mantle);
+  border: none;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s; /* smooth effect */
+}
+
+.back-circle-button:hover {
+  color: var(--color-red);
+  transform: scale(1.1);
+}
+
+.back-button-container {
+  display: flex;
+  margin-left: auto;
+}
+
 footer {
   display: flex;
   gap: 0.3rem;
