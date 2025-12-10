@@ -9,10 +9,14 @@ const detailsSectionArticle = document.querySelector("section#details article");
 const friendsSection = document.querySelector("section#friends");
 const friendsSectionTitle = document.querySelector("section#friends h2");
 const friendsSectionList = document.querySelector('section#friends ul');
+const spinnerFriends = document.querySelector("section#friends div.loading");
+
+let friendsSpinnerCount = 0;
 
 function init() {
   spinnerExpenses.classList.add("hidden");
   spinnerEditDetails.classList.add("hidden");
+  spinnerFriends.classList.add("hidden");
 }
 
 function setReloadCallback(callback) {
@@ -96,14 +100,13 @@ function buildExpenseDetails(expense, editExpenseCallback) {
     day: 'numeric' 
   });
 
-  let label = detailsSectionTitle.querySelector("label");
-  label.textContent = "Expense Details";
-  
   let iconItem = detailsSection.querySelector("i");
-
   iconItem.className = "fa-solid fa-circle-info";
   iconItem.setAttribute("aria-hidden", "true");
 
+  let label = detailsSectionTitle.querySelector("label");
+  label.textContent = "Expense Details";
+  
   detailsSectionArticle.innerHTML = `
     <header>
       <h3>${expense.description}</h3>
@@ -134,13 +137,12 @@ function buildExpenseDetails(expense, editExpenseCallback) {
 
 function clearExpenseDetails() {
 
-  let label = detailsSectionTitle.querySelector("label");
-  label.textContent = "Expense Details";
-  
   let iconItem = detailsSection.querySelector("i");
-
   iconItem.className = "fa-solid fa-circle-info";
   iconItem.setAttribute("aria-hidden", "true");
+
+  let label = detailsSectionTitle.querySelector("label");
+  label.textContent = "Expense Details";
 
   detailsSectionArticle.innerHTML = "<h3>Pick an Expense</h3>";
 }
@@ -154,12 +156,17 @@ function buildFriendsExpense(expense, addFriendCallback, removeFriendCallback,
    addCreditCallback) {
 
   // Title
-  friendsSectionTitle.innerHTML = `
-    <i class="fa-solid fa-user-group" aria-hidden="true"></i>
-    Friends on expense
-  `;
-  friendsSectionList.innerHTML = '';
+  let existingButton = friendsSectionTitle.querySelector(".back-circle-button");
+  if (existingButton) existingButton.remove();
+
+  let label = friendsSectionTitle.querySelector("label");
+  label.textContent = "Friends on expense";
   
+  let iconItem = friendsSectionTitle.querySelector("i");
+  iconItem.className = "fa-solid fa-user-group";
+  iconItem.setAttribute("aria-hidden", "true");
+    
+  friendsSectionList.innerHTML = '';
   // Build friends cards or not
   if (expense.friends.length === 0) { // No friends
     let noFriendsLi = document.createElement('li');
@@ -208,13 +215,14 @@ function buildFriendsRow(friend, expense, addCallback, removeCallback) {
       <p><span>Debit:</span>$${friend.debit_balance.toFixed(2)}</p>
     </article>
 
-    <button type="button" class="circle-button" aria-label="Open friend menu">
-      <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
-    </button>
-    
-    <div class="friend-menu hidden">
-      <button class="menu-item">Add credit</button>
-      <button class="menu-item remove">Delete</button>
+    <div class="menu-wrapper">
+      <button type="button" class="circle-button" aria-label="Open friend menu">
+        <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
+      </button>
+      <div class="friend-menu hidden">
+        <button class="menu-item">Add credit</button>
+        <button class="menu-item remove">Delete</button>
+      </div>
     </div>
   `;
   
@@ -247,9 +255,25 @@ function buildFriendsRow(friend, expense, addCallback, removeCallback) {
 }
 
 function clearFriendsExpense() {
+  let existingButton = friendsSectionTitle.querySelector(".back-circle-button");
+  if (existingButton) existingButton.remove();
   friendsSection.className = "hidden"
   friendsSectionTitle.innerHTML = "";
   friendsSectionList.innerHTML = "";
+}
+
+function spinSpinnerFriends() {
+  if (friendsSpinnerCount === 0) {
+    spinnerFriends.classList.toggle("hidden");
+  }
+  friendsSpinnerCount++;
+}
+
+function stopSpinSpinnerFriends() {
+  friendsSpinnerCount--;
+  if (friendsSpinnerCount === 0) {
+    spinnerFriends.classList.toggle("hidden");
+  }
 }
 
 function buildEditExpense(expense, confirmCallback, cancelCallback) {
@@ -258,7 +282,6 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
   label.textContent = "Edit expense";
   
   let iconItem = detailsSection.querySelector("i");
-
   iconItem.className = "fa-solid fa-pen-to-square expense-icon";
   iconItem.setAttribute("aria-hidden", "true");
 
@@ -341,13 +364,20 @@ function buildAddFriendExpense(expense, allFriends, confirmCallback,
     availableFriends = allFriends.filter(f => !friendExpenseIds.has(f.id));
   }
 
-  friendsSectionTitle.innerHTML = `
-    <button class="back-circle-button"><i class="fa-solid fa-circle-chevron-left"></i></button>
-    <i class="fa-solid fa-user-plus" aria-hidden="true"></i> 
-    Add Friend
-  `;
+  // Title
+  let label = friendsSectionTitle.querySelector("label");
+  label.textContent = "Add Friend";
   
-  let btn = friendsSectionTitle.querySelector("button");
+  let iconItem = friendsSectionTitle.querySelector("i");
+  iconItem.className = "fa-solid fa-user-plus";
+  iconItem.setAttribute("aria-hidden", "true");
+
+  let btn = document.createElement("button");
+  btn.className = "back-circle-button";
+  btn.innerHTML = `<i class="fa-solid fa-circle-chevron-left"></i>`;
+
+  friendsSectionTitle.prepend(btn);
+  
   btn.addEventListener("click", (event) => {
     event.preventDefault();
     cancelCallback(expense);
@@ -479,5 +509,7 @@ export {
   clearExpenseSelection,
   clearExpenseDetails,
   clearFriendsExpense,
-  toggleLoadingEditDetails
+  toggleLoadingEditDetails,
+  spinSpinnerFriends,
+  stopSpinSpinnerFriends,
 }; // TODO

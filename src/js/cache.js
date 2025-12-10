@@ -48,3 +48,24 @@ export function removeFriend(friendId) {
 export function clearFriendsCache() {
   friendsCache.clear();
 }
+
+const locks = new Map();
+
+async function lock(id) {
+  while (locks.get(id)) {
+    await locks.get(id);
+  }
+
+  let release;
+  const p = new Promise(res => release = res);
+
+  locks.set(id, p);
+  return () => {
+    locks.delete(id);
+    release();
+  };
+}
+
+export async function lockExpense(id) {
+  return lock(id);
+}
