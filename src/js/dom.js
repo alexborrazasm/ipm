@@ -35,6 +35,7 @@ function addExpenseItem(expense, callback) {
   linkItem.href = "#";
   linkItem.addEventListener("click", (event) => {
     event.preventDefault();
+    detailsSection.scrollIntoView({ behavior: 'smooth' });
     callback(expense.id);
   });
   iconItem.className = "fa-solid fa-credit-card expense-icon";
