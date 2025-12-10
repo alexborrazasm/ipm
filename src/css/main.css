@@ -290,6 +290,11 @@ main section#expense-list div.loading {
   display: block;
 }
 
+main article#content div.loading {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
 main section#expense-list ul {
   list-style: none;
   display: grid;

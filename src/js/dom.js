@@ -96,10 +96,8 @@ function buildExpenseDetails(expense, editExpenseCallback) {
     day: 'numeric' 
   });
 
-  const textNode = detailsSectionTitle.childNodes[3];
-  textNode.textContent = `
-    Expense Details
-  `;
+  let label = detailsSectionTitle.querySelector("label");
+  label.textContent = "Expense Details";
   
   let iconItem = detailsSection.querySelector("i");
 
@@ -135,13 +133,16 @@ function buildExpenseDetails(expense, editExpenseCallback) {
 }
 
 function clearExpenseDetails() {
-  detailsSectionTitle.innerHTML = `
-      <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-      Expense Details
-  `;
-  detailsSectionArticle.innerHTML = `
-      <h3>Pick an Expense</h3>
-  `;
+
+  let label = detailsSectionTitle.querySelector("label");
+  label.textContent = "Expense Details";
+  
+  let iconItem = detailsSection.querySelector("i");
+
+  iconItem.className = "fa-solid fa-circle-info";
+  iconItem.setAttribute("aria-hidden", "true");
+
+  detailsSectionArticle.innerHTML = "<h3>Pick an Expense</h3>";
 }
 
 function clearExpenseSelection() {
@@ -253,10 +254,13 @@ function clearFriendsExpense() {
 
 function buildEditExpense(expense, confirmCallback, cancelCallback) {
 
-  detailsSectionTitle.innerHTML = `
-    <i class="fa-solid fa-pen-to-square expense-icon" aria-hidden="true"></i>
-    Edit expense
-  `;
+  let label = detailsSectionTitle.querySelector("label");
+  label.textContent = "Edit expense";
+  
+  let iconItem = detailsSection.querySelector("i");
+
+  iconItem.className = "fa-solid fa-pen-to-square expense-icon";
+  iconItem.setAttribute("aria-hidden", "true");
 
   detailsSectionArticle.innerHTML = `
     <form>
