@@ -393,30 +393,42 @@ function addFriendToAddFriendsItem(friend, expense, callback) {
 }
 
 function showRemoveFriend(friend, removeCallback) {
-  const removeFriend = document.querySelector('#remove-friend article');
-  dialog.classList.remove('hidden');
-  removeFriend.innerHTML = `
-  <p> Do you want to remove "${friend.name}" from this expense? </p>
-  <div class="two-buttons">
-    <button type="button" class="form-button cancel-button">
-      Cancel
-    </button>
-    <button type="submit" class="form-button confirm-button">
-      Confirm
-    </button>
-  </div>
+  const dialog = document.querySelector('#add-credit-remove-friends');
+
+  dialog.innerHTML = `
+    <h2>
+      <i class="fa-solid fa-user-minus" aria-hidden="true"></i>
+      Remove Friend
+    </h2>
+
+    <article>
+      <p>Do you want to remove "${friend.name}" from this expense?</p>
+      <div class="two-buttons">
+        <button type="button" class="form-button cancel-button">Cancel</button>
+        <button type="submit" class="form-button confirm-button">Confirm</button>
+      </div>
+    </article>
   `;
 
-  const confirmButton = removeFriend.querySelector('.confirm-button');
+  dialog.showModal();
+
+  const cancelButton = dialog.querySelector('.cancel-button');
+  const confirmButton = dialog.querySelector('.confirm-button');
+
+  cancelButton.addEventListener('click', () => dialog.close());
   confirmButton.addEventListener('click', () => {
-    removeCallback();
+    removeCallback(friend);
+    dialog.close();
   });
 }
 
-function showAddCreditFriend(addCallback) {
-  const addCreditFriend = document.querySelector('#add-credit article');
-  
-  addCreditFriend.innerHTML = `
+function showAddCreditFriend(friend, addCreditCallback) {
+   const dialog = document.querySelector('#add-credit-remove-friends');
+
+  dialog.innerHTML = `
+    <h2>
+      <i class="fa-solid fa-coins" aria-hidden="true"></i>Add Credit
+    </h2>
     <form class="card">
       <label for="add-credit-input" class="form-label">
       How much credit do you want to add to 'Alex' for 'Travel to A Coruña'?
@@ -437,12 +449,19 @@ function showAddCreditFriend(addCallback) {
         Confirm
       </button>
     </div>
-  `
-  const confirmButton = addCreditFriend.querySelector('.confirm-button');
+  `;
+
+  dialog.showModal();
+
+  const cancelButton = dialog.querySelector('.cancel-button');
+  const confirmButton = dialog.querySelector('.confirm-button');
+  const input = dialog.querySelector('#add-credit-input');
+
+  cancelButton.addEventListener('click', () => dialog.close());
+
   confirmButton.addEventListener('click', () => {
-    const inputField = addCreditFriend.querySelector('#add-credit-input');
-    const amount = parseFloat(inputField.value);
-    addCallback(amount);
+    addCreditCallback(Number(input.value));  
+    dialog.close();
   });
 }
 
