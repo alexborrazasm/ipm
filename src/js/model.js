@@ -101,8 +101,8 @@ async function removeFriendFromExpense(friendId, expenseId) {
 
 async function addCreditToFriend(friendId, expenseId, amount) {
   try {
-    return await appFetch(`/expenses/${expenseId}/friends/${friendId}/credit`, 
-      fetchConfig('POST', { amount }));
+    return await appFetch(`/expenses/${expenseId}/friends/${friendId}/?amount=${amount}`, 
+      fetchConfig('PUT'));
   } catch (error) {
     throw new ConnectionError(error.message);
   }

@@ -392,7 +392,7 @@ function addFriendToAddFriendsItem(friend, expense, callback) {
   friendsSectionList.appendChild(listItem);
 }
 
-function showRemoveFriend(friend, removeCallback) {
+function showRemoveFriend(friend, expense, removeCallback) {
   const dialog = document.querySelector('#add-credit-remove-friends');
 
   dialog.innerHTML = `
@@ -417,37 +417,33 @@ function showRemoveFriend(friend, removeCallback) {
 
   cancelButton.addEventListener('click', () => dialog.close());
   confirmButton.addEventListener('click', () => {
-    removeCallback(friend);
+    removeCallback(friend, expense);
     dialog.close();
   });
 }
 
-function showAddCreditFriend(friend, addCreditCallback) {
-   const dialog = document.querySelector('#add-credit-remove-friends');
+function showAddCreditFriend(friend, expense, addCreditCallback) {
+  const dialog = document.querySelector('#add-credit-remove-friends');
 
   dialog.innerHTML = `
     <h2>
-      <i class="fa-solid fa-coins" aria-hidden="true"></i>Add Credit
+      <i class="fa-solid fa-coins" aria-hidden="true"></i> Add Credit
     </h2>
     <form class="card">
       <label for="add-credit-input" class="form-label">
-      How much credit do you want to add to 'Alex' for 'Travel to A Coruña'?
+        How much credit do you want to add to '${friend.name}' for '${expense.description}'?
       </label>
       <input
         type="number"
         id="add-credit-input"
         name="add-credit"
         class="form-input"
-        value="233.00" required
-      >      
+        value="0.00" required
+      >
     </form>
     <div class="two-buttons">
-      <button type="button" class="form-button cancel-button">
-        Cancel
-      </button>
-      <button type="submit" class="form-button confirm-button">
-        Confirm
-      </button>
+      <button type="button" class="form-button cancel-button">Cancel</button>
+      <button type="submit" class="form-button confirm-button">Confirm</button>
     </div>
   `;
 
@@ -460,10 +456,11 @@ function showAddCreditFriend(friend, addCreditCallback) {
   cancelButton.addEventListener('click', () => dialog.close());
 
   confirmButton.addEventListener('click', () => {
-    addCreditCallback(Number(input.value));  
+    addCreditCallback(friend, expense, Number(input.value));
     dialog.close();
   });
 }
+
 
 export { 
   init, 

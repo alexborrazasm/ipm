@@ -104,20 +104,58 @@ async function onCancelAddFriendExpense(expense) {
 
 async function onRemoveFriendExpense(friend, expense) {
   console.log("on remove credit to expense");
-  ui.showRemoveFriend(friend, onConfirmRemoveFriendExpense);
+  ui.showRemoveFriend(friend, expense, onConfirmRemoveFriendExpense);
 }
 
 async function onConfirmRemoveFriendExpense(friend, expense) {
   console.log("on confirm remove friends expense");
-  // TODO
+  try {
+    //ui.toggleLoadingAddExpenses(); TODO
+    await model.removeFriendFromExpense(friend.id, expense.id);
+    
+    expense.friends = await model.retrieveFriendsOnExpense(expense.id);
+
+    cache.setExpense(expense);
+    //ui.toggleLoadingAddFriends();
+  } catch(error) {
+    //ui.toggleLoadingAddExpenses();
+    ui.showError("Connection error. Please, try again later.");
+    console.error(error);
+  }
+  
+  ui.buildFriendsExpense(
+    expense,
+    onAddFriendExpense, 
+    onRemoveFriendExpense, 
+    onAddCreditToExpense
+  );
 }
 
 async function onAddCreditToExpense(friend, expense) {
   console.log("on add credit to expense");
-  ui.showAddCreditFriend(friend, onConfirmAddCreditFriendExpense);
+  ui.showAddCreditFriend(friend, expense, onConfirmAddCreditFriendExpense);
 }
 
 async function onConfirmAddCreditFriendExpense(friend, expense, amount) {
   console.log("on confirm add credit to friend expense");
-  // TODO
+  try {
+    //ui.toggleLoadingAddExpenses(); TODO
+    await model.addCreditToFriend(friend.id, expense.id, amount);
+    
+    expense.friends = await model.retrieveFriendsOnExpense(expense.id);
+
+    cache.setExpense(expense);
+    //ui.toggleLoadingAddFriends();
+  } catch(error) {
+    //ui.toggleLoadingAddExpenses();
+    ui.showError("Connection error. Please, try again later.");
+    console.error(error);
+  }
+  
+  ui.buildFriendsExpense(
+    expense,
+    onAddFriendExpense, 
+    onRemoveFriendExpense, 
+    onAddCreditToExpense
+  );
 }
