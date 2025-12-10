@@ -212,12 +212,18 @@ main section {
 }
 
 main dialog {
+  max-width: 80%;
   margin: auto;
-  padding: 0.4rem;
-  border-radius: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.7rem;
   background: var(--color-crust);
   color: var(--color-text);
   border: none;
+}
+
+main dialog .form-label {
+  margin-bottom: 1.1rem;
+  display: block;
 }
 
 dialog::backdrop {

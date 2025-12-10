@@ -446,7 +446,7 @@ function showRemoveFriend(friend, expense, removeCallback) {
     </h2>
 
     <article>
-      <p>Do you want to remove "${friend.name}" from this expense?</p>
+      <label class="form-label can-break">Do you want to remove '${friend.name}' from this expense?</label>
       <div class="two-buttons">
         <button type="button" class="form-button cancel-button">Cancel</button>
         <button type="submit" class="form-button confirm-button">Confirm</button>
@@ -474,7 +474,7 @@ function showAddCreditFriend(friend, expense, addCreditCallback) {
       <i class="fa-solid fa-coins" aria-hidden="true"></i> Add Credit
     </h2>
     <form class="card">
-      <label for="add-credit-input" class="form-label">
+      <label for="add-credit-input" class="form-label can-break">
         How much credit do you want to add to '${friend.name}' for '${expense.description}'?
       </label>
       <input

@@ -142,7 +142,7 @@ async function onAddFriendExpense(expenseId) {
 }
 
 async function onConfirmAddFriendExpense(friendId, expenseId) {
-  console.log("on confirm add friends expense try lock");
+  console.log("on confirm add friends expense");
   ui.spinSpinnerFriends();
   const release = await cache.lockExpense(expenseId);
 
@@ -212,13 +212,12 @@ async function onRemoveFriendExpense(friendId, expenseId) {
 }
 
 async function onConfirmRemoveFriendExpense(friendId, expenseId) {
-  console.log("on confirm remove friends expense try lock");
+  console.log("on confirm remove friends expense");
 
   ui.spinSpinnerFriends();
   const release = await cache.lockExpense(expenseId);
 
   try {
-    console.log("on confirm remove friends expense");
     await model.removeFriendFromExpense(friendId, expenseId);
     
     let expense = cache.getExpense(expenseId);
@@ -263,12 +262,20 @@ async function onConfirmAddCreditFriendExpense(friendId, expenseId, amount) {
   const release = await cache.lockExpense(expenseId);
 
   try {
-    console.log(friendId);
-    console.log(expenseId);
-    await model.addCreditToFriend(friendId, expenseId, amount);
-    
     let expense = cache.getExpense(expenseId);
 
+    if (amount == 0) {
+      ui.buildFriendsExpense(
+        expense,
+        onAddFriendExpense, 
+        onRemoveFriendExpense, 
+        onAddCreditToExpense
+      );
+      return;
+    }
+
+    await model.addCreditToFriend(friendId, expenseId, amount);
+      
     expense.creditBalance = expense.creditBalance + amount;
     expense.friends = await model.retrieveFriendsOnExpense(expense.id);
 
