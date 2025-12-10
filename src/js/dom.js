@@ -30,11 +30,12 @@ function addExpenseItem(expense, callback) {
   let titleItem = document.createElement("h3");
   
   listItem.dataset.id = expense.id;
+  titleItem.className = "can-break";
   titleItem.textContent = expense.description;
   linkItem.href = "#";
   linkItem.addEventListener("click", (event) => {
     event.preventDefault();
-    callback(expense);
+    callback(expense.id);
   });
   iconItem.className = "fa-solid fa-credit-card expense-icon";
   iconItem.setAttribute("aria-hidden", "true");
@@ -109,7 +110,7 @@ function buildExpenseDetails(expense, editExpenseCallback) {
   
   detailsSectionArticle.innerHTML = `
     <header>
-      <h3>${expense.description}</h3>
+      <h3 class="can-break">${expense.description}</h3>
       <button class="circle-button" aria-label="Edit expense">
         <i class="fa-solid fa-pencil" aria-hidden="true"></i>
       </button>
@@ -131,7 +132,7 @@ function buildExpenseDetails(expense, editExpenseCallback) {
   // Get the button we just inserted
   let editButton = detailsSectionArticle.querySelector('button');
   editButton.addEventListener("click", () => {
-    editExpenseCallback(expense);
+    editExpenseCallback(expense.id);
   });
 }
 
@@ -193,7 +194,7 @@ function buildFriendsExpense(expense, addFriendCallback, removeFriendCallback,
   
   addFriendLink.addEventListener('click', (event) => {
     event.preventDefault();
-    addFriendCallback(expense);
+    addFriendCallback(expense.id);
   });
   
   addFriendLi.appendChild(addFriendLink);
@@ -211,8 +212,14 @@ function buildFriendsRow(friend, expense, addCallback, removeCallback) {
     <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
     <article>
       <h3>${friend.name}</h3>
-      <p><span>Credit:</span>$${friend.credit_balance.toFixed(2)}</p>
-      <p><span>Debit:</span>$${friend.debit_balance.toFixed(2)}</p>
+      <p>
+        <span>Credit:</span>
+        <span class="can-break">$${friend.credit_balance.toFixed(2)}</span>
+      </p>
+      <p>
+        <span>Debit:</span>
+        <span class="can-break">$${friend.debit_balance.toFixed(2)}</span>
+      </p>
     </article>
 
     <div class="menu-wrapper">
@@ -244,11 +251,11 @@ function buildFriendsRow(friend, expense, addCallback, removeCallback) {
 
   // Add callbacks
   addCreditBtn.addEventListener("click", () => {
-    addCallback(friend, expense);
+    addCallback(friend.id, expense.id);
   });
 
   deleteBtn.addEventListener("click", () => {
-    removeCallback(friend, expense);
+    removeCallback(friend.id, expense.id);
   });
 
   friendsSectionList.appendChild(li);
@@ -258,7 +265,14 @@ function clearFriendsExpense() {
   let existingButton = friendsSectionTitle.querySelector(".back-circle-button");
   if (existingButton) existingButton.remove();
   friendsSection.className = "hidden"
-  friendsSectionTitle.innerHTML = "";
+  
+  let label = friendsSectionTitle.querySelector("label");
+  label.textContent = "";
+  
+  let iconItem = friendsSectionTitle.querySelector("i");
+  iconItem.innerHTML = "";
+  iconItem.className = "";
+  
   friendsSectionList.innerHTML = "";
 }
 
@@ -343,11 +357,11 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
     const description = formData.get('expense-title');
     const amount = parseFloat(formData.get('expense-amount'));
     const date = formData.get('expense-date');
-    confirmCallback(expense, description, date, amount);
+    confirmCallback(expense.id, description, date, amount);
   });
 
   cancelButton.addEventListener('click', () => {
-    cancelCallback(expense);
+    cancelCallback(expense.id);
   });
 }
 
@@ -380,7 +394,7 @@ function buildAddFriendExpense(expense, allFriends, confirmCallback,
   
   btn.addEventListener("click", (event) => {
     event.preventDefault();
-    cancelCallback(expense);
+    cancelCallback(expense.id);
   });
 
   friendsSectionList.innerHTML = "";
@@ -412,7 +426,7 @@ function addFriendToAddFriendsItem(friend, expense, callback) {
   linkItem.href = "#";
   linkItem.addEventListener("click", (event) => {
     event.preventDefault();
-    callback(friend, expense);
+    callback(friend.id, expense.id);
   });
 
   linkItem.appendChild(iconItem);
@@ -447,7 +461,7 @@ function showRemoveFriend(friend, expense, removeCallback) {
 
   cancelButton.addEventListener('click', () => dialog.close());
   confirmButton.addEventListener('click', () => {
-    removeCallback(friend, expense);
+    removeCallback(friend.id, expense.id);
     dialog.close();
   });
 }
@@ -486,11 +500,10 @@ function showAddCreditFriend(friend, expense, addCreditCallback) {
   cancelButton.addEventListener('click', () => dialog.close());
 
   confirmButton.addEventListener('click', () => {
-    addCreditCallback(friend, expense, Number(input.value));
+    addCreditCallback(friend.id, expense.id, Number(input.value));
     dialog.close();
   });
 }
-
 
 export { 
   init, 
