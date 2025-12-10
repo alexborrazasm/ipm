@@ -320,7 +320,7 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
     const description = formData.get('expense-title');
     const amount = parseFloat(formData.get('expense-amount'));
     const date = formData.get('expense-date');
-    confirmCallback(expense, description, amount, date);
+    confirmCallback(expense, description, date, amount);
   });
 
   cancelButton.addEventListener('click', () => {

@@ -49,7 +49,34 @@ async function onEditExpense(expense) {
 
 async function onConfirmEditExpense(expense, description, date, amount) {
   console.log("on confirm edit expense");
-  // TODO
+  if (expense.description !== description
+      || expense.date !== date
+      || expense.amount !== amount) {
+    try {
+      console.log("updating expense...");
+      ui.toggleLoadingEditDetails();
+      await model.editExpense(expense.id, description, date, amount);
+
+      expense.description = description;
+      expense.date = date;
+      expense.amount = amount;
+
+      cache.setExpense(expense);
+      ui.buildExpenseDetails(expense, onEditExpense);
+      ui.toggleLoadingEditDetails();
+
+      ui.clearExpenses();
+      load();
+    }
+    catch(error) {
+      ui.showError("Connection error. Please, try again later.");
+      console.error(error);
+    }
+  }
+  else {
+    console.log("no changes detected");
+    ui.buildExpenseDetails(expense, onEditExpense);
+  }
 }
 
 async function onCancelEditExpense(expense) {
