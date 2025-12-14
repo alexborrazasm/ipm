@@ -41,10 +41,21 @@ function addExpenseItem(expense, callback) {
   titleItem.textContent = expense.description;
   linkItem.href = "#";
   linkItem.addEventListener("click", (event) => {
+    event.preventDefault(); 
+    
+    const currentSelected = expenseList.querySelector("li.selected");
+    if (currentSelected) {
+      currentSelected.classList.remove("selected");
+    }
+    
+    listItem.classList.add("selected");
+    
     const isDesktopOrTablet = window.matchMedia("(min-width: 768px)").matches;
     if (!isDesktopOrTablet){
-      event.preventDefault();
-      detailsSection.scrollIntoView({ behavior: 'smooth' });
+      const detailsSection = document.getElementById('details'); 
+      if(detailsSection) {
+        detailsSection.scrollIntoView({ behavior: 'smooth' });
+      }
     }
     callback(expense.id);
   });
@@ -54,7 +65,7 @@ function addExpenseItem(expense, callback) {
   linkItem.appendChild(iconItem);
   linkItem.appendChild(titleItem);
   listItem.appendChild(linkItem);
-  
+
   expenseList.appendChild(listItem);
 }
 

@@ -327,6 +327,10 @@ main section#expense-list li i {
   color: var(--color-accent);
 }
 
+main section#expense-list li.selected a {
+  background-color: var(--color-surface0);
+}
+
 div#error-message h2 {
   color: var(--color-base);
 }
