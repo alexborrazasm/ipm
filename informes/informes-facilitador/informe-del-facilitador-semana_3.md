@@ -58,7 +58,7 @@ N/A
 N/A
 ---
 
-### **4. Coordinación y resolución conjunta de problemas**
+### **5. Coordinación y resolución conjunta de problemas**
 
 **Descripción:**  
 - Sesiones de trabajo colaborativo para resolver errores complejos.  
@@ -102,21 +102,6 @@ Falta de tiempo para profundizar más en algunos aspectos del proyecto.
 - Gestión de concurrencia implementada.
 
 ---
-
-### **4. Coordinación y resolución conjunta de problemas**
-
-**Descripción:**  
-- Sesiones de trabajo colaborativo para resolver errores complejos.  
-- Puesta en común de ideas para mejorar la estructura y lógica de la aplicación.  
-- Apoyo mutuo para comprender mejor el funcionamiento del código JavaScript.
-
-**Responsables:**  
-- Todo el equipo
-
-**Estado:** *Completada* ✅
-
-**Conflictos o incidencias:**  
-Falta de tiempo para profundizar más en algunos aspectos del proyecto.
 
 ## 🔁 Valoración general de la semana 3
 
