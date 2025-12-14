@@ -1,37 +1,38 @@
-# Informe del Curador-Traductor semana 1
+# Informe del Curador-Traductor semana 2
 
 A continuación se ofrece el informe de la Curador-Traductor de la 
-semana 1 de trabajo 26/11/2025 - 30/11/2025, cuyo papel desempeña: 
- 
+semana 2 de trabajo 01/12/2025 - 07/12/2025, cuyo papel desempeña: 
+
 Alexandre Borrazás Mancebo
 
 ---
 
 ## 🎯 **Objetivos de aprendizaje**
 
-### 1️⃣ **Preparación del entorno**
-- Configuración del entorno de trabajo,
+### 1️⃣ **Implementación de la parte dinámica**
+- Familiarizarse con JS.
+- Crear partes de la interfaz de forma dinámica.
+- Implementar todas las llamadas a la APi desde JS.
 
 ### 2️⃣ **Diseño de Interfaces Web**
 - Metodología mobile first.
 - Diseño adaptativo.
-- Crear wireframes de la interfaz. 
+- Actualizar wireframes de la interfaz. 
 - Realizar puesta en común y colaboración en equipo sobre ideas de diseño.
 
-### 3️⃣ **Implementación de la web**
-- Familiarizarse con html5.
-- Creación de la página en html semántico.
+### 3️⃣ **HTML**
+- Rework de la página en html5 para adaptarse a elemento dinámicos.
 - Normas de accesibilidad 
   [WCAG 2](https://www.w3.org/WAI/standards-guidelines/wcag/).
 - Todos los elementos en baseline.
 
-### 4️⃣ **Estilar la web**
-- Familiarizarse con css3.
+### 4️⃣ **CSS**
+- Rework del css3 de la web para adaptarse a los elemento dinámicos.
 - Metodología mobile first.
 - Hacer la web adaptativa.
-- Estilar la web con css3.
 - Todos los elementos en
   [Baseline](https://web-platform-dx.github.io/web-features/).
+
 ---
 
 ## 📚 **Recursos empleados**
@@ -94,4 +95,10 @@ Utilizamos estos iconos para hacer la web más vistosa.
 - [Docs](https://docs.fontawesome.com/)
 - [Web para buscar los iconos](https://fontawesome.com/search?)
 
+### 7. **Recursos para JS**
+**🧾 Cómo usarlo:**  
+Utilizamos estos iconos para hacer la web más vistosa.
+
+**🔗 Enlace:**
+- [javascript.info](https://javascript.info/)
 ---

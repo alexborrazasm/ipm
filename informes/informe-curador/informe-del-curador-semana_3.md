@@ -1,38 +1,23 @@
-# Informe del Curador-Traductor semana 1
+# Informe del Curador-Traductor semana 3
 
 A continuación se ofrece el informe de la Curador-Traductor de la 
-semana 1 de trabajo 26/11/2025 - 30/11/2025, cuyo papel desempeña: 
- 
+semana 3 de trabajo 08/12/2025 - 14/12/2025, cuyo papel desempeña: 
+
 Alexandre Borrazás Mancebo
 
 ---
 
 ## 🎯 **Objetivos de aprendizaje**
 
-### 1️⃣ **Preparación del entorno**
-- Configuración del entorno de trabajo,
+### 1️⃣ **Afinar detalles creación de **
+- Finalización y corrección del trabajo de la semana 2.
 
-### 2️⃣ **Diseño de Interfaces Web**
-- Metodología mobile first.
-- Diseño adaptativo.
-- Crear wireframes de la interfaz. 
-- Realizar puesta en común y colaboración en equipo sobre ideas de diseño.
+### 2️⃣ **Manejo de errores en JS**
+- Manejar y mostrar errores en la interfaz de la API.
 
-### 3️⃣ **Implementación de la web**
-- Familiarizarse con html5.
-- Creación de la página en html semántico.
-- Normas de accesibilidad 
-  [WCAG 2](https://www.w3.org/WAI/standards-guidelines/wcag/).
-- Todos los elementos en baseline.
-
-### 4️⃣ **Estilar la web**
-- Familiarizarse con css3.
-- Metodología mobile first.
-- Hacer la web adaptativa.
-- Estilar la web con css3.
-- Todos los elementos en
-  [Baseline](https://web-platform-dx.github.io/web-features/).
----
+### 3️⃣ **Concurrencia en JS**
+- Evitar que la aplicación rompa cuando el usuario se dedica a tocar muy rápido
+  los botones.
 
 ## 📚 **Recursos empleados**
 
@@ -94,4 +79,10 @@ Utilizamos estos iconos para hacer la web más vistosa.
 - [Docs](https://docs.fontawesome.com/)
 - [Web para buscar los iconos](https://fontawesome.com/search?)
 
+### 7. **Recursos para JS**
+**🧾 Cómo usarlo:**  
+Utilizamos estos iconos para hacer la web más vistosa.
+
+**🔗 Enlace:**
+- [javascript.info](https://javascript.info/)
 ---
