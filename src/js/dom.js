@@ -67,13 +67,20 @@ function toggleLoadingExpenses() {
 }
 
 function showError(message) {
-  let iconItem = document.createElement("i");
-  let titleItem = document.createElement("h2");
-  let buttonItem = document.createElement("button");
-  
+  errorMessageDiv.innerHTML = "";
+
+  const iconItem = document.createElement("i");
+  const titleItem = document.createElement("h2");
+  const textSpan = document.createElement("span");
+
   iconItem.className = "fa-solid fa-triangle-exclamation expense-icon";
   iconItem.setAttribute("aria-hidden", "true");
-  titleItem.textContent = "Error";
+  titleItem.appendChild(iconItem);
+
+  textSpan.textContent = message;
+  titleItem.appendChild(textSpan);
+
+  const buttonItem = document.createElement("button");
   buttonItem.type = "button";
   buttonItem.className = "form-button";
   buttonItem.textContent = "Dismiss";
@@ -81,15 +88,18 @@ function showError(message) {
     errorMessageDiv.classList.add("hidden");
     errorMessageDiv.innerHTML = "";
   });
-  
-  titleItem.appendChild(iconItem);
+
   errorMessageDiv.appendChild(titleItem);
-  titleItem.textContent = message;
   errorMessageDiv.appendChild(buttonItem);
-  
+
   errorMessageDiv.setAttribute("role", "alert");
   errorMessageDiv.setAttribute("aria-live", "assertive");
-  errorMessageDiv.className = "";
+  errorMessageDiv.classList.remove("hidden");
+  
+  const isDesktopOrTablet = window.matchMedia("(min-width: 768px)").matches;
+    if (!isDesktopOrTablet){
+      errorMessageDiv.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 function clearError() {
