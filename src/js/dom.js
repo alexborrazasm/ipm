@@ -41,8 +41,11 @@ function addExpenseItem(expense, callback) {
   titleItem.textContent = expense.description;
   linkItem.href = "#";
   linkItem.addEventListener("click", (event) => {
-    event.preventDefault();
-    detailsSection.scrollIntoView({ behavior: 'smooth' });
+    const isDesktopOrTablet = window.matchMedia("(min-width: 768px)").matches;
+    if (!isDesktopOrTablet){
+      event.preventDefault();
+      detailsSection.scrollIntoView({ behavior: 'smooth' });
+    }
     callback(expense.id);
   });
   iconItem.className = "fa-solid fa-credit-card expense-icon";
