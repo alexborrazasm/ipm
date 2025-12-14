@@ -9,7 +9,7 @@ Alexandre Borrazás Mancebo
 
 ## 🎯 **Objetivos de aprendizaje**
 
-### 1️⃣ **Afinar detalles creación de **
+### 1️⃣ **Afinar detalles parte dinámica**
 - Finalización y corrección del trabajo de la semana 2.
 
 ### 2️⃣ **Manejo de errores en JS**
