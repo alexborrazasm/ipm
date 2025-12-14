@@ -47,16 +47,8 @@ function addExpenseItem(expense, callback) {
     if (currentSelected) {
       currentSelected.classList.remove("selected");
     }
-    
+
     listItem.classList.add("selected");
-    
-    const isDesktopOrTablet = window.matchMedia("(min-width: 768px)").matches;
-    if (!isDesktopOrTablet){
-      const detailsSection = document.getElementById('details'); 
-      if(detailsSection) {
-        detailsSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
     callback(expense.id);
   });
   iconItem.className = "fa-solid fa-credit-card expense-icon";
@@ -65,6 +57,9 @@ function addExpenseItem(expense, callback) {
   linkItem.appendChild(iconItem);
   linkItem.appendChild(titleItem);
   listItem.appendChild(linkItem);
+
+  if (expense.id === selectedExpense)
+    listItem.classList.add("selected");
 
   expenseList.appendChild(listItem);
 }
