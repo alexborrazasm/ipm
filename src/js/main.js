@@ -51,10 +51,14 @@ async function onShowExpense(expenseId) {
 
 async function onEditExpense(expenseId) {
   console.log("on edit expense");
+  ui.spinSpinnerEditDetails();
   const release = await cache.lockExpense(expenseId);
+  ui.stopSpinSpinnerEditDetails();
   try {
     let expense = cache.getExpense(expenseId);
-    ui.buildEditExpense(expense, onConfirmEditExpense, onCancelEditExpense);
+    if (ui.isSelected(expenseId)) {
+      ui.buildEditExpense(expense, onConfirmEditExpense, onCancelEditExpense);
+    }
   } finally {
     release();
   }
@@ -62,7 +66,7 @@ async function onEditExpense(expenseId) {
 
 async function onConfirmEditExpense(expenseId, description, date, amount) {
   console.log("on confirm edit expense");
-  ui.toggleLoadingEditDetails();
+  ui.spinSpinnerEditDetails();
   const release = await cache.lockExpense(expenseId);
 
   try {
@@ -87,15 +91,19 @@ async function onConfirmEditExpense(expenseId, description, date, amount) {
     newExpense.date = date;
     newExpense.amount = amount;
 
-    ui.buildExpenseDetails(newExpense, onEditExpense);
+    if (ui.isSelected(expenseId)) {
+      ui.buildExpenseDetails(newExpense, onEditExpense);
+    }
     if (expense.amount !== amount) {
-      newExpense.friends = await model.retrieveFriends(expense.id);
-      ui.buildFriendsExpense(
-        newExpense,
-        onAddFriendExpense, 
-        onRemoveFriendExpense, 
-        onAddCreditToExpense
-      );
+      newExpense.friends = await model.retrieveFriendsOnExpense(expense.id);
+      if (ui.isSelected(expenseId)) {
+        ui.buildFriendsExpense(
+          newExpense,
+          onAddFriendExpense, 
+          onRemoveFriendExpense, 
+          onAddCreditToExpense
+        );
+      }
     }
     cache.setExpense(newExpense);
 
@@ -109,33 +117,34 @@ async function onConfirmEditExpense(expenseId, description, date, amount) {
     ui.showError("Connection error. Please, try again later.");
     console.error(error);
   } finally {
-    ui.toggleLoadingEditDetails();
+    ui.stopSpinSpinnerEditDetails();
     release();
   }
 }
 
 async function onCancelEditExpense(expenseId) {
   console.log("on cancel edit expense");
-  const release = await cache.lockExpense(expenseId);
-  try {
-    let expense = cache.getExpense(expenseId);
+  let expense = cache.getExpense(expenseId);
+  if (ui.isSelected(expenseId)) {
     ui.buildExpenseDetails(expense, onEditExpense);
-  } finally {
-    release();
   }
 }
 
 async function onAddFriendExpense(expenseId) {
   console.log("on add friends expense");
+  ui.spinSpinnerFriends();
   const release = await cache.lockExpense(expenseId);
+  ui.stopSpinSpinnerFriends();
   try {
     let expense = cache.getExpense(expenseId);
-    ui.buildAddFriendExpense(
-      expense, 
-      cache.getAllFriends(), 
-      onConfirmAddFriendExpense,
-      onCancelAddFriendExpense
-    );
+    if (ui.isSelected(expenseId)) {
+      ui.buildAddFriendExpense(
+        expense, 
+        cache.getAllFriends(), 
+        onConfirmAddFriendExpense,
+        onCancelAddFriendExpense
+      );
+    }
   } finally {
     release();
   }
@@ -163,12 +172,14 @@ async function onConfirmAddFriendExpense(friendId, expenseId) {
     
     expense.friends = await model.retrieveFriendsOnExpense(expense.id);
     cache.setExpense(expense);
-    ui.buildFriendsExpense(
-      expense,
-      onAddFriendExpense, 
-      onRemoveFriendExpense, 
-      onAddCreditToExpense
-    );
+    if (ui.isSelected(expenseId)) {
+      ui.buildFriendsExpense(
+        expense,
+        onAddFriendExpense, 
+        onRemoveFriendExpense, 
+        onAddCreditToExpense
+      );
+    }
   } catch(error) {
     ui.showError("Connection error. Please, try again later.");
     console.error(error);
@@ -200,12 +211,16 @@ async function onCancelAddFriendExpense(expenseId) {
 async function onRemoveFriendExpense(friendId, expenseId) {
   console.log("on remove credit to expense");
 
+  ui.spinSpinnerFriends();
   const release = await cache.lockExpense(expenseId);
+  ui.stopSpinSpinnerFriends();
 
   try {
     let expense = cache.getExpense(expenseId);
     let friend = cache.getFriend(friendId);
-    ui.showRemoveFriend(friend, expense, onConfirmRemoveFriendExpense);
+    if (ui.isSelected(expenseId)) {
+      ui.showRemoveFriend(friend, expense, onConfirmRemoveFriendExpense);
+    }
   } finally {
     release();
   }
@@ -233,8 +248,13 @@ async function onConfirmRemoveFriendExpense(friendId, expenseId) {
       onAddCreditToExpense
     );
   } catch(error) {
-    ui.showError("Connection error. Please, try again later.");
-    console.error(error);
+    if (error.message.includes("409")) {
+      let friend = cache.getFriend(friendId);
+      ui.showError(`Cannot remove ${friend.name}.`);
+    } else {
+      ui.showError("Connection error. Please, try again later.");
+      console.error(error);
+    }
   } finally {
     ui.stopSpinSpinnerFriends();
     release();
@@ -244,12 +264,16 @@ async function onConfirmRemoveFriendExpense(friendId, expenseId) {
 async function onAddCreditToExpense(friendId, expenseId) {
   console.log("on add credit to expense");
 
+  ui.spinSpinnerFriends();
   const release = await cache.lockExpense(expenseId);
+  ui.stopSpinSpinnerFriends();
 
   try {
     let expense = cache.getExpense(expenseId);
     let friend = cache.getFriend(friendId);
-    ui.showAddCreditFriend(friend, expense, onConfirmAddCreditFriendExpense);
+    if (ui.isSelected(expenseId)) {
+      ui.showAddCreditFriend(friend, expense, onConfirmAddCreditFriendExpense);
+    }
   } finally {
     release();
   }

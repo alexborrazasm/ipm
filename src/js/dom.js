@@ -12,11 +12,18 @@ const friendsSectionList = document.querySelector('section#friends ul');
 const spinnerFriends = document.querySelector("section#friends div.loading");
 
 let friendsSpinnerCount = 0;
+let editSpinnerCount = 0;
+
+let selectedExpense = -1;
 
 function init() {
   spinnerExpenses.classList.add("hidden");
   spinnerEditDetails.classList.add("hidden");
   spinnerFriends.classList.add("hidden");
+}
+
+function isSelected(expenseId) {
+  return expenseId === selectedExpense;
 }
 
 function setReloadCallback(callback) {
@@ -57,9 +64,6 @@ function toggleLoadingExpenses() {
 }
 
 function showError(message) {
-  // Clean prev content
-  errorMessageDiv.innerHTML = "";
-
   let iconItem = document.createElement("i");
   let titleItem = document.createElement("h2");
   let buttonItem = document.createElement("button");
@@ -90,8 +94,18 @@ function clearError() {
   errorMessageDiv.innerHTML = "";
 }
 
-function toggleLoadingEditDetails() {
-  spinnerEditDetails.classList.toggle("hidden");
+function spinSpinnerEditDetails() {
+  if (editSpinnerCount === 0) {
+    spinnerEditDetails.classList.toggle("hidden");
+  }
+  editSpinnerCount++;
+}
+
+function stopSpinSpinnerEditDetails() {
+  editSpinnerCount--;
+  if (editSpinnerCount === 0) {
+    spinnerEditDetails.classList.toggle("hidden");
+  }
 }
 
 function buildExpenseDetails(expense, editExpenseCallback) {
@@ -101,6 +115,8 @@ function buildExpenseDetails(expense, editExpenseCallback) {
     month: 'long', 
     day: 'numeric' 
   });
+  
+  selectedExpense = expense.id;
 
   let iconItem = detailsSection.querySelector("i");
   iconItem.className = "fa-solid fa-circle-info";
@@ -152,6 +168,7 @@ function clearExpenseDetails() {
 function clearExpenseSelection() {
   clearExpenseDetails();
   clearFriendsExpense();
+  selectedExpense = -1;
 }
 
 function buildFriendsExpense(expense, addFriendCallback, removeFriendCallback,
@@ -379,6 +396,12 @@ function buildAddFriendExpense(expense, allFriends, confirmCallback,
     availableFriends = allFriends.filter(f => !friendExpenseIds.has(f.id));
   }
 
+  // Remove existing back button if it already exists
+  const existingBtn = friendsSectionTitle.querySelector(".back-circle-button");
+  if (existingBtn) {
+    existingBtn.remove();
+  }
+
   // Title
   let label = friendsSectionTitle.querySelector("label");
   label.textContent = "Add Friend";
@@ -523,7 +546,9 @@ export {
   clearExpenseSelection,
   clearExpenseDetails,
   clearFriendsExpense,
-  toggleLoadingEditDetails,
+  spinSpinnerEditDetails,
+  stopSpinSpinnerEditDetails,
   spinSpinnerFriends,
   stopSpinSpinnerFriends,
+  isSelected,
 }; // TODO
