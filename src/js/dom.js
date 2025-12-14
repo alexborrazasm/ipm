@@ -96,10 +96,7 @@ function showError(message) {
   errorMessageDiv.setAttribute("aria-live", "assertive");
   errorMessageDiv.classList.remove("hidden");
   
-  const isDesktopOrTablet = window.matchMedia("(min-width: 768px)").matches;
-    if (!isDesktopOrTablet){
-      errorMessageDiv.scrollIntoView({ behavior: 'smooth' });
-    }
+  errorMessageDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
 function clearError() {
