@@ -30,7 +30,7 @@
         <label></label>
       </div>
       <!-- Expense list -->
-      <section id="expense-list">
+      <div id="expense-list">
         <h2>
           <i class="fa-solid fa-wallet" aria-hidden="true"></i>
           Expenses
@@ -46,16 +46,19 @@
           <li>
           </li>
         </ul>
-      </section>
+      </div>
     </article>
     <article id="content">
+      <h2 class="visually-hidden">Expense Content</h2>
       <!-- Expense detail -->
       <section id="details">
-        <h2>
-          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-          <label>Expense Details</label>
+        <div class="title-reload-container">
+          <h2>
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+            <span>Expense Details</span>
+          </h2>
           <div class="loading"></div>
-        </h2>
+        </div>
         <article>
           <h3>Pick an Expense</h3>
         </article>
@@ -63,11 +66,13 @@
 
       <!-- Friends -->
       <section id="friends" class="hidden">
-        <h2>
-          <i></i>
-          <label></label>
+        <div class="title-reload-container">
+          <h2>
+          <i class="fa-solid fa-user-group" aria-hidden="true"></i>
+          <span>Friends on expense</span>
+          </h2>
           <div class="loading"></div>
-        </h2>
+        </div>
         <ul>
         </ul>
       </section>

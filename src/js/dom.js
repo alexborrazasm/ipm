@@ -1,6 +1,6 @@
-const expenseList = document.querySelector("section#expense-list ul");
-const spinnerExpenses = document.querySelector("section#expense-list div.loading");
-const reloadButton = document.querySelector("section#expense-list button#reload");
+const expenseList = document.querySelector("div#expense-list ul");
+const spinnerExpenses = document.querySelector("div#expense-list div.loading");
+const reloadButton = document.querySelector("div#expense-list button#reload");
 const errorMessageDiv = document.querySelector("div#error-message");
 const detailsSection = document.querySelector("section#details");
 const detailsSectionTitle = document.querySelector("section#details h2");
@@ -138,8 +138,8 @@ function buildExpenseDetails(expense, editExpenseCallback) {
   iconItem.className = "fa-solid fa-circle-info";
   iconItem.setAttribute("aria-hidden", "true");
 
-  let label = detailsSectionTitle.querySelector("label");
-  label.textContent = "Expense Details";
+  let span = detailsSectionTitle.querySelector("span");
+  span.textContent = "Expense Details";
   
   detailsSectionArticle.innerHTML = `
     <header>
@@ -175,8 +175,8 @@ function clearExpenseDetails() {
   iconItem.className = "fa-solid fa-circle-info";
   iconItem.setAttribute("aria-hidden", "true");
 
-  let label = detailsSectionTitle.querySelector("label");
-  label.textContent = "Expense Details";
+  let span = detailsSectionTitle.querySelector("span");
+  span.textContent = "Expense Details";
 
   detailsSectionArticle.innerHTML = "<h3>Pick an Expense</h3>";
 }
@@ -194,8 +194,8 @@ function buildFriendsExpense(expense, addFriendCallback, removeFriendCallback,
   let existingButton = friendsSectionTitle.querySelector(".back-circle-button");
   if (existingButton) existingButton.remove();
 
-  let label = friendsSectionTitle.querySelector("label");
-  label.textContent = "Friends on expense";
+  let span = friendsSectionTitle.querySelector("span");
+  span.textContent = "Friends on expense";
   
   let iconItem = friendsSectionTitle.querySelector("i");
   iconItem.className = "fa-solid fa-user-group";
@@ -300,8 +300,8 @@ function clearFriendsExpense() {
   if (existingButton) existingButton.remove();
   friendsSection.className = "hidden"
   
-  let label = friendsSectionTitle.querySelector("label");
-  label.textContent = "";
+  let span = friendsSectionTitle.querySelector("span");
+  span.textContent = "";
   
   let iconItem = friendsSectionTitle.querySelector("i");
   iconItem.innerHTML = "";
@@ -326,8 +326,8 @@ function stopSpinSpinnerFriends() {
 
 function buildEditExpense(expense, confirmCallback, cancelCallback) {
 
-  let label = detailsSectionTitle.querySelector("label");
-  label.textContent = "Edit expense";
+  let span = detailsSectionTitle.querySelector("span");
+  span.textContent = "Edit expense";
   
   let iconItem = detailsSection.querySelector("i");
   iconItem.className = "fa-solid fa-pen-to-square expense-icon";
@@ -419,8 +419,8 @@ function buildAddFriendExpense(expense, allFriends, confirmCallback,
   }
 
   // Title
-  let label = friendsSectionTitle.querySelector("label");
-  label.textContent = "Add Friend";
+  let span = friendsSectionTitle.querySelector("span");
+  span.textContent = "Add Friend";
   
   let iconItem = friendsSectionTitle.querySelector("i");
   iconItem.className = "fa-solid fa-user-plus";

@@ -205,6 +205,7 @@ body header#banner h1 {
 }
 
 div#error-message,
+div#expense-list,
 main section {
   margin: 0 auto;
   padding: 1rem;
@@ -266,6 +267,12 @@ main h2 {
   color: var(--color-accent);
 }
 
+.title-reload-container {
+  display: flex;
+  display: flex;
+  align-items: center;
+}
+
 main search {
   margin-bottom: 0.4rem;
   margin-right: 2rem;
@@ -281,17 +288,17 @@ main search input {
   width: 100%;
 }
 
-main search input:placeholder {
+main search input::placeholder {
   color: var(--color-subtext0);
 }
 
-main section#expense-list button#reload {
+main div#expense-list button#reload {
   color: var(--color-accent);
   background-color: var(--color-base);
   font-size: 2rem;
 }
 
-main section#expense-list div.loading {
+main div#expense-list div.loading {
   margin: 0 auto;
   display: block;
 }
@@ -301,7 +308,7 @@ main article#content div.loading {
   height: 1.2rem;
 }
 
-main section#expense-list ul {
+main div#expense-list ul {
   list-style: none;
   display: grid;
   padding-top: 0.4rem;
@@ -309,7 +316,7 @@ main section#expense-list ul {
   margin: 0 auto;
 }
 
-main section#expense-list li a {
+main div#expense-list li a {
   flex-direction: row;
   display: flex;
   align-items: center;
@@ -321,13 +328,13 @@ main section#expense-list li a {
   color: inherit;
 }
 
-main section#expense-list li i {
+main div#expense-list li i {
   font-size: 1.5rem;
   display: flex;
   color: var(--color-accent);
 }
 
-main section#expense-list li.selected a {
+main div#expense-list li.selected a {
   background-color: var(--color-surface0);
 }
 
@@ -567,10 +574,10 @@ footer {
 }
 
 .can-break {
-  word-break: break-word;
+  word-break: break-all;
 }
 
-/* spinner */
+/* Spinner */
 .loading {
   display: inline-block;
   width: calc(1.2em - 3px);
@@ -578,15 +585,14 @@ footer {
   border: 3px solid var(--color-accent);
   border-radius: 50%;
   border-top-color: var(--color-base);
-  -webkit-animation: spin 1s ease-in-out infinite;
-  animation: spin 1s ease-in-out infinite; 
+  animation: spin 1s ease-in-out infinite;
 }
 
+/* Standard animation */
 @keyframes spin {
-  to { -webkit-transform: rotate(360deg); }
-}
-@-webkit-keyframes spin {
-  to { -webkit-transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .hidden {
@@ -594,6 +600,17 @@ footer {
   visibility: hidden;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(0);
+  white-space: nowrap;
+  border: 0;
+}
 
 @media (min-width: 576px) {
 }
@@ -613,13 +630,12 @@ footer {
   main article#content {
     flex: 1 1;
   }
-
 }
 
 @media (min-width:  1200px) {
   /* Right content */
 
-  main article#sidebar {
+  main div#sidebar {
     margin-right: 1.5rem;
   }
   
@@ -632,8 +648,4 @@ footer {
     padding: 1rem;
     border-radius: 8px;
   }
-  
-}
-
-@media (min-width:  1400px) {
 }
