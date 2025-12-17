@@ -177,22 +177,40 @@ function buildExpenseDetails(expense, editExpenseCallback) {
   detailsSectionArticle.innerHTML = `
     <header>
       <h3 class="can-break">${expense.description}</h3>
-      <button class="circle-button" aria-label="Edit expense">
+
+      <button
+        class="circle-button"
+        aria-label="Edit expense ${expense.description}"
+      >
         <i class="fa-solid fa-pencil" aria-hidden="true"></i>
       </button>
     </header>
-    <p>
-      <span><i class="fa-solid fa-coins" aria-hidden="true"></i> Amount:</span>
-      $${expense.amount.toFixed(2)}
-    </p>
-    <p>
-      <span><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> Balance:</span>
-      $${expense.creditBalance.toFixed(2)}
-    </p>
-    <p>
-      <span><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Date:</span>
-      <time datetime="${expense.date}">${formattedDate}</time>
-    </p>
+
+    <dl class="expense-details">
+      <dt>
+        <i class="fa-solid fa-coins" aria-hidden="true"></i>
+        Amount:
+      </dt>
+      <dd>
+        $${expense.amount.toFixed(2)}
+      </dd>
+
+      <dt>
+        <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
+        Balance:
+      </dt>
+      <dd>
+        $${expense.creditBalance.toFixed(2)}
+      </dd>
+
+      <dt>
+        <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+        Date:
+      </dt>
+      <dd>
+        <time datetime="${expense.date}">${formattedDate}</time>
+      </dd>
+    </dl>
   `;
   
   // Get the button we just inserted
@@ -275,24 +293,35 @@ function buildFriendsRow(friend, expense, addCallback, removeCallback) {
   let li = document.createElement('li');
 
   li.dataset.friendId = friend.id;
+
   li.innerHTML = `
     <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
+
     <div class="body-wrapper">
       <h3>${friend.name}</h3>
-      <p>
-        <span>Credit:</span>
-        <span class="can-break">$${friend.credit_balance.toFixed(2)}</span>
-      </p>
-      <p>
-        <span>Debit:</span>
-        <span class="can-break">$${friend.debit_balance.toFixed(2)}</span>
-      </p>
+
+      <dl class="friend-balances">
+        <dt>Credit:</dt>
+        <dd class="can-break">
+          $${friend.credit_balance.toFixed(2)}
+        </dd>
+
+        <dt>Debit:</dt>
+        <dd class="can-break">
+          $${friend.debit_balance.toFixed(2)}
+        </dd>
+      </dl>
     </div>
 
     <div class="menu-wrapper">
-      <button type="button" class="circle-button" aria-label="friend menu">
+      <button
+        type="button"
+        class="circle-button"
+        aria-label="Open menu for ${friend.name}"
+      >
         <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
       </button>
+
       <div class="friend-menu hidden">
         <button class="menu-item">Add credit</button>
         <button class="menu-item remove">Delete</button>
