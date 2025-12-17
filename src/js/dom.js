@@ -10,6 +10,7 @@ const friendsSection = document.querySelector("section#friends");
 const friendsSectionTitle = document.querySelector("section#friends h2");
 const friendsSectionList = document.querySelector('section#friends ul');
 const spinnerFriends = document.querySelector("section#friends div.loading");
+const searchInput = document.querySelector("#expense-list search input");
 
 let friendsSpinnerCount = 0;
 let editSpinnerCount = 0;
@@ -20,6 +21,21 @@ function init() {
   spinnerExpenses.classList.add("hidden");
   spinnerEditDetails.classList.add("hidden");
   spinnerFriends.classList.add("hidden");
+  searchInput.addEventListener("input", onSearchExpenses);
+
+}
+
+function onSearchExpenses() {
+  const query = searchInput.value.toLowerCase();
+  const items = expenseList.querySelectorAll("li");
+
+  items.forEach(li => {
+    const title = li.querySelector("h3");
+    if (!title) return;
+
+    const text = title.textContent.toLowerCase();
+    li.style.display = text.includes(query) ? "" : "none";
+  });
 }
 
 function isSelected(expenseId) {
