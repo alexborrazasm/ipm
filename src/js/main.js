@@ -82,8 +82,7 @@ async function onConfirmEditExpense(expenseId, description, date, amount) {
       ui.buildExpenseDetails(expense, onEditExpense);
       return;
     }
-
-    console.log("updating expense...");
+    ui.showAccesibilityMsg("Updating expense...");
     await model.editExpense(expense.id, description, date, amount);
 
     let newExpense = {... expense};

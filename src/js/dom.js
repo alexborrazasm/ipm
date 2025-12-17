@@ -43,23 +43,16 @@ function onSearchExpenses() {
 }
 
 function showAccesibilityMsg(message) {
-  let liveRegion = document.getElementById('accessible-live-region');
-
-  if (!liveRegion) {
-    liveRegion = document.createElement('div');
-    liveRegion.id = 'accessible-live-region';
-    liveRegion.className = 'visually-hidden';
-    liveRegion.setAttribute('aria-live', 'polite');
-    liveRegion.setAttribute('role', 'status');
-    document.body.appendChild(liveRegion);
-  }
-
-  liveRegion.textContent = message;
-
+  const liveRegion = document.getElementById('accessible-live-region');
+  liveRegion.textContent = '';
+  setTimeout(() => {
+    liveRegion.textContent = message;
+  }, 100);
   setTimeout(() => {
     liveRegion.textContent = '';
-  }, 2000);
+  }, 4000); 
 }
+
 
 
 function isSelected(expenseId) {
@@ -434,7 +427,6 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
     const amount = parseFloat(formData.get('expense-amount'));
     const date = formData.get('expense-date');
     confirmCallback(expense.id, description, date, amount);
-    showAccesibilityMsg("Saving changes...")
   });
 
   cancelButton.addEventListener('click', () => {
@@ -597,6 +589,7 @@ export {
   addExpenseItem,
   toggleLoadingExpenses,
   showError,
+  showAccesibilityMsg,
   buildExpenseDetails,
   buildFriendsExpense,
   buildEditExpense,
