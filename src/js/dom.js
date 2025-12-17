@@ -26,14 +26,18 @@ function init() {
 }
 
 function onSearchExpenses() {
-  const query = searchInput.value.toLowerCase();
+  const removeAccents = (str) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  };
+
+  const query = removeAccents(searchInput.value.toLowerCase());
   const items = expenseList.querySelectorAll("li");
 
   items.forEach(li => {
     const title = li.querySelector("h3");
     if (!title) return;
 
-    const text = title.textContent.toLowerCase();
+    const text = removeAccents(title.textContent.toLowerCase());
     li.style.display = text.includes(query) ? "" : "none";
   });
 }
@@ -430,6 +434,7 @@ function buildEditExpense(expense, confirmCallback, cancelCallback) {
     const amount = parseFloat(formData.get('expense-amount'));
     const date = formData.get('expense-date');
     confirmCallback(expense.id, description, date, amount);
+    showAccesibilityMsg("Saving changes...")
   });
 
   cancelButton.addEventListener('click', () => {
@@ -473,6 +478,7 @@ function buildAddFriendExpense(expense, allFriends, confirmCallback,
   btn.addEventListener("click", (event) => {
     event.preventDefault();
     cancelCallback(expense.id);
+    showAccesibilityMsg("Cancelling adding a friend...")
   });
 
   friendsSectionList.innerHTML = "";
@@ -488,6 +494,7 @@ function buildAddFriendExpense(expense, allFriends, confirmCallback,
     availableFriends.forEach((friend) => addFriendToAddFriendsItem(
       friend, expense, confirmCallback)
     );
+    showAccesibilityMsg("Available friends loaded.")
   }
 }
 
@@ -580,6 +587,7 @@ function showAddCreditFriend(friend, expense, addCreditCallback) {
   confirmButton.addEventListener('click', () => {
     addCreditCallback(friend.id, expense.id, Number(input.value));
     dialog.close();
+    showAccesibilityMsg("Adding credit...")
   });
 }
 
