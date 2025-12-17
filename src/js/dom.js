@@ -53,8 +53,6 @@ function showAccesibilityMsg(message) {
   }, 4000); 
 }
 
-
-
 function isSelected(expenseId) {
   return expenseId === selectedExpense;
 }
@@ -470,7 +468,6 @@ function buildAddFriendExpense(expense, allFriends, confirmCallback,
   btn.addEventListener("click", (event) => {
     event.preventDefault();
     cancelCallback(expense.id);
-    showAccesibilityMsg("Cancelling adding a friend...")
   });
 
   friendsSectionList.innerHTML = "";
@@ -486,7 +483,6 @@ function buildAddFriendExpense(expense, allFriends, confirmCallback,
     availableFriends.forEach((friend) => addFriendToAddFriendsItem(
       friend, expense, confirmCallback)
     );
-    showAccesibilityMsg("Available friends loaded.")
   }
 }
 
@@ -579,7 +575,6 @@ function showAddCreditFriend(friend, expense, addCreditCallback) {
   confirmButton.addEventListener('click', () => {
     addCreditCallback(friend.id, expense.id, Number(input.value));
     dialog.close();
-    showAccesibilityMsg("Adding credit...")
   });
 }
 

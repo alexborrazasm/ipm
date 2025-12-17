@@ -51,7 +51,7 @@ async function onShowExpense(expenseId) {
 
 async function onEditExpense(expenseId) {
   console.log("on edit expense");
-  ui.spinSpinnerEditDetails();
+  ui.spinSpinnerEditDetails();    
   const release = await cache.lockExpense(expenseId);
   ui.stopSpinSpinnerEditDetails();
   try {
@@ -67,6 +67,7 @@ async function onEditExpense(expenseId) {
 async function onConfirmEditExpense(expenseId, description, date, amount) {
   console.log("on confirm edit expense");
   ui.spinSpinnerEditDetails();
+  ui.showAccesibilityMsg("Updating expense...");
   const release = await cache.lockExpense(expenseId);
 
   try {
@@ -82,9 +83,7 @@ async function onConfirmEditExpense(expenseId, description, date, amount) {
       ui.buildExpenseDetails(expense, onEditExpense);
       return;
     }
-    ui.showAccesibilityMsg("Updating expense...");
     await model.editExpense(expense.id, description, date, amount);
-
     let newExpense = {... expense};
     newExpense.description = description;
     newExpense.date = date;
@@ -117,6 +116,7 @@ async function onConfirmEditExpense(expenseId, description, date, amount) {
     console.error(error);
   } finally {
     ui.stopSpinSpinnerEditDetails();
+    ui.showAccesibilityMsg("Updated expense");
     release();
   }
 }
@@ -152,6 +152,7 @@ async function onAddFriendExpense(expenseId) {
 async function onConfirmAddFriendExpense(friendId, expenseId) {
   console.log("on confirm add friends expense");
   ui.spinSpinnerFriends();
+  ui.showAccesibilityMsg("Adding a friend to expense...");
   const release = await cache.lockExpense(expenseId);
 
   try {
@@ -184,6 +185,7 @@ async function onConfirmAddFriendExpense(friendId, expenseId) {
     console.error(error);
   } finally {
     ui.stopSpinSpinnerFriends();
+    ui.showAccesibilityMsg("Added a friend to expense");
     release();
   }
 }
@@ -229,6 +231,7 @@ async function onConfirmRemoveFriendExpense(friendId, expenseId) {
   console.log("on confirm remove friends expense");
 
   ui.spinSpinnerFriends();
+  ui.showAccesibilityMsg("Removing a friend from expense...");
   const release = await cache.lockExpense(expenseId);
 
   try {
@@ -256,6 +259,7 @@ async function onConfirmRemoveFriendExpense(friendId, expenseId) {
     }
   } finally {
     ui.stopSpinSpinnerFriends();
+    ui.showAccesibilityMsg("Removed a friend from expense");
     release();
   }
 }
@@ -282,6 +286,7 @@ async function onConfirmAddCreditFriendExpense(friendId, expenseId, amount) {
   console.log("on confirm add credit to friend expense");
   
   ui.spinSpinnerFriends();
+  ui.showAccesibilityMsg("Adding credit to friend...");
   const release = await cache.lockExpense(expenseId);
 
   try {
@@ -317,6 +322,7 @@ async function onConfirmAddCreditFriendExpense(friendId, expenseId, amount) {
     console.error(error);
   } finally {
     ui.stopSpinSpinnerFriends();
+    ui.showAccesibilityMsg("Added credit to friend");
     release();
   }
 }
