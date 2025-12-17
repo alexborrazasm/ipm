@@ -65,7 +65,7 @@ function addExpenseItem(expense, callback) {
   let listItem = document.createElement("li");
   let linkItem = document.createElement("a");
   let iconItem = document.createElement("i");
-  let titleItem = document.createElement("h3");
+  let titleItem = document.createElement("span");
   
   listItem.dataset.id = expense.id;
   titleItem.className = "can-break";

@@ -334,6 +334,12 @@ main div#expense-list li i {
   color: var(--color-accent);
 }
 
+main div#expense-list li span {
+  font-size: 1.2rem;
+  flex: 1;
+  font-weight: bold;
+}
+
 main div#expense-list li.selected a {
   background-color: var(--color-surface0);
 }
