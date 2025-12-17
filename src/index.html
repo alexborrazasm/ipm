@@ -25,9 +25,9 @@
   <main>
     <article id="sidebar">
       <!-- ERROR -->
-      <div id="error-message" class="visually-hidden" role="alert" aria-atomic="true">
+      <div id="error-message" class="visually-hidden">
         <i class="fa-solid fa-triangle-exclamation expense-icon" aria-hidden="true"></i>
-        <span></span>
+        <span role="alert"></span>
       </div>
       <!-- Expense list -->
       <div id="expense-list">
@@ -43,15 +43,13 @@
         </search>
         <div class="loading"></div>
         <ul> <!-- list of expenses-->
-          <li>
-          </li>
         </ul>
       </div>
     </article>
-    <article id="content">
+    <article id="content" aria-live="polite">
       <h2 class="visually-hidden">Expense Content</h2>
       <!-- Expense detail -->
-      <section id="details">
+      <section id="details"">
         <div class="title-reload-container">
           <h2>
             <i class="fa-solid fa-circle-info" aria-hidden="true"></i>

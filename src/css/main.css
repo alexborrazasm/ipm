@@ -419,7 +419,7 @@ section#friends p {
   justify-content: space-between;
 }
 
-section#friends li div {
+section#friends li div.body-wrapper {
   flex: 1;
 }
 

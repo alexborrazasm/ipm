@@ -286,7 +286,7 @@ function buildFriendsRow(friend, expense, addCallback, removeCallback) {
   li.dataset.friendId = friend.id;
   li.innerHTML = `
     <i class="fa-solid fa-user friend-icon" aria-hidden="true"></i>
-    <div>
+    <div class="body-wrapper">
       <h3>${friend.name}</h3>
       <p>
         <span>Credit:</span>
@@ -299,7 +299,7 @@ function buildFriendsRow(friend, expense, addCallback, removeCallback) {
     </div>
 
     <div class="menu-wrapper">
-      <button type="button" class="circle-button" aria-label="Open friend menu">
+      <button type="button" class="circle-button" aria-label="friend menu">
         <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
       </button>
       <div class="friend-menu hidden">
