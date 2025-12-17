@@ -34,11 +34,16 @@ function onSearchExpenses() {
   const items = expenseList.querySelectorAll("li");
 
   items.forEach(li => {
-    const title = li.querySelector("h3");
-    if (!title) return;
+    const title = li.querySelector(".expense-detail");
+    if (title){
+      const text = removeAccents(title.textContent.toLowerCase());
+      if(!text.includes(removeAccents(query))){
+        li.classList.add("hidden");
+      }else{
+        li.classList.remove("hidden");
+      }
 
-    const text = removeAccents(title.textContent.toLowerCase());
-    li.style.display = text.includes(query) ? "" : "none";
+    };
   });
 }
 
@@ -68,7 +73,7 @@ function addExpenseItem(expense, callback) {
   let titleItem = document.createElement("span");
   
   listItem.dataset.id = expense.id;
-  titleItem.className = "can-break";
+  titleItem.className = "can-break expense-detail";
   titleItem.textContent = expense.description;
   linkItem.href = "#";
   linkItem.addEventListener("click", (event) => {
