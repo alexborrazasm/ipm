@@ -38,6 +38,26 @@ function onSearchExpenses() {
   });
 }
 
+function showAccesibilityMsg(message) {
+  let liveRegion = document.getElementById('accessible-live-region');
+
+  if (!liveRegion) {
+    liveRegion = document.createElement('div');
+    liveRegion.id = 'accessible-live-region';
+    liveRegion.className = 'visually-hidden';
+    liveRegion.setAttribute('aria-live', 'polite');
+    liveRegion.setAttribute('role', 'status');
+    document.body.appendChild(liveRegion);
+  }
+
+  liveRegion.textContent = message;
+
+  setTimeout(() => {
+    liveRegion.textContent = '';
+  }, 2000);
+}
+
+
 function isSelected(expenseId) {
   return expenseId === selectedExpense;
 }
