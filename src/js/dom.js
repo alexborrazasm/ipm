@@ -127,8 +127,7 @@ function showError(message) {
   buttonItem.className = "form-button";
   buttonItem.textContent = "Dismiss";
   buttonItem.addEventListener("click", () => {
-    errorMessageDiv.classList.add("visually-hidden");
-    errorMessageDiv.innerHTML = "";
+    clearError();
   });
 
   errorMessageDiv.appendChild(titleItem);
@@ -143,7 +142,10 @@ function showError(message) {
 
 function clearError() {
   errorMessageDiv.classList.add("visually-hidden");
-  errorMessageDiv.innerHTML = "";
+  errorMessageDiv.innerHTML = `
+  <i class="fa-solid fa-triangle-exclamation expense-icon" aria-hidden="true"></i>
+  <label></label>
+  `;
 }
 
 function spinSpinnerEditDetails() {
