@@ -610,6 +610,7 @@ footer {
   clip-path: inset(0);
   white-space: nowrap;
   border: 0;
+  opacity: 0;
 }
 
 @media (min-width: 768px) {

@@ -91,7 +91,7 @@ function showError(message) {
   buttonItem.className = "form-button";
   buttonItem.textContent = "Dismiss";
   buttonItem.addEventListener("click", () => {
-    errorMessageDiv.classList.add("hidden");
+    errorMessageDiv.classList.add("visually-hidden");
     errorMessageDiv.innerHTML = "";
   });
 
@@ -100,13 +100,13 @@ function showError(message) {
 
   errorMessageDiv.setAttribute("role", "alert");
   errorMessageDiv.setAttribute("aria-live", "assertive");
-  errorMessageDiv.classList.remove("hidden");
+  errorMessageDiv.classList.remove("visually-hidden");
   
   errorMessageDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
 function clearError() {
-  errorMessageDiv.classList.add("hidden");
+  errorMessageDiv.classList.add("visually-hidden");
   errorMessageDiv.innerHTML = "";
 }
 
@@ -567,4 +567,4 @@ export {
   spinSpinnerFriends,
   stopSpinSpinnerFriends,
   isSelected,
-}; // TODO
+};
