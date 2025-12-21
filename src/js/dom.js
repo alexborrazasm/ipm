@@ -11,7 +11,8 @@ const friendsSectionTitle = document.querySelector("section#friends h2");
 const friendsSectionList = document.querySelector('section#friends ul');
 const spinnerFriends = document.querySelector("section#friends div.loading");
 const searchInput = document.querySelector("#expense-list search input");
-const liveRegion = document.querySelector("div#accessible-live-region");
+const liveRegionSidebar = document.querySelector("#accessible-status-sidebar");
+const liveRegionContent = document.querySelector("#accessible-status-content");
 
 let friendsSpinnerCount = 0;
 let editSpinnerCount = 0;
@@ -48,15 +49,20 @@ function onSearchExpenses() {
   });
 }
 
-function showAccessibilityMsg(msg) {
-  liveRegion.textContent = '';
-  liveRegion.textContent = msg;
-  //setTimeout(() => {
-  //  liveRegion.textContent = message;
-  //}, 100);
-  //setTimeout(() => {
-  //  liveRegion.textContent = '';
-  //}, 4000); 
+function showAccessibilityMsgSidebar(msg) {
+  liveRegionSidebar.textContent = '';
+  liveRegionSidebar.textContent = msg;
+  setTimeout(() => {
+    liveRegionSidebar.textContent = '';
+  }, 1000); 
+}
+
+function showAccessibilityMsgContent(msg) {
+  liveRegionContent.textContent = '';
+  liveRegionContent.textContent = msg;
+  setTimeout(() => {
+    liveRegionContent.textContent = '';
+  }, 1000); 
 }
 
 function isSelected(expenseId) {
@@ -619,7 +625,8 @@ export {
   addExpenseItem,
   toggleLoadingExpenses,
   showError,
-  showAccessibilityMsg,
+  showAccessibilityMsgSidebar,
+  showAccessibilityMsgContent,
   buildExpenseDetails,
   buildFriendsExpense,
   buildEditExpense,

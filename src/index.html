@@ -24,6 +24,7 @@
 
   <main>
     <article id="sidebar">
+      <span id="accessible-status-sidebar" class="visually-hidden" aria-live="polite"></span>
       <!-- ERROR -->
       <div id="error-message" class="visually-hidden">
         <i class="fa-solid fa-triangle-exclamation expense-icon" aria-hidden="true"></i>
@@ -47,11 +48,10 @@
       </div>
     </article>
     <article id="content" aria-live="polite" aria-atomic="true">
-      <h2 class="visually-hidden">Expense Content</h2>
-      <!-- Live region for accessibility messages -->
-      <div id="accessible-live-region"  class="visually-hidden" role="status"></div>
+      <h2 class="visually-hidden">expense content</h2>
       <!-- Expense detail -->
       <section id="details">
+        <span id="accessible-status-content" class="visually-hidden"></span>
         <div class="title-reload-container">
           <h2>
             <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
