@@ -119,13 +119,13 @@ async function onConfirmEditExpense(expenseId, description, date, amount) {
     }
     cache.setExpense(newExpense);
 
-    ui.showAccessibilityMsgContent(`${expense.description} updated`);
-
     if (expense.description !== description) {
       let expenses = cache.getAllExpenses();
       ui.clearExpenses();
       expenses.forEach((expense) => ui.addExpenseItem(expense, onShowExpense));
     }
+
+    ui.showAccessibilityMsgContent(`${expense.description} updated`);
 
   } catch(error) {
     ui.showError("Connection error. Please, try again later.");
