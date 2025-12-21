@@ -11,6 +11,7 @@ const friendsSectionTitle = document.querySelector("section#friends h2");
 const friendsSectionList = document.querySelector('section#friends ul');
 const spinnerFriends = document.querySelector("section#friends div.loading");
 const searchInput = document.querySelector("#expense-list search input");
+const liveRegion = document.querySelector("div#accessible-live-region");
 
 let friendsSpinnerCount = 0;
 let editSpinnerCount = 0;
@@ -47,15 +48,15 @@ function onSearchExpenses() {
   });
 }
 
-function showAccesibilityMsg(message) {
-  const liveRegion = document.getElementById('accessible-live-region');
+function showAccessibilityMsg(msg) {
   liveRegion.textContent = '';
-  setTimeout(() => {
-    liveRegion.textContent = message;
-  }, 100);
-  setTimeout(() => {
-    liveRegion.textContent = '';
-  }, 4000); 
+  liveRegion.textContent = msg;
+  //setTimeout(() => {
+  //  liveRegion.textContent = message;
+  //}, 100);
+  //setTimeout(() => {
+  //  liveRegion.textContent = '';
+  //}, 4000); 
 }
 
 function isSelected(expenseId) {
@@ -618,7 +619,7 @@ export {
   addExpenseItem,
   toggleLoadingExpenses,
   showError,
-  showAccesibilityMsg,
+  showAccessibilityMsg,
   buildExpenseDetails,
   buildFriendsExpense,
   buildEditExpense,

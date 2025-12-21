@@ -23,8 +23,6 @@
   </header>
 
   <main>
-    <!-- Live region for accessibility messages -->
-    <div id="accessible-live-region" class="hidden" role="status" aria-live="polite"></div>
     <article id="sidebar">
       <!-- ERROR -->
       <div id="error-message" class="visually-hidden">
@@ -50,6 +48,8 @@
     </article>
     <article id="content" aria-live="polite" aria-atomic="true">
       <h2 class="visually-hidden">Expense Content</h2>
+      <!-- Live region for accessibility messages -->
+      <div id="accessible-live-region"  class="visually-hidden" role="status"></div>
       <!-- Expense detail -->
       <section id="details">
         <div class="title-reload-container">
