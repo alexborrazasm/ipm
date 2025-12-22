@@ -151,7 +151,7 @@ function clearError() {
   errorMessageDiv.classList.add("visually-hidden");
   errorMessageDiv.innerHTML = `
   <i class="fa-solid fa-triangle-exclamation expense-icon" aria-hidden="true"></i>
-  <label></label>
+  <span></span>
   `;
 }
 
