@@ -145,6 +145,7 @@ function showError(message) {
   errorMessageDiv.classList.remove("visually-hidden");
   
   errorMessageDiv.scrollIntoView({ behavior: 'smooth' });
+  buttonItem.focus();
 }
 
 function clearError() {
