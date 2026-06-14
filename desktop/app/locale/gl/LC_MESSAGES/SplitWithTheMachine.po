@@ -1,0 +1,220 @@
+# Galician translations for PACKAGE package.
+# Copyright (C) 2025 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# nerea <nerea.ppertega@udc.es>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-25 17:32+0200\n"
+"PO-Revision-Date: 2025-10-24 15:36+0200\n"
+"Last-Translator: nerea <nerea.ppertega@udc.es>\n"
+"Language-Team: Galician <proxecto@trasno.gal>\n"
+"Language: gl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: model.py:29 model.py:49 model.py:76 model.py:94 model.py:123 model.py:143
+#: model.py:163 model.py:188 model.py:214 model.py:235
+msgid "Unexpected error"
+msgstr "Erro inesperado"
+
+#: model.py:33 model.py:53 model.py:80 model.py:98 model.py:127 model.py:147
+#: model.py:167 model.py:192 model.py:218 model.py:239
+msgid "Cannot connect to server, please check your network"
+msgstr "Non foi posíbel conectar ao servidor. Por favor, revisa a túa rede"
+
+#: model.py:120
+msgid "Expense already exists"
+msgstr "O gasto xa existe"
+
+#: model.py:185
+msgid "Couldn't delete friend from expense"
+msgstr "Non foi posíbel eliminar á amizade do gasto"
+
+#: model.py:211
+msgid "Couldn't add friend to expense"
+msgstr "Non foi posíbel engadir á amizade ao gasto"
+
+#: presenter.py:73
+msgid "Expense successfully added"
+msgstr "Gasto exitosamente engadido"
+
+#: presenter.py:164
+msgid "Expense successfully edited"
+msgstr "Gasto exitosamente editado"
+
+#: presenter.py:205
+msgid "Expense successfully deleted"
+msgstr "Gasto exitosamente eliminado"
+
+#: presenter.py:243
+msgid "Friend successfully added to expense"
+msgstr "Amizade exitosamente engadida ao gasto"
+
+#: presenter.py:286
+msgid "Friend successfully deleted from expense"
+msgstr "Amizade exitosamente eliminada do gasto"
+
+#: presenter.py:332
+msgid "Credit successfully added to friend"
+msgstr "Crédito exitosamente adxudicado a amizade"
+
+#: view.py:201
+msgid "About"
+msgstr "Acerca"
+
+#: view.py:211
+msgid "Main Menu"
+msgstr "Menú principal"
+
+#: view.py:390
+msgid "Expenses"
+msgstr "Gastos"
+
+#: view.py:395 view.py:1519
+msgid "Add an Expense"
+msgstr "Engadir un Gasto"
+
+#: view.py:406
+msgid "Search"
+msgstr "Pesquisa"
+
+#: view.py:441
+#, python-brace-format
+msgid "Balance: {balance}"
+msgstr "Saldo: {balance}"
+
+#: view.py:600
+msgid "Loading..."
+msgstr "Carregando..."
+
+#: view.py:632
+msgid "No Internet Connection"
+msgstr "Sen conexión a Internet"
+
+#: view.py:637
+msgid "Please check your connection and try again."
+msgstr "Por favor, revisa a túa rede e tenta de novo."
+
+#: view.py:642
+msgid "Retry"
+msgstr "Tentar de novo"
+
+#: view.py:671 view.py:903
+msgid "Date"
+msgstr "Data"
+
+#: view.py:680
+msgid "Pick a Date"
+msgstr "Escolle unha Data"
+
+#: view.py:785 view.py:1448
+msgid "None of the fields should be empty"
+msgstr "Ningún dos campos debería permanecer baleiro"
+
+#: view.py:792 view.py:1455
+msgid "The 'Amount' field must contain positive numbers"
+msgstr "O campo 'Cantidade' debe conter números positivos"
+
+#: view.py:797 view.py:1460
+msgid "Amount must be greater than 0"
+msgstr "A cantidade debe ser superior a 0"
+
+#: view.py:818 view.py:884 view.py:920
+msgid "Description"
+msgstr "Descrición"
+
+#: view.py:819 view.py:892 view.py:924
+msgid "Amount"
+msgstr "Cantidade"
+
+#: view.py:850
+msgid "New Expense"
+msgstr "Novo Gasto"
+
+#: view.py:852 view.py:976 view.py:1020 view.py:1183 view.py:1407
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: view.py:860 view.py:1023 view.py:1186
+msgid "Add"
+msgstr "Engadir"
+
+#: view.py:948
+msgid "Balance"
+msgstr "Saldo"
+
+#: view.py:970 view.py:1312
+msgid "Confirm deletion"
+msgstr "Confirmar borrado"
+
+#: view.py:971 view.py:1313
+#, python-format
+msgid "Are you sure you want to remove '%s'?"
+msgstr "Estás seguro de querer borrar '%s'?"
+
+#: view.py:977
+msgid "Remove"
+msgstr "Eliminar"
+
+#: view.py:1013 view.py:1081
+msgid "Add Credit"
+msgstr "Engadir Crédito"
+
+#: view.py:1036
+#, python-brace-format
+msgid "to {friend}"
+msgstr "a {friend}"
+
+#: view.py:1088
+msgid "Remove Friend"
+msgstr "Eliminar Amizade"
+
+#: view.py:1113
+#, python-brace-format
+msgid "Credit: {credit}   |   Debit: {debit}"
+msgstr "Crédito: {credit}   |   Débito: {debit}"
+
+#: view.py:1142 view.py:1176
+msgid "Add Friend"
+msgstr "Engadir Amizade"
+
+#: view.py:1161
+msgid "No more friends available"
+msgstr "Non quedan amizades dispoñibles"
+
+#: view.py:1162
+msgid "You have already added all your friends to this expense."
+msgstr "Engadiches todas as túas amizades a este gasto."
+
+#: view.py:1192
+msgid "Search friends..."
+msgstr "Buscar amizades..."
+
+#: view.py:1355
+msgid "Details"
+msgstr "Detalles"
+
+#: view.py:1363
+msgid "Friends"
+msgstr "Amizades"
+
+#: view.py:1374
+msgid "Remove expense"
+msgstr "Eliminar gasto"
+
+#: view.py:1403
+msgid "Edit Expense"
+msgstr "Editar Gasto"
+
+#: view.py:1414
+msgid "Done"
+msgstr "Feito"
+
+#: view.py:1509
+msgid "Pick an Expense"
+msgstr "Escolle un Gasto"
