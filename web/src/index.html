@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <title>SplitWithMe</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Split expenses with your friends app.">
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+
+<body>
+
+  <header id="banner">
+    <h1>SplitWithMe</h1>
+  </header>
+
+  <main>
+    <article id="sidebar">
+      <span id="accessible-status-sidebar" class="visually-hidden" aria-live="polite"></span>
+      <!-- ERROR -->
+      <div id="error-message" class="visually-hidden">
+        <i class="fa-solid fa-triangle-exclamation expense-icon" aria-hidden="true"></i>
+        <span role="alert"></span>
+      </div>
+      <!-- Expense list -->
+      <div id="expense-list">
+        <h2>
+          <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+          Expenses
+          <button id="reload" class="circle-button" aria-label="reload">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+        </h2>
+        <search>
+          <input type="text" placeholder="Search expense...">
+        </search>
+        <div class="loading"></div>
+        <ul> <!-- list of expenses-->
+        </ul>
+      </div>
+    </article>
+    <article id="content" aria-live="polite" aria-atomic="true">
+      <h2 class="visually-hidden">expense content</h2>
+      <!-- Expense detail -->
+      <section id="details">
+        <span id="accessible-status-content" class="visually-hidden"></span>
+        <div class="title-reload-container">
+          <h2>
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+            <span>Expense Details</span>
+          </h2>
+          <div class="loading"></div>
+        </div>
+        <article>
+          <h3>Pick an Expense</h3>
+        </article>
+      </section>
+
+      <!-- Friends -->
+      <section id="friends" class="hidden">
+        <div class="title-reload-container">
+          <h2>
+            <i class="fa-solid fa-user-group" aria-hidden="true"></i>
+            <span>Friends on expense</span>
+          </h2>
+          <div class="loading"></div>
+        </div>
+        <ul>
+        </ul>
+      </section>
+      <!-- Dialog: add credit to friends or confirm remove -->
+      <dialog id="add-credit-remove-friends">
+      </dialog> 
+      
+    </article>
+
+  </main>
+  
+  <footer>
+    <i class="fa-regular fa-copyright" aria-hidden="true"></i>
+    <p>2025 IPM  Rage Against the Machine</p>
+  </footer>
+  
+  <script type="module" src="./js/main.js"></script>
+
+</body>
+
+</html>
